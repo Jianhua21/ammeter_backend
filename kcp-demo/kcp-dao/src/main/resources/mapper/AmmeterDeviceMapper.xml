@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterDeviceMapper" >
+  <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterDevice" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="imsi" property="imsi" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+      <result column="ammeter_number" property="ammeterNumber" jdbcType="VARCHAR" />
+    <result column="meter_no" property="meterNo" jdbcType="VARCHAR" />
+    <result column="ass_manage_code" property="assManageCode" jdbcType="VARCHAR" />
+    <result column="rated_voltage" property="ratedVoltage" jdbcType="VARCHAR" />
+    <result column="rated_current" property="ratedCurrent" jdbcType="VARCHAR" />
+    <result column="max_current" property="maxCurrent" jdbcType="VARCHAR" />
+    <result column="active_acc_level" property="activeAccLevel" jdbcType="VARCHAR" />
+    <result column="reactive_acc_level" property="reactiveAccLevel" jdbcType="VARCHAR" />
+    <result column="active_constant" property="activeConstant" jdbcType="INTEGER" />
+    <result column="reactive_constant" property="reactiveConstant" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="product_date" property="productDate" jdbcType="TIMESTAMP" />
+    <result column="protocol_no" property="protocolNo" jdbcType="VARCHAR" />
+    <result column="software_no" property="softwareNo" jdbcType="VARCHAR" />
+    <result column="hardware_no" property="hardwareNo" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, imsi, address, meter_no,ammeter_number, ass_manage_code, rated_voltage, rated_current, max_current,
+    active_acc_level, reactive_acc_level, active_constant, reactive_constant, type, product_date, 
+    protocol_no, software_no, hardware_no
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ammeter_device
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByCondition" resultMap="BaseResultMap" >
+
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_device
+  </select>
+  <resultMap id="AmmeterInfoMap" type="com.kashuo.kcp.domain.AmmeterInfoResult" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="imsi" property="imsi" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+      <result column="ammeter_number" property="ammeterNumber" jdbcType="VARCHAR" />
+    <result column="meter_no" property="meterNo" jdbcType="VARCHAR" />
+    <result column="ass_manage_code" property="assManageCode" jdbcType="VARCHAR" />
+    <result column="rated_voltage" property="ratedVoltage" jdbcType="VARCHAR" />
+    <result column="rated_current" property="ratedCurrent" jdbcType="VARCHAR" />
+    <result column="max_current" property="maxCurrent" jdbcType="VARCHAR" />
+    <result column="active_acc_level" property="activeAccLevel" jdbcType="VARCHAR" />
+    <result column="reactive_acc_level" property="reactiveAccLevel" jdbcType="VARCHAR" />
+    <result column="active_constant" property="activeConstant" jdbcType="INTEGER" />
+    <result column="reactive_constant" property="reactiveConstant" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="product_date" property="productDate" jdbcType="TIMESTAMP" />
+    <result column="protocol_no" property="protocolNo" jdbcType="VARCHAR" />
+    <result column="software_no" property="softwareNo" jdbcType="VARCHAR" />
+    <result column="hardware_no" property="hardwareNo" jdbcType="VARCHAR" />
+    <result column="info_id" property="infoId" jdbcType="INTEGER" />
+    <result column="zero_line_current" property="zeroLineCurrent" jdbcType="VARCHAR" />
+    <result column="grid_frequency" property="gridFrequency" jdbcType="VARCHAR" />
+    <result column="average_power_minute" property="averagePowerMinute" jdbcType="VARCHAR" />
+    <result column="active_demand" property="activeDemand" jdbcType="VARCHAR" />
+    <result column="reactive_demand" property="reactiveDemand" jdbcType="VARCHAR" />
+    <result column="apparent_demand" property="apparentDemand" jdbcType="VARCHAR" />
+    <result column="temperature" property="temperature" jdbcType="VARCHAR" />
+    <result column="clock_cell_voltage" property="clockCellVoltage" jdbcType="VARCHAR" />
+    <result column="no_power_cell_voltage" property="noPowerCellVoltage" jdbcType="VARCHAR" />
+    <result column="battery_working_time" property="batteryWorkingTime" jdbcType="VARCHAR" />
+    <result column="active_power" property="activePower" jdbcType="VARCHAR" />
+    <result column="reverse_active_power" property="reverseActivePower" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+
+  <select id="selectAmmeterInfo" resultMap="AmmeterInfoMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterCondition">
+    select device.id,device.imsi,device.address,device.meter_no,device.ass_manage_code,device.rated_voltage,
+device.rated_current,device.max_current,active_acc_level,reactive_acc_level,
+device.active_constant,device.reactive_constant,device.type,device.product_date,
+device.protocol_no,device.software_no,device.hardware_no,info.id as info_id,
+info.zero_line_current,info.grid_frequency,info.average_power_minute,
+info.active_demand,info.reactive_demand,info.apparent_demand,info.temperature,
+info.clock_cell_voltage,info.no_power_cell_voltage,info.battery_working_time,info.active_power,
+info.reverse_active_power,IFNULL(info.`status`,1) as status
+ from ammeter_device device left JOIN
+    ammeter_working_info info on device.id = info.ammeter_id
+    where device.channel_id = #{channelId,jdbcType=INTEGER}
+    <if test="meterNo != null and meterNo !=''">
+      and device.meter_no like CONCAT('%',#{meterNo,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="imsi != null and imsi != ''">
+      and device.imsi  like CONCAT('%',#{imsi,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="address != null and address != ''">
+      and device.address  like CONCAT('%',#{address,jdbcType=VARCHAR},'%')
+    </if>
+  </select>
+
+  <select id="selectByImsiKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_device
+    where imsi = #{imsi,jdbcType=VARCHAR}
+      limit 1
+  </select>
+
+    <select id="selectByAmmeterNumber" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from ammeter_device
+        where ammeter_number = #{ammeterNumber,jdbcType=VARCHAR}
+        limit 1
+    </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ammeter_device
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterDevice" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_device (imsi, address, meter_no, ammeter_number,
+      ass_manage_code, rated_voltage, rated_current, 
+      max_current, active_acc_level, reactive_acc_level, 
+      active_constant, reactive_constant, type, 
+      product_date, protocol_no, software_no, 
+      hardware_no)
+    values (#{imsi,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{meterNo,jdbcType=VARCHAR}, #{ammeterNumber,jdbcType=VARCHAR},
+      #{assManageCode,jdbcType=VARCHAR}, #{ratedVoltage,jdbcType=VARCHAR}, #{ratedCurrent,jdbcType=VARCHAR}, 
+      #{maxCurrent,jdbcType=VARCHAR}, #{activeAccLevel,jdbcType=VARCHAR}, #{reactiveAccLevel,jdbcType=VARCHAR}, 
+      #{activeConstant,jdbcType=INTEGER}, #{reactiveConstant,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, 
+      #{productDate,jdbcType=TIMESTAMP}, #{protocolNo,jdbcType=VARCHAR}, #{softwareNo,jdbcType=VARCHAR}, 
+      #{hardwareNo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterDevice" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_device
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="imsi != null" >
+        imsi,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="meterNo != null" >
+        meter_no,
+      </if>
+      <if test="assManageCode != null" >
+        ass_manage_code,
+      </if>
+      <if test="ratedVoltage != null" >
+        rated_voltage,
+      </if>
+      <if test="ratedCurrent != null" >
+        rated_current,
+      </if>
+      <if test="maxCurrent != null" >
+        max_current,
+      </if>
+      <if test="activeAccLevel != null" >
+        active_acc_level,
+      </if>
+      <if test="reactiveAccLevel != null" >
+        reactive_acc_level,
+      </if>
+      <if test="activeConstant != null" >
+        active_constant,
+      </if>
+      <if test="reactiveConstant != null" >
+        reactive_constant,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="productDate != null" >
+        product_date,
+      </if>
+      <if test="protocolNo != null" >
+        protocol_no,
+      </if>
+      <if test="softwareNo != null" >
+        software_no,
+      </if>
+      <if test="hardwareNo != null" >
+        hardware_no,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="imsi != null" >
+        #{imsi,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="meterNo != null" >
+        #{meterNo,jdbcType=VARCHAR},
+      </if>
+      <if test="assManageCode != null" >
+        #{assManageCode,jdbcType=VARCHAR},
+      </if>
+      <if test="ratedVoltage != null" >
+        #{ratedVoltage,jdbcType=VARCHAR},
+      </if>
+      <if test="ratedCurrent != null" >
+        #{ratedCurrent,jdbcType=VARCHAR},
+      </if>
+      <if test="maxCurrent != null" >
+        #{maxCurrent,jdbcType=VARCHAR},
+      </if>
+      <if test="activeAccLevel != null" >
+        #{activeAccLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="reactiveAccLevel != null" >
+        #{reactiveAccLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="activeConstant != null" >
+        #{activeConstant,jdbcType=INTEGER},
+      </if>
+      <if test="reactiveConstant != null" >
+        #{reactiveConstant,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="productDate != null" >
+        #{productDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="protocolNo != null" >
+        #{protocolNo,jdbcType=VARCHAR},
+      </if>
+      <if test="softwareNo != null" >
+        #{softwareNo,jdbcType=VARCHAR},
+      </if>
+      <if test="hardwareNo != null" >
+        #{hardwareNo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterDevice" >
+    update ammeter_device
+    <set >
+      <if test="imsi != null" >
+        imsi = #{imsi,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="meterNo != null" >
+        meter_no = #{meterNo,jdbcType=VARCHAR},
+      </if>
+      <if test="assManageCode != null" >
+        ass_manage_code = #{assManageCode,jdbcType=VARCHAR},
+      </if>
+      <if test="ratedVoltage != null" >
+        rated_voltage = #{ratedVoltage,jdbcType=VARCHAR},
+      </if>
+      <if test="ratedCurrent != null" >
+        rated_current = #{ratedCurrent,jdbcType=VARCHAR},
+      </if>
+      <if test="maxCurrent != null" >
+        max_current = #{maxCurrent,jdbcType=VARCHAR},
+      </if>
+      <if test="activeAccLevel != null" >
+        active_acc_level = #{activeAccLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="reactiveAccLevel != null" >
+        reactive_acc_level = #{reactiveAccLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="activeConstant != null" >
+        active_constant = #{activeConstant,jdbcType=INTEGER},
+      </if>
+      <if test="reactiveConstant != null" >
+        reactive_constant = #{reactiveConstant,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="productDate != null" >
+        product_date = #{productDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="protocolNo != null" >
+        protocol_no = #{protocolNo,jdbcType=VARCHAR},
+      </if>
+      <if test="softwareNo != null" >
+        software_no = #{softwareNo,jdbcType=VARCHAR},
+      </if>
+      <if test="hardwareNo != null" >
+        hardware_no = #{hardwareNo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <update id="updateByImsiKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterDevice" >
+        update ammeter_device
+        <set >
+            <if test="imsi != null" >
+                imsi = #{imsi,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null" >
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="meterNo != null" >
+                meter_no = #{meterNo,jdbcType=VARCHAR},
+            </if>
+            <if test="assManageCode != null" >
+                ass_manage_code = #{assManageCode,jdbcType=VARCHAR},
+            </if>
+            <if test="ratedVoltage != null" >
+                rated_voltage = #{ratedVoltage,jdbcType=VARCHAR},
+            </if>
+            <if test="ratedCurrent != null" >
+                rated_current = #{ratedCurrent,jdbcType=VARCHAR},
+            </if>
+            <if test="maxCurrent != null" >
+                max_current = #{maxCurrent,jdbcType=VARCHAR},
+            </if>
+            <if test="activeAccLevel != null" >
+                active_acc_level = #{activeAccLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="reactiveAccLevel != null" >
+                reactive_acc_level = #{reactiveAccLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="activeConstant != null" >
+                active_constant = #{activeConstant,jdbcType=INTEGER},
+            </if>
+            <if test="reactiveConstant != null" >
+                reactive_constant = #{reactiveConstant,jdbcType=INTEGER},
+            </if>
+            <if test="type != null" >
+                type = #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="productDate != null" >
+                product_date = #{productDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="protocolNo != null" >
+                protocol_no = #{protocolNo,jdbcType=VARCHAR},
+            </if>
+            <if test="softwareNo != null" >
+                software_no = #{softwareNo,jdbcType=VARCHAR},
+            </if>
+            <if test="hardwareNo != null" >
+                hardware_no = #{hardwareNo,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where imsi = #{imsi,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterDevice" >
+    update ammeter_device
+    set imsi = #{imsi,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      meter_no = #{meterNo,jdbcType=VARCHAR},
+      ass_manage_code = #{assManageCode,jdbcType=VARCHAR},
+      rated_voltage = #{ratedVoltage,jdbcType=VARCHAR},
+      rated_current = #{ratedCurrent,jdbcType=VARCHAR},
+      max_current = #{maxCurrent,jdbcType=VARCHAR},
+      active_acc_level = #{activeAccLevel,jdbcType=VARCHAR},
+      reactive_acc_level = #{reactiveAccLevel,jdbcType=VARCHAR},
+      active_constant = #{activeConstant,jdbcType=INTEGER},
+      reactive_constant = #{reactiveConstant,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      product_date = #{productDate,jdbcType=TIMESTAMP},
+      protocol_no = #{protocolNo,jdbcType=VARCHAR},
+      software_no = #{softwareNo,jdbcType=VARCHAR},
+      hardware_no = #{hardwareNo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,16 @@
+package com.kashuo.kcp.core.service;
+
+import com.kashuo.kcp.dao.${className}Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+/**
+*  Created by ${author} on ${time}.
+*/
+@Service
+public class ${className}Service {
+    @Autowired
+    private ${className}Mapper ${firstCodeLowerCaseClassName}Mapper;
+
+
+}

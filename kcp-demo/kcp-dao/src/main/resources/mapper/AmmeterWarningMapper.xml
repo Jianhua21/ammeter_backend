@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterWarningMapper" >
+  <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterWarning" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="ammeter_id" property="ammeterId" jdbcType="INTEGER" />
+    <result column="warning_status" property="warningStatus" jdbcType="CHAR" />
+    <result column="warning_date" property="warningDate" jdbcType="TIMESTAMP" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="create_by" property="createBy" jdbcType="VARCHAR" />
+    <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
+    <result column="warning_type" property="warningType" jdbcType="INTEGER" />
+  </resultMap>
+
+    <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterWarningResult" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="imsi" property="imsi" jdbcType="VARCHAR" />
+        <result column="ammeter_number" property="number" jdbcType="VARCHAR" />
+        <result column="warning_date" property="warningDate" jdbcType="TIMESTAMP" />
+        <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
+        <result column="ammeter_type" property="ammeterType" jdbcType="VARCHAR" />
+        <result column="warning_type" property="warningType" jdbcType="INTEGER" />
+    </resultMap>
+  <sql id="Base_Column_List" >
+    id, ammeter_id, warning_status, warning_date, create_date, create_by, warning_desc,warning_type
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ammeter_warning
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+    
+    <select id="queryWarningList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
+        select d.id,d.imsi,d.ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type
+        from ammeter_warning w,ammeter_device d
+       where w.ammeter_id = d.id
+         and w.warning_status = 0
+        <if test="channelId != null">
+            and d.channel_id =  #{channelId,jdbcType=INTEGER}
+        </if>
+         <if test="ammeterType != null">
+            and   d.type  like CONCAT('%',#{ammeterType,jdbcType=VARCHAR},'%')
+         </if>
+        <if test="dateTime!=null and dateTime!=''">
+            <![CDATA[ AND w.warning_date >= #{dateTime} ]]>
+        </if>
+        order by w.warning_date desc
+    </select>
+    
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ammeter_warning
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterWarning" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_warning (ammeter_id, warning_status, warning_date, 
+      create_date, create_by, warning_desc,warning_type
+      )
+    values (#{ammeterId,jdbcType=INTEGER}, #{warningStatus,jdbcType=CHAR}, #{warningDate,jdbcType=TIMESTAMP}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{warningDesc,jdbcType=VARCHAR},#{warningType,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterWarning" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_warning
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ammeterId != null" >
+        ammeter_id,
+      </if>
+      <if test="warningStatus != null" >
+        warning_status,
+      </if>
+      <if test="warningDate != null" >
+        warning_date,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="createBy != null" >
+        create_by,
+      </if>
+      <if test="warningDesc != null" >
+        warning_desc,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ammeterId != null" >
+        #{ammeterId,jdbcType=INTEGER},
+      </if>
+      <if test="warningStatus != null" >
+        #{warningStatus,jdbcType=CHAR},
+      </if>
+      <if test="warningDate != null" >
+        #{warningDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null" >
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="warningDesc != null" >
+        #{warningDesc,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterWarning" >
+    update ammeter_warning
+    <set >
+      <if test="ammeterId != null" >
+        ammeter_id = #{ammeterId,jdbcType=INTEGER},
+      </if>
+      <if test="warningStatus != null" >
+        warning_status = #{warningStatus,jdbcType=CHAR},
+      </if>
+      <if test="warningDate != null" >
+        warning_date = #{warningDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createBy != null" >
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="warningDesc != null" >
+        warning_desc = #{warningDesc,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterWarning" >
+    update ammeter_warning
+    set ammeter_id = #{ammeterId,jdbcType=INTEGER},
+      warning_status = #{warningStatus,jdbcType=CHAR},
+      warning_date = #{warningDate,jdbcType=TIMESTAMP},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      warning_desc = #{warningDesc,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

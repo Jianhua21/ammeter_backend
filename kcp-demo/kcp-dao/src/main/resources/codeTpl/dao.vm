@@ -1,0 +1,9 @@
+package com.kashuo.kcp.dao;
+
+
+/**
+*  Created by ${author} on ${time}.
+*/
+public interface ${className}Mapper {
+
+}

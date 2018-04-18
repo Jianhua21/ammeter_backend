@@ -1,0 +1,9 @@
+package com.kashuo.kcp.api.domain;
+
+import java.io.Serializable;
+/**
+*  Created by ${author} on ${time}.
+*/
+public class ${className}Api implements Serializable {
+
+}

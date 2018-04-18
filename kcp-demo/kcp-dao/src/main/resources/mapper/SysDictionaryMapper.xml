@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.SysDictionaryMapper" >
+  <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.SysDictionary" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="param_1" property="param1" jdbcType="VARCHAR" />
+    <result column="param_2" property="param2" jdbcType="VARCHAR" />
+    <result column="param_3" property="param3" jdbcType="VARCHAR" />
+    <result column="param_4" property="param4" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="param_id" property="paramId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, param_1, param_2, param_3, param_4, type, param_id
+  </sql>
+  <select id="selectByCondition" resultMap="BaseResultMap">
+  select
+  <include refid="Base_Column_List" />
+  from sys_dictionary and type != 7 where status = 0
+</select>
+
+  <select id="querySystemParams" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_dictionary and type = 7 where status = 0
+  </select>
+</mapper>

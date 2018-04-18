@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterRuleMapper" >
+  <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterRule" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="rule_name" property="ruleName" jdbcType="VARCHAR" />
+    <result column="rule_params" property="ruleParams" jdbcType="VARCHAR" />
+    <result column="rule_key" property="ruleKey" jdbcType="VARCHAR" />
+    <result column="rule_value" property="ruleValue" jdbcType="VARCHAR" />
+    <result column="rule_status" property="ruleStatus" jdbcType="CHAR" />
+    <result column="rule_desc" property="ruleDesc" jdbcType="VARCHAR" />
+    <result column="rule_type" property="ruleType" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, rule_name, rule_params, rule_key, rule_value, rule_status, rule_desc, rule_type
+  </sql>
+
+
+  <select id="getNetWorkRules" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_rule where rule_status = 0 and rule_type =1
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ammeter_rule
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ammeter_rule
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterRule" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_rule (rule_name, rule_params, rule_key, 
+      rule_value, rule_status, rule_desc, 
+      rule_type)
+    values (#{ruleName,jdbcType=VARCHAR}, #{ruleParams,jdbcType=VARCHAR}, #{ruleKey,jdbcType=VARCHAR}, 
+      #{ruleValue,jdbcType=VARCHAR}, #{ruleStatus,jdbcType=CHAR}, #{ruleDesc,jdbcType=VARCHAR}, 
+      #{ruleType,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterRule" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_rule
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ruleName != null" >
+        rule_name,
+      </if>
+      <if test="ruleParams != null" >
+        rule_params,
+      </if>
+      <if test="ruleKey != null" >
+        rule_key,
+      </if>
+      <if test="ruleValue != null" >
+        rule_value,
+      </if>
+      <if test="ruleStatus != null" >
+        rule_status,
+      </if>
+      <if test="ruleDesc != null" >
+        rule_desc,
+      </if>
+      <if test="ruleType != null" >
+        rule_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ruleName != null" >
+        #{ruleName,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleParams != null" >
+        #{ruleParams,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleKey != null" >
+        #{ruleKey,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleValue != null" >
+        #{ruleValue,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleStatus != null" >
+        #{ruleStatus,jdbcType=CHAR},
+      </if>
+      <if test="ruleDesc != null" >
+        #{ruleDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleType != null" >
+        #{ruleType,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterRule" >
+    update ammeter_rule
+    <set >
+      <if test="ruleName != null" >
+        rule_name = #{ruleName,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleParams != null" >
+        rule_params = #{ruleParams,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleKey != null" >
+        rule_key = #{ruleKey,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleValue != null" >
+        rule_value = #{ruleValue,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleStatus != null" >
+        rule_status = #{ruleStatus,jdbcType=CHAR},
+      </if>
+      <if test="ruleDesc != null" >
+        rule_desc = #{ruleDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleType != null" >
+        rule_type = #{ruleType,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterRule" >
+    update ammeter_rule
+    set rule_name = #{ruleName,jdbcType=VARCHAR},
+      rule_params = #{ruleParams,jdbcType=VARCHAR},
+      rule_key = #{ruleKey,jdbcType=VARCHAR},
+      rule_value = #{ruleValue,jdbcType=VARCHAR},
+      rule_status = #{ruleStatus,jdbcType=CHAR},
+      rule_desc = #{ruleDesc,jdbcType=VARCHAR},
+      rule_type = #{ruleType,jdbcType=CHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

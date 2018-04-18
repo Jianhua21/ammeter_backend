@@ -1,0 +1,19 @@
+package com.kashuo.kcp.api.service;
+import com.kashuo.kcp.api.domain.${className}Api;
+import java.util.List;
+
+/**
+*  Created by ${author} on ${time}.
+*/
+public interface I${className}Service {
+
+    List<${className}Api> list(${className} ${firstCodeLowerCaseClassName});
+
+    ${className}Api get(Integer id);
+
+    int insert(${className}Api ${firstCodeLowerCaseClassName});
+
+    int update(${className}Api ${firstCodeLowerCaseClassName});
+
+    int delete(Integer id);
+}

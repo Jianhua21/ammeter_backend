@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterRoleMapper">
+    <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterRole">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="role_name" property="roleName" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="owner" property="owner" jdbcType="VARCHAR"/>
+        <result column="channel_id" property="channelId" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, role_name, description, owner
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_role
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from ammeter_role
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterRole">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ammeter_role (id, role_name, description,
+        owner
+        <if test="channelId != null">
+            ,channel_id
+        </if>
+        )
+        values (#{id,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+        #{owner,jdbcType=VARCHAR}
+        <if test="channelId != null">
+            ,#{channelId,jdbcType=INTEGER}
+        </if>
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterRole">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ammeter_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            <if test="roleName != null">
+                role_name,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="owner != null">
+                owner,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id,jdbcType=INTEGER},
+            <if test="roleName != null">
+                #{roleName,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="owner != null">
+                #{owner,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterRole">
+        update ammeter_role
+        <set>
+            <if test="roleName != null">
+                role_name = #{roleName,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="owner != null">
+                owner = #{owner,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterRole">
+        update ammeter_role
+        set role_name = #{roleName,jdbcType=VARCHAR},
+        description = #{description,jdbcType=VARCHAR},
+        owner = #{owner,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectRoleListByChannelId" resultType="java.util.Map" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_role where channel_id = #{channelId}
+    </select>
+
+    <!-- 查询账户列表 -->
+    <select id="selectListSelective" resultType="java.util.Map" parameterType="com.kashuo.kcp.dao.condition.RoleCondition">
+        select id,role_name as name, description from ammeter_role where channel_id = #{channelId}
+    </select>
+
+    <!-- 渠道商管理角色查询 -->
+    <select id="selectRoleByChannel" resultType="java.util.Map" parameterType="com.kashuo.kcp.dao.condition.RoleCondition">
+        select id,role_name as name, description from ammeter_role where channel_id = #{channelId}
+    </select>
+
+    <select id="selectByChannelIdAndName" resultType="com.kashuo.kcp.domain.AmmeterRole">
+        select <include refid="Base_Column_List"/> from ammeter_role where channel_id = #{0} and binary role_name = #{1} limit 1
+    </select>
+
+</mapper>

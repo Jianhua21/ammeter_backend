@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration>
+<configuration>
+
+    <property name="APP_LOGGING_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %level %logger{64}\\(%L\\): %msg%n"/>
+
+
+    <!-- 控制台输出日志 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${APP_LOGGING_PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>./logs/application.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>./logs/application.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${APP_LOGGING_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE" />
+        <includeCallerData>true</includeCallerData>
+    </appender>
+
+    <appender name="CONSOLE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="CONSOLE" />
+        <includeCallerData>true</includeCallerData>
+    </appender>
+
+
+    <!--这里指定logger name-->
+    <logger name="org.springframework" level="WARN" />
+    <logger name="org.apache.ibatis" level="WARN" />
+    <logger name="org.mybatis.spring" level="WARN" />
+    <logger name="org.springframework.web" level="WARN"/>
+    <logger name="com.kashuo" level="INFO"/>
+    <logger name="dao" level="DEBUG"/>
+    <!--<logger name="com.kashuo.kop.server.dao" level="DEBUG"/>-->
+    <!--<logger name="com.kashuo.kop.server.provider.impl.ZdManager" level="DEBUG"/>-->
+    <!--<logger name="com.kashuo.kop.server.provider.impl.KsManager" level="DEBUG"/>-->
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE_ASYNC" />
+        <appender-ref ref="FILE_ASYNC" />
+    </root>
+</configuration>

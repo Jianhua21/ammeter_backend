@@ -1,0 +1,43 @@
+package com.kashuo.kcp.rpc;
+
+import com.kashuo.kcp.api.service.I${className}Service;
+import com.kashuo.kcp.api.domain.${className};
+import org.springframework.beans.factory.annotation.Autowired;
+import com.kashuo.kcp.core.service.${className}Service;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+/**
+*  Created by ${author} on ${time}.
+*/
+@Service
+public class ${className}Rpc implements I${className}Service {
+    @Autowired
+    private ${className}Service ${firstCodeLowerCaseClassName}Service;
+
+    @Override
+    public List<${className}> list(${className} ${firstCodeLowerCaseClassName}) {
+        return null;
+    }
+
+    @Override
+    public ${className} get(Integer id) {
+        return null;
+    }
+
+    @Override
+    public int insert(${className} ${firstCodeLowerCaseClassName}) {
+        return 0;
+    }
+
+    @Override
+    public int update(${className} ${firstCodeLowerCaseClassName}) {
+        return 0;
+    }
+
+    @Override
+    public int delete(Integer id) {
+        return 0;
+    }
+
+}

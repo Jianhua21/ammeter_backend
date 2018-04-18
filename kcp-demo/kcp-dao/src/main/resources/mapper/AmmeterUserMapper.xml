@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterUserMapper">
+    <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterUser">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="realname" property="realname" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="TINYINT"/>
+        <result column="position_id" property="positionId" jdbcType="INTEGER"/>
+        <result column="department_id" property="departmentId" jdbcType="INTEGER"/>
+        <result column="job_number" property="jobNumber" jdbcType="VARCHAR"/>
+        <result column="login_name" property="loginName" jdbcType="VARCHAR"/>
+        <result column="login_passwd" property="loginPasswd" jdbcType="VARCHAR"/>
+        <result column="mobile_phone" property="mobilePhone" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="user_type" property="userType" jdbcType="TINYINT"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="role_id" property="roleId" jdbcType="INTEGER"/>
+        <result column="channel_id" property="channelId" jdbcType="INTEGER"/>
+        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="token" property="token" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, realname, gender, position_id, department_id, job_number, login_name, login_passwd,
+    mobile_phone, email, user_type, status, role_id, channel_id,
+    create_by, create_time, token
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_user
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ammeter_user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterUser">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ammeter_user (realname, gender, position_id,
+        department_id, job_number, login_name,
+        login_passwd, mobile_phone,
+        email, user_type, status,
+        role_id, channel_id,
+        create_by, create_time,
+        token)
+        values (#{realname,jdbcType=VARCHAR}, #{gender,jdbcType=TINYINT}, #{positionId,jdbcType=INTEGER},
+        #{departmentId,jdbcType=INTEGER}, #{jobNumber,jdbcType=VARCHAR}, #{loginName,jdbcType=VARCHAR},
+        #{loginPasswd,jdbcType=VARCHAR}, #{mobilePhone,jdbcType=VARCHAR},
+        #{email,jdbcType=VARCHAR}, #{userType,jdbcType=TINYINT}, #{status,jdbcType=TINYINT},
+        #{roleId,jdbcType=INTEGER}, #{channelId,jdbcType=INTEGER},
+        #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+        #{token,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterUser">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ammeter_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="realname != null">
+                realname,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="positionId != null">
+                position_id,
+            </if>
+            <if test="departmentId != null">
+                department_id,
+            </if>
+            <if test="jobNumber != null">
+                job_number,
+            </if>
+            <if test="loginName != null">
+                login_name,
+            </if>
+            <if test="loginPasswd != null">
+                login_passwd,
+            </if>
+            <if test="mobilePhone != null">
+                mobile_phone,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="userType != null">
+                user_type,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="roleId != null">
+                role_id,
+            </if>
+            <if test="channelId != null">
+                channel_id,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="token != null">
+                token,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="realname != null">
+                #{realname,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                #{gender,jdbcType=TINYINT},
+            </if>
+            <if test="positionId != null">
+                #{positionId,jdbcType=INTEGER},
+            </if>
+            <if test="departmentId != null">
+                #{departmentId,jdbcType=INTEGER},
+            </if>
+            <if test="jobNumber != null">
+                #{jobNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="loginName != null">
+                #{loginName,jdbcType=VARCHAR},
+            </if>
+            <if test="loginPasswd != null">
+                #{loginPasswd,jdbcType=VARCHAR},
+            </if>
+            <if test="mobilePhone != null">
+                #{mobilePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="userType != null">
+                #{userType,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="roleId != null">
+                #{roleId,jdbcType=INTEGER},
+            </if>
+            <if test="channelId != null">
+                #{channelId,jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="token != null">
+                #{token,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterUser">
+        update ammeter_user
+        <set>
+            <if test="realname != null">
+                realname = #{realname,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=TINYINT},
+            </if>
+            <if test="positionId != null">
+                position_id = #{positionId,jdbcType=INTEGER},
+            </if>
+            <if test="departmentId != null">
+                department_id = #{departmentId,jdbcType=INTEGER},
+            </if>
+            <if test="jobNumber != null">
+                job_number = #{jobNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="loginName != null">
+                login_name = #{loginName,jdbcType=VARCHAR},
+            </if>
+            <if test="loginPasswd != null">
+                login_passwd = #{loginPasswd,jdbcType=VARCHAR},
+            </if>
+            <if test="mobilePhone != null">
+                mobile_phone = #{mobilePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="userType != null">
+                user_type = #{userType,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="roleId != null">
+                role_id = #{roleId,jdbcType=INTEGER},
+            </if>
+            <if test="channelId != null">
+                channel_id = #{channelId,jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="token != null">
+                token = #{token,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterUser">
+    update ammeter_user
+    set realname = #{realname,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=TINYINT},
+      position_id = #{positionId,jdbcType=INTEGER},
+      department_id = #{departmentId,jdbcType=INTEGER},
+      job_number = #{jobNumber,jdbcType=VARCHAR},
+      login_name = #{loginName,jdbcType=VARCHAR},
+      login_passwd = #{loginPasswd,jdbcType=VARCHAR},
+      mobile_phone = #{mobilePhone,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      user_type = #{userType,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      role_id = #{roleId,jdbcType=INTEGER},
+      channel_id = #{channelId,jdbcType=INTEGER},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      token = #{token,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+    <!--查询用户管理列表-->
+    <select id="selectUserMangerList" resultType="com.kashuo.kcp.dao.condition.AmmeterUserCondition"
+            parameterType="com.kashuo.kcp.dao.condition.AmmeterUserCondition">
+        select u.id as userId,u.login_name,u.realname as realName,d.department_name as departmentName, d.id as
+        departmentId ,u.mobile_phone, u.email,r.role_name,r.id as roleId,r.channelId as channelId
+        from
+        ammeter_user u LEFT JOIN ammeter_department d ON u.department_id=d.id
+        LEFT JOIN ammeter_role r ON u.role_id=r.id
+        where 1=1
+        <if test="realName !=null and realName !=''">
+            and u.real_name = #{realName}
+        </if>
+        <if test="mobilePhone !=null and mobilePhone !=''">
+            and u.mobile_phone = #{mobilePhone}
+        </if>
+        <if test="departmentId !=null and departmentId !=''">
+            and d.department_id = #{departmentId}
+        </if>
+        <if test="roleId !=null and roleId !=''">
+            and r.role_id = #{roleId}
+        </if>
+        <if test="channelId !=null and channelId !=''">
+            and r.channel_id = #{channelId}
+        </if>
+    </select>
+
+    <select id="login" parameterType="java.lang.String" resultMap="BaseResultMap">
+      select * from ammeter_user where user_type != 2 and binary login_name = #{username}
+  </select>
+
+    <select id="selectUserByMobilePhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select * from ammeter_user where mobile_phone = #{mobilePhone} and user_type != 2 limit 1
+  </select>
+
+    <select id="checkToken" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select * from ammeter_user where binary token = #{token}
+  </select>
+
+    <select id="loadPriCode" parameterType="java.lang.Integer" resultType="java.lang.String">
+    select distinct upper(pri_code) from pri_role_map where role_id = #{roleid}
+  </select>
+
+    <select id ="removePriCode" resultType="java.lang.String" parameterType="java.util.List">
+        select  upper(pri_code) from privileges where menu_id in (select id from menu where url in
+        <foreach collection="menuUrlList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        )
+    </select>
+
+    <select id="checkUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_user
+        where binary login_name = #{loginName} limit 1
+    </select>
+
+    <select id="checkMobile" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_user
+        where mobile_phone = #{mobilePhone} and status=1 limit 1
+    </select>
+
+    <select id="checkOtherUserName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_user
+        where binary login_name = #{loginName} and id != #{id} and status=1 limit 1
+    </select>
+
+
+    <select id="checkOtherMobile" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_user
+        where mobile_phone = #{mobilePhone} and id != #{id} and status=1 limit 1
+    </select>
+
+
+    <select id="selectListSelective" resultType="map" parameterType="com.kashuo.kcp.dao.condition.AmmeterUserCondition">
+        select a.id as userId,a.login_name loginName,a.realname as realName,a.gender,a.job_number as jobNumber,
+        b.id as departmentId, b.department_name as departmentName,a.mobile_phone as mobilePhone,a.email,c.id as roleId,
+        c.role_name as roleName,a.status
+        from ammeter_user a left join ammeter_department b on a.department_id = b.id left join ammeter_role c on a.role_id = c.id
+        <where>
+            a.user_type = 1
+            <if test="realName != null and realName != ''">
+                and a.realname like CONCAT('%',#{realName},'%')
+            </if>
+            <if test="mobilePhone != null and mobilePhone != ''">
+                and a.mobile_phone like CONCAT('%',#{mobilePhone},'%')
+            </if>
+            <if test="departmentId != null and departmentId !=''">
+                and a.department_id = #{departmentId}
+            </if>
+            <if test="roleId != null and roleId!=''">
+                and role_id = #{roleId}
+            </if>
+            <if test="channelId != null and channelId!=''">
+                and a.channel_id = #{channelId}
+            </if>
+            order by a.create_time desc
+        </where>
+    </select>
+
+    <select id="selectUserByChannelList" resultMap="BaseResultMap" parameterType="java.util.List">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_user
+        where status = 1 and channel_id IN
+        <foreach collection="channelIdList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="userId > 0">
+            and id != #{userId}
+        </if>
+        order by channel_id,user_type,create_time
+    </select>
+
+</mapper>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterPositionMapper" >
+  <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterPosition" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="number" property="number" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="amap_longitude" property="amapLongitude" jdbcType="VARCHAR" />
+    <result column="amap_latitude" property="amapLatitude" jdbcType="VARCHAR" />
+    <result column="gps_longitude" property="gpsLongitude" jdbcType="VARCHAR" />
+    <result column="gps_latitude" property="gpsLatitude" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_by" property="createBy" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="imei" property="imei" jdbcType="VARCHAR" />
+
+  </resultMap>
+
+  <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterPosition" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="number" property="number" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="amap_longitude" property="amapLongitude" jdbcType="VARCHAR" />
+    <result column="amap_latitude" property="amapLatitude" jdbcType="VARCHAR" />
+    <result column="gps_longitude" property="gpsLongitude" jdbcType="VARCHAR" />
+    <result column="gps_latitude" property="gpsLatitude" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_by" property="createBy" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="realname" property="realName" jdbcType="VARCHAR" />
+    <result column="imei" property="imei" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, number, address, amap_longitude, amap_latitude, gps_longitude, gps_latitude, 
+    remark,status,create_by,create_time,imei,device_id,verifyCode,psk
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ammeter_position
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+    <select id="getPositionList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterPositionCondition">
+        select
+      p.id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude, p.gps_longitude, p.gps_latitude,
+      p.remark,p.status,p.create_by,p.create_time,d.type,u.realname,p.imei
+        from ammeter_position p,ammeter_user u,ammeter_device d
+        where
+        p.create_by = u.id
+        and p.number= d.ammeter_number
+        and u.channel_id = d.channel_id
+      <if test="channelId != null" >
+        and  u.channel_id =#{channelId,jdbcType=INTEGER}
+      </if>
+        <if test="name != null" >
+           and  p.name like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="imei != null" >
+            and  p.imei like CONCAT('%',#{number,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="address != null" >
+            and  p.address like CONCAT('%',#{address,jdbcType=VARCHAR},'%')
+        </if>
+
+    </select>
+  <update id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    update  ammeter_position set status =1
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterPosition" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_position (name, number, address, 
+      amap_longitude, amap_latitude, gps_longitude, 
+      gps_latitude, remark,create_by,create_time,imei)
+    values (#{name,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{amapLongitude,jdbcType=VARCHAR}, #{amapLatitude,jdbcType=VARCHAR}, #{gpsLongitude,jdbcType=VARCHAR}, 
+      #{gpsLatitude,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},#{createBy,jdbcType=INTEGER},
+    #{createTime,jdbcType=TIMESTAMP}, #{imei,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterPosition" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_position
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="number != null" >
+        number,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="amapLongitude != null" >
+        amap_longitude,
+      </if>
+      <if test="amapLatitude != null" >
+        amap_latitude,
+      </if>
+      <if test="gpsLongitude != null" >
+        gps_longitude,
+      </if>
+      <if test="gpsLatitude != null" >
+        gps_latitude,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="amapLongitude != null" >
+        #{amapLongitude,jdbcType=VARCHAR},
+      </if>
+      <if test="amapLatitude != null" >
+        #{amapLatitude,jdbcType=VARCHAR},
+      </if>
+      <if test="gpsLongitude != null" >
+        #{gpsLongitude,jdbcType=VARCHAR},
+      </if>
+      <if test="gpsLatitude != null" >
+        #{gpsLatitude,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterPosition" >
+    update ammeter_position
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null" >
+        number = #{number,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="amapLongitude != null" >
+        amap_longitude = #{amapLongitude,jdbcType=VARCHAR},
+      </if>
+      <if test="amapLatitude != null" >
+        amap_latitude = #{amapLatitude,jdbcType=VARCHAR},
+      </if>
+      <if test="gpsLongitude != null" >
+        gps_longitude = #{gpsLongitude,jdbcType=VARCHAR},
+      </if>
+      <if test="gpsLatitude != null" >
+        gps_latitude = #{gpsLatitude,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        device_id = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="verifyCode != null" >
+        verify_code = #{verifyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="psk != null" >
+        psk = #{psk,jdbcType=VARCHAR},
+      </if>
+
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterPosition" >
+    update ammeter_position
+    set name = #{name,jdbcType=VARCHAR},
+      number = #{number,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      amap_longitude = #{amapLongitude,jdbcType=VARCHAR},
+      amap_latitude = #{amapLatitude,jdbcType=VARCHAR},
+      gps_longitude = #{gpsLongitude,jdbcType=VARCHAR},
+      gps_latitude = #{gpsLatitude,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

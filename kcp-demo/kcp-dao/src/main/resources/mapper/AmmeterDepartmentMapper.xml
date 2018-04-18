@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterDepartmentMapper">
+    <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterDepartment">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="department_name" property="departmentName" jdbcType="VARCHAR"/>
+        <result column="department_type" property="departmentType" jdbcType="TINYINT"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="level_code" property="levelCode" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="channel_id" property="channelId" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, department_name, department_type, description, status, level_code, create_by,channel_id
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_department
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from ammeter_department
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterDepartment">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ammeter_department (id, department_name, department_type,
+        description, status, level_code,
+        create_by,channel_id)
+        values (#{id,jdbcType=INTEGER}, #{departmentName,jdbcType=VARCHAR}, #{departmentType,jdbcType=TINYINT},
+        #{description,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{levelCode,jdbcType=VARCHAR},
+        #{createBy,jdbcType=VARCHAR},#{channelId,jdbcType=INTEGER})
+    </insert>
+    <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterDepartment">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ammeter_department
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            <if test="departmentName != null">
+                department_name,
+            </if>
+            <if test="departmentType != null">
+                department_type,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="levelCode != null">
+                level_code,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="channelId != null">
+                channel_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id,jdbcType=INTEGER},
+            <if test="departmentName != null">
+                #{departmentName,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentType != null">
+                #{departmentType,jdbcType=TINYINT},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="levelCode != null">
+                #{levelCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="channelId != null">
+                #{channelId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterDepartment">
+        update ammeter_department
+        <set>
+            <if test="departmentName != null">
+                department_name = #{departmentName,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentType != null">
+                department_type = #{departmentType,jdbcType=TINYINT},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="levelCode != null">
+                level_code = #{levelCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="channelId != null">
+                channel_id = #{channelId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterDepartment">
+        update ammeter_department
+        set department_name = #{departmentName,jdbcType=VARCHAR},
+        department_type = #{departmentType,jdbcType=TINYINT},
+        description = #{description,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT},
+        level_code = #{levelCode,jdbcType=VARCHAR},
+        create_by = #{createBy,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateSubDepartMent" parameterType="java.util.Map">
+        update ammeter_department set level_code = concat(#{newLevelCode},substr(level_code,length(#{levelCode})+1)) where level_code like concat(#{levelCode},'%');
+    </update>
+
+    <update id="updateSubDepartmentStatus" parameterType="java.lang.String">
+        update ammeter_department set status = 0 where level_code like concat(#{levelCode},'%');
+    </update>
+
+    <!-- 根据用户ID和渠道商ID查询部门信息列表-->
+    <select id="selectDepartmentByChannelId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_department
+        where channel_id=#{channelId}
+    </select>
+
+    <select id="selectDepartmentByNameAndChannelId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_department where department_name = #{0} and channel_id = #{1} limit 1
+    </select>
+
+
+</mapper>

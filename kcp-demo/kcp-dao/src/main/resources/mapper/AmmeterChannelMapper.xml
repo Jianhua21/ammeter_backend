@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterChannelMapper">
+    <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterChannel">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="channel_name" property="channelName" jdbcType="VARCHAR"/>
+        <result column="channel_type" property="channelType" jdbcType="TINYINT"/>
+        <result column="channel_code" property="channelCode" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="contact_name" property="contactName" jdbcType="VARCHAR"/>
+        <result column="mobile_phone" property="mobilePhone" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="level_code" property="levelCode" jdbcType="VARCHAR"/>
+
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, channel_name, channel_type,channel_code, address, contact_name, mobile_phone, email, status, level_code
+    </sql>
+    <sql id="Base_Column_List_">
+        id, channel_name,channel_code, address, contact_name, mobile_phone, email, status, level_code
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_channel
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByUserKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_channel c,ammeter_user u
+        where u.channel_id = c.id and u.id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="selectParentByChannelCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_channel
+        WHERE level_code = (SELECT substr(level_code,1,length(level_code) - 3) level_code from channel
+        where channel_code =#{channelCode} )
+    </select>
+
+    <select id="selectByPrimaryKey2" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List_"/>,case channel_type when 0 then 100 else channel_type end as channel_type
+        from ammeter_channel
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="isVpartner" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_channel
+        where channel_type=5 AND #{levelCode} like concat(level_code,'___')
+    </select>
+    <select id="selectBySubLevelCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_channel
+        where level_code like concat(#{levelCode},'%')
+        <if test="channelName !=null and channelName !=''">
+            and channel_name like concat('%',#{channelName},'%');
+        </if>
+        <if test="channelCode !=null and channelCode !=''">
+            and channel_code like concat('%',#{channelCode},'%');
+        </if>
+    </select>
+    <select id="selectBySubLevelCode2" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List_"/>,case channel_type when 0 then 100 else channel_type end as channel_type
+        from ammeter_channel
+        where level_code like concat(#{levelCode},'%')
+        <if test="channelName !=null and channelName !=''">
+            and channel_name like concat('%',#{channelName},'%');
+        </if>
+        <if test="channelCode !=null and channelCode !=''">
+            and channel_code like concat('%',#{channelCode},'%');
+        </if>
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from ammeter_channel
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterChannel">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ammeter_channel (channel_name, channel_code, address,
+        contact_name, mobile_phone, email,
+        status, level_code)
+        values (#{channelName,jdbcType=VARCHAR}, #{channelCode,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
+        #{contactName,jdbcType=VARCHAR}, #{mobilePhone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT}, #{levelCode,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterChannel">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ammeter_channel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="channelName != null">
+                channel_name,
+            </if>
+            <if test="channelCode != null">
+                channel_code,
+            </if>
+            <if test="channelType != null">
+                channel_type,
+            </if>
+
+            <if test="address != null">
+                address,
+            </if>
+            <if test="contactName != null">
+                contact_name,
+            </if>
+            <if test="mobilePhone != null">
+                mobile_phone,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="levelCode != null">
+                level_code
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="channelName != null">
+                #{channelName,jdbcType=VARCHAR},
+            </if>
+            <if test="channelCode != null">
+                #{channelCode,jdbcType=VARCHAR},
+            </if>
+            <if test="channelType != null">
+                #{channelType,jdbcType=VARCHAR},
+            </if>
+
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="contactName != null">
+                #{contactName,jdbcType=VARCHAR},
+            </if>
+            <if test="mobilePhone != null">
+                #{mobilePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="levelCode != null">
+                #{levelCode,jdbcType=VARCHAR}
+            </if>
+
+
+        </trim>
+    </insert>
+    <update id="updateSubChannelList" parameterType="java.util.Map">
+        update ammeter_channel set level_code = concat(#{newLevelCode},substr(level_code,length(#{levelCode})+1)) where level_code like concat(#{levelCode},'%');
+    </update>
+
+    <update id="updateSubChannelStatus" parameterType="java.lang.String">
+        update ammeter_channel set status = 0 where level_code like concat(#{levelCode},'%');
+    </update>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterChannel">
+        update ammeter_channel
+        <set>
+            <if test="channelName != null">
+                channel_name = #{channelName,jdbcType=VARCHAR},
+            </if>
+            <if test="channelCode != null">
+                channel_code = #{channelCode,jdbcType=VARCHAR},
+            </if>
+            <if test="channelType != null">
+                channel_type=#{channelType,jdbcType=VARCHAR},
+            </if>
+
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="contactName != null">
+                contact_name = #{contactName,jdbcType=VARCHAR},
+            </if>
+            <if test="mobilePhone != null">
+                mobile_phone = #{mobilePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="levelCode != null">
+                level_code = #{levelCode,jdbcType=VARCHAR}
+            </if>
+
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--根据查询条件查询渠道商信息 -->
+    <select id="selectByCriteria" resultMap="BaseResultMap" parameterType="com.kashuo.kcp.domain.AmmeterChannel">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_channel
+        where 1=1
+        <if test="id !=null and id !=''">
+            and id=#{id}
+        </if>
+        <if test="channelName !=null and channelName !=''">
+            and channel_name=#{channelName}
+        </if>
+        <if test="contactName !=null and contactName !=''">
+            and contact_name=#{contactName}
+        </if>
+        <if test="mobilePhone !=null and mobilePhone !=''">
+            and mobile_phone=#{mobilePhone}
+        </if>
+    </select>
+
+    <select id="parentChannelRole" resultType="map">
+       select id,role_name from role where channel_id =
+       ( select id from ammeter_channel where level_code = ( select substr(level_code,1,length(level_code)-3) from ammeter_channel where id = #{channelId} limit 1) )
+    </select>
+    <select id="selectParentChannel" resultType="java.util.Map">
+        select channel_name as name,level_code as value from ammeter_channel where level_code = #{levelCode} limit 1
+    </select>
+
+    <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterChannel">
+        update ammeter_channel
+        set channel_name = #{channelName,jdbcType=VARCHAR},
+        channel_code = #{channelCode,jdbcType=VARCHAR},
+        address = #{address,jdbcType=VARCHAR},
+        contact_name = #{contactName,jdbcType=VARCHAR},
+        mobile_phone = #{mobilePhone,jdbcType=VARCHAR},
+        email = #{email,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT},
+        level_code = #{levelCode,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 查找自身及父级们停用状态个数 -->
+    <select id="foundParentsIsDisable" resultType="java.lang.Integer">
+        select count(0) from ammeter_channel where status = 0 and level_code in
+        <foreach collection="list" item="item" open="(" separator="," close=")">#{item}</foreach>
+    </select>
+
+    <!-- 加载所有分公司 -->
+    <select id="selectBranceOffice" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_channel
+        where LENGTH(level_code)=3
+        AND channel_type=1
+    </select>
+
+    <select id="selectPrimaryCompany" resultType="java.util.Map" parameterType="java.lang.String">
+        select
+       channel_name as channelName,
+       level_code as levelCode
+        from ammeter_channel
+        where  channel_type=1
+        order by level_code asc
+    </select>
+
+    <select id="checkChannelName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_channel
+        where binary channel_name = #{channelName}
+    </select>
+    <select id="selectChildChannels" resultMap="BaseResultMap">
+        SELECT
+        id,
+        channel_code as channelCode,
+        channel_name as channelName,
+        level_code as levelCode
+        FROM ammeter_channel
+        WHERE level_code LIKE concat((SELECT level_code FROM channel WHERE id =#{channelId} ),'___')
+        <if test="channelName !=null and channelName !=''">
+            AND LOCATE(#{channelName}, channel_name)>0
+        </if>
+        <if test="channelCode !=null and channelCode !=''">
+            AND LOCATE(#{channelCode}, channel_code)>0
+        </if>
+    </select>
+
+
+    <select id="selectChannelName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_channel
+        where channel_code = #{channelCode}
+    </select>
+
+    <select id="selectChannelByLikeName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_channel
+    </select>
+
+    <select id="selectListChannelCode" resultMap="BaseResultMap">
+        select
+        channel_code as channelCode,
+        channel_name as channelName
+        from ammeter_channel
+        where
+        level_code LIKE concat((SELECT level_code FROM channel WHERE id =#{channelId} ),'___')
+        <if test="channelCode !=null and channelCode !=''">
+            and channel_code like concat('%',#{channelCode},'%')
+        </if>
+    </select>
+
+
+    <select id="selectListChannel" resultMap="BaseResultMap">
+        select
+        channel_code as channelCode,
+        channel_name as channelName
+        from ammeter_channel
+        where
+        level_code LIKE concat((SELECT level_code FROM channel WHERE id =#{channelId} ),'%')
+        <if test="channelCode !=null and channelCode !=''">
+            and channel_code !=#{channelCode}
+        </if>
+        and status = 1;
+    </select>
+
+    <select id="selectChildChannelCodes" resultType="java.lang.String">
+        SELECT
+        channel_code AS channelCode
+        FROM ammeter_channel
+        WHERE
+        (level_code = #{levelCode} or level_code LIKE CONCAT(#{levelCode},'___'))
+        <if test="channelName !=null and channelName !=''">
+            and channel_name like concat('%',#{channelName},'%');
+        </if>
+    </select>
+
+    <select id="selectallChildChannelCodes" resultType="java.lang.String">
+        SELECT
+        channel_code AS channelCode
+        FROM ammeter_channel
+        WHERE level_code LIKE concat((SELECT level_code FROM ammeter_channel WHERE id =#{channelId} ),'%')
+        <if test="channelName !=null and channelName !=''">
+            and channel_name like concat('%',#{channelName},'%')
+        </if>
+        <if test="channelCode !=null and channelCode !=''">
+            and channel_code like concat('%',#{channelCode},'%')
+        </if>
+    </select>
+
+    <select id="selectPartnerChannelCodes" resultType="java.lang.String">
+        SELECT
+        channel_code AS channelCode
+        FROM ammeter_channel
+        WHERE level_code LIKE concat((SELECT level_code FROM channel WHERE id =#{channelId} ),'%')
+        and  channel_type in
+        <foreach collection="list" item="item" open="(" separator="," close=")">#{item}</foreach>
+    </select>
+
+    <select id="getSonChannelIdsByChannelId" resultType="java.lang.Integer">
+        select id from ammeter_channel  WHERE level_code LIKE concat((SELECT level_code FROM ammeter_channel WHERE id =#{channelId} ),'%')
+    </select>
+
+    <!--卡说分公司 -->
+    <select id="getKSBranchOffice" resultMap="BaseResultMap" parameterType="java.lang.Byte">
+        select
+        <include refid="Base_Column_List"/>
+        from ammeter_channel
+        where 1 = 1
+        <if test="channelType !=null and channelType !=''">
+            and channel_type = #{channelType}
+        </if>
+        <if test="status !=null and status !=''">
+            and status = #{status}
+        </if>
+    </select>
+
+    <select id="getChildrenChannelCodes" resultType="java.lang.String">
+         SELECT
+        channel_code as channelCode,
+        FROM ammeter_channel
+        WHERE level_code LIKE concat((SELECT level_code FROM channel WHERE id =#{channelId} ),'___')
+    </select>
+</mapper>

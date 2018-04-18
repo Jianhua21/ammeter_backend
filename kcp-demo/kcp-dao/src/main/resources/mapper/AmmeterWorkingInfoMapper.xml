@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterWorkingInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterWorkingInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="ammeter_id" property="ammeterId" jdbcType="INTEGER" />
+    <result column="zero_line_current" property="zeroLineCurrent" jdbcType="VARCHAR" />
+    <result column="grid_frequency" property="gridFrequency" jdbcType="VARCHAR" />
+    <result column="average_power_minute" property="averagePowerMinute" jdbcType="VARCHAR" />
+    <result column="active_demand" property="activeDemand" jdbcType="VARCHAR" />
+    <result column="reactive_demand" property="reactiveDemand" jdbcType="VARCHAR" />
+    <result column="apparent_demand" property="apparentDemand" jdbcType="VARCHAR" />
+    <result column="temperature" property="temperature" jdbcType="VARCHAR" />
+    <result column="clock_cell_voltage" property="clockCellVoltage" jdbcType="VARCHAR" />
+    <result column="no_power_cell_voltage" property="noPowerCellVoltage" jdbcType="VARCHAR" />
+    <result column="battery_working_time" property="batteryWorkingTime" jdbcType="VARCHAR" />
+    <result column="active_power" property="activePower" jdbcType="VARCHAR" />
+    <result column="reverse_active_power" property="reverseActivePower" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, ammeter_id, zero_line_current, grid_frequency, average_power_minute, active_demand, 
+    reactive_demand, apparent_demand, temperature, clock_cell_voltage, no_power_cell_voltage, 
+    battery_working_time, active_power, reverse_active_power, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ammeter_working_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByAmmeterId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_working_info
+    where ammeter_id = #{ammeterId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ammeter_working_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterWorkingInfo" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_working_info (ammeter_id, zero_line_current, grid_frequency, 
+      average_power_minute, active_demand, reactive_demand, 
+      apparent_demand, temperature, clock_cell_voltage, 
+      no_power_cell_voltage, battery_working_time, 
+      active_power, reverse_active_power, status
+      )
+    values (#{ammeterId,jdbcType=INTEGER}, #{zeroLineCurrent,jdbcType=VARCHAR}, #{gridFrequency,jdbcType=VARCHAR}, 
+      #{averagePowerMinute,jdbcType=VARCHAR}, #{activeDemand,jdbcType=VARCHAR}, #{reactiveDemand,jdbcType=VARCHAR}, 
+      #{apparentDemand,jdbcType=VARCHAR}, #{temperature,jdbcType=VARCHAR}, #{clockCellVoltage,jdbcType=VARCHAR}, 
+      #{noPowerCellVoltage,jdbcType=VARCHAR}, #{batteryWorkingTime,jdbcType=VARCHAR}, 
+      #{activePower,jdbcType=VARCHAR}, #{reverseActivePower,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterWorkingInfo" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_working_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ammeterId != null" >
+        ammeter_id,
+      </if>
+      <if test="zeroLineCurrent != null" >
+        zero_line_current,
+      </if>
+      <if test="gridFrequency != null" >
+        grid_frequency,
+      </if>
+      <if test="averagePowerMinute != null" >
+        average_power_minute,
+      </if>
+      <if test="activeDemand != null" >
+        active_demand,
+      </if>
+      <if test="reactiveDemand != null" >
+        reactive_demand,
+      </if>
+      <if test="apparentDemand != null" >
+        apparent_demand,
+      </if>
+      <if test="temperature != null" >
+        temperature,
+      </if>
+      <if test="clockCellVoltage != null" >
+        clock_cell_voltage,
+      </if>
+      <if test="noPowerCellVoltage != null" >
+        no_power_cell_voltage,
+      </if>
+      <if test="batteryWorkingTime != null" >
+        battery_working_time,
+      </if>
+      <if test="activePower != null" >
+        active_power,
+      </if>
+      <if test="reverseActivePower != null" >
+        reverse_active_power,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ammeterId != null" >
+        #{ammeterId,jdbcType=INTEGER},
+      </if>
+      <if test="zeroLineCurrent != null" >
+        #{zeroLineCurrent,jdbcType=VARCHAR},
+      </if>
+      <if test="gridFrequency != null" >
+        #{gridFrequency,jdbcType=VARCHAR},
+      </if>
+      <if test="averagePowerMinute != null" >
+        #{averagePowerMinute,jdbcType=VARCHAR},
+      </if>
+      <if test="activeDemand != null" >
+        #{activeDemand,jdbcType=VARCHAR},
+      </if>
+      <if test="reactiveDemand != null" >
+        #{reactiveDemand,jdbcType=VARCHAR},
+      </if>
+      <if test="apparentDemand != null" >
+        #{apparentDemand,jdbcType=VARCHAR},
+      </if>
+      <if test="temperature != null" >
+        #{temperature,jdbcType=VARCHAR},
+      </if>
+      <if test="clockCellVoltage != null" >
+        #{clockCellVoltage,jdbcType=VARCHAR},
+      </if>
+      <if test="noPowerCellVoltage != null" >
+        #{noPowerCellVoltage,jdbcType=VARCHAR},
+      </if>
+      <if test="batteryWorkingTime != null" >
+        #{batteryWorkingTime,jdbcType=VARCHAR},
+      </if>
+      <if test="activePower != null" >
+        #{activePower,jdbcType=VARCHAR},
+      </if>
+      <if test="reverseActivePower != null" >
+        #{reverseActivePower,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByAmmeterIdSelective" parameterType="com.kashuo.kcp.domain.AmmeterWorkingInfo" >
+    update ammeter_working_info
+    <set >
+      <if test="zeroLineCurrent != null and zeroLineCurrent != ''" >
+        zero_line_current = #{zeroLineCurrent,jdbcType=VARCHAR},
+      </if>
+      <if test="gridFrequency != null and gridFrequency != ''" >
+        grid_frequency = #{gridFrequency,jdbcType=VARCHAR},
+      </if>
+      <if test="averagePowerMinute != null and averagePowerMinute != ''" >
+        average_power_minute = #{averagePowerMinute,jdbcType=VARCHAR},
+      </if>
+      <if test="activeDemand != null and activeDemand != ''" >
+        active_demand = #{activeDemand,jdbcType=VARCHAR},
+      </if>
+      <if test="reactiveDemand != null and reactiveDemand != ''" >
+        reactive_demand = #{reactiveDemand,jdbcType=VARCHAR},
+      </if>
+      <if test="apparentDemand != null and apparentDemand != ''" >
+        apparent_demand = #{apparentDemand,jdbcType=VARCHAR},
+      </if>
+      <if test="temperature != null and temperature != ''" >
+        temperature = #{temperature,jdbcType=VARCHAR},
+      </if>
+      <if test="clockCellVoltage != null and clockCellVoltage != ''" >
+        clock_cell_voltage = #{clockCellVoltage,jdbcType=VARCHAR},
+      </if>
+      <if test="noPowerCellVoltage != null and noPowerCellVoltage != ''" >
+        no_power_cell_voltage = #{noPowerCellVoltage,jdbcType=VARCHAR},
+      </if>
+      <if test="batteryWorkingTime != null and batteryWorkingTime != ''" >
+        battery_working_time = #{batteryWorkingTime,jdbcType=VARCHAR},
+      </if>
+      <if test="activePower != null and activePower != ''" >
+        active_power = #{activePower,jdbcType=VARCHAR},
+      </if>
+      <if test="reverseActivePower != null and reverseActivePower != ''" >
+        reverse_active_power = #{reverseActivePower,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null and status != ''" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ammeter_id = #{ammeterId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterWorkingInfo" >
+    update ammeter_working_info
+    set ammeter_id = #{ammeterId,jdbcType=INTEGER},
+      zero_line_current = #{zeroLineCurrent,jdbcType=VARCHAR},
+      grid_frequency = #{gridFrequency,jdbcType=VARCHAR},
+      average_power_minute = #{averagePowerMinute,jdbcType=VARCHAR},
+      active_demand = #{activeDemand,jdbcType=VARCHAR},
+      reactive_demand = #{reactiveDemand,jdbcType=VARCHAR},
+      apparent_demand = #{apparentDemand,jdbcType=VARCHAR},
+      temperature = #{temperature,jdbcType=VARCHAR},
+      clock_cell_voltage = #{clockCellVoltage,jdbcType=VARCHAR},
+      no_power_cell_voltage = #{noPowerCellVoltage,jdbcType=VARCHAR},
+      battery_working_time = #{batteryWorkingTime,jdbcType=VARCHAR},
+      active_power = #{activePower,jdbcType=VARCHAR},
+      reverse_active_power = #{reverseActivePower,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByAmmeterId" parameterType="java.lang.Integer">
+    update ammeter_working_info set status = #{status,jdbcType=INTEGER}
+    where ammeter_id = #{ammeterId,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterNetworkMapper" >
+  <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterNetwork" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="ammeter_id" property="ammeterId" jdbcType="INTEGER" />
+    <result column="rssi" property="rssi" jdbcType="VARCHAR" />
+    <result column="rsrq" property="rsrq" jdbcType="VARCHAR" />
+    <result column="celli" property="celli" jdbcType="VARCHAR" />
+    <result column="record_hour" property="recordHour" jdbcType="INTEGER" />
+    <result column="record_day" property="recordDay" jdbcType="VARCHAR" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+    <result column="warning_flag" property="warningFlag" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, ammeter_id, rssi, rsrq, celli, record_hour, record_day, created_time,warning_flag
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ammeter_network
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectForWarningReport" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_network where id in(
+    select max(id) from ammeter_network group by ammeter_id) and warning_flag = 0 order by id desc
+  </select>
+
+  <select id="selectByAmmeterId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_network
+    where ammeter_id = #{id,jdbcType=INTEGER}
+      order by id desc limit 1
+  </select>
+    <select id="queryNetWorkParams" resultMap="BaseResultMap"
+            parameterType="com.kashuo.kcp.domain.AmmeterNetwork">
+        select
+        <include refid="Base_Column_List" />
+        from ammeter_network
+        where ammeter_id = #{ammeterId,jdbcType=INTEGER}
+        <if test="recordHour != null">
+            and record_hour = #{recordHour}
+        </if>
+        <if test="recordDay != null and recordDay !=''">
+            and record_day = #{recordDay}
+        </if>
+    </select>
+<select id="networkList" parameterType="com.kashuo.kcp.dao.condition.AmmeterNetWorkCondition"
+resultType="com.kashuo.kcp.domain.AmmeterNetWorkResult">
+    select a.imsi,a.id,b.celli,b.rsrq,b.rssi,b.created_time  from ammeter_device a
+    left join
+    (select b1.* from ammeter_network b1 ,
+    (select max(id) id from ammeter_network group by ammeter_id) c
+    where b1.id =c.id) b
+    on  a.id = b.ammeter_id
+where 1=1
+<if test="imsi != null and imsi !=''">
+    and a.imsi like CONCAT('%',#{imsi,jdbcType=VARCHAR},'%')
+</if>
+order by b.created_time desc
+</select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ammeter_network
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterNetwork" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_network (ammeter_id, rssi, rsrq, 
+      celli, record_hour, record_day, 
+      created_time)
+    values (#{ammeterId,jdbcType=INTEGER}, #{rssi,jdbcType=VARCHAR}, #{rsrq,jdbcType=VARCHAR}, 
+      #{celli,jdbcType=VARCHAR}, #{recordHour,jdbcType=INTEGER}, #{recordDay,jdbcType=VARCHAR}, 
+      #{createdTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterNetwork" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_network
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ammeterId != null" >
+        ammeter_id,
+      </if>
+      <if test="rssi != null" >
+        rssi,
+      </if>
+      <if test="rsrq != null" >
+        rsrq,
+      </if>
+      <if test="celli != null" >
+        celli,
+      </if>
+      <if test="recordHour != null" >
+        record_hour,
+      </if>
+      <if test="recordDay != null" >
+        record_day,
+      </if>
+      <if test="createdTime != null" >
+        created_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ammeterId != null" >
+        #{ammeterId,jdbcType=INTEGER},
+      </if>
+      <if test="rssi != null" >
+        #{rssi,jdbcType=VARCHAR},
+      </if>
+      <if test="rsrq != null" >
+        #{rsrq,jdbcType=VARCHAR},
+      </if>
+      <if test="celli != null" >
+        #{celli,jdbcType=VARCHAR},
+      </if>
+      <if test="recordHour != null" >
+        #{recordHour,jdbcType=INTEGER},
+      </if>
+      <if test="recordDay != null" >
+        #{recordDay,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null" >
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterNetwork" >
+    update ammeter_network
+    <set >
+      <if test="ammeterId != null" >
+        ammeter_id = #{ammeterId,jdbcType=INTEGER},
+      </if>
+      <if test="rssi != null" >
+        rssi = #{rssi,jdbcType=VARCHAR},
+      </if>
+      <if test="rsrq != null" >
+        rsrq = #{rsrq,jdbcType=VARCHAR},
+      </if>
+      <if test="celli != null" >
+        celli = #{celli,jdbcType=VARCHAR},
+      </if>
+      <if test="recordHour != null" >
+        record_hour = #{recordHour,jdbcType=INTEGER},
+      </if>
+      <if test="recordDay != null" >
+        record_day = #{recordDay,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null" >
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterNetwork" >
+    update ammeter_network
+    set ammeter_id = #{ammeterId,jdbcType=INTEGER},
+      rssi = #{rssi,jdbcType=VARCHAR},
+      rsrq = #{rsrq,jdbcType=VARCHAR},
+      celli = #{celli,jdbcType=VARCHAR},
+      record_hour = #{recordHour,jdbcType=INTEGER},
+      record_day = #{recordDay,jdbcType=VARCHAR},
+      created_time = #{createdTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateStatusByPrimaryKey" parameterType="java.lang.Integer">
+    update ammeter_network
+    set warning_flag = 1
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
