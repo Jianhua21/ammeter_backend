@@ -19,6 +19,16 @@ public class AmmeterAuth {
 
     private String status;
 
+    private String appId;
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
     public Integer getId() {
         return id;
     }

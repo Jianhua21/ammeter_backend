@@ -56,7 +56,7 @@ public class AmmeterPositionCondition implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return name != null ? name.trim():null;
     }
 
     public void setName(String name) {
@@ -64,7 +64,7 @@ public class AmmeterPositionCondition implements Serializable {
     }
 
     public String getNumber() {
-        return number;
+        return number != null ? number.trim(): null;
     }
 
     public void setNumber(String number) {
@@ -72,7 +72,7 @@ public class AmmeterPositionCondition implements Serializable {
     }
 
     public String getAddress() {
-        return address;
+        return address!= null ? address.trim():null;
     }
 
     public void setAddress(String address) {

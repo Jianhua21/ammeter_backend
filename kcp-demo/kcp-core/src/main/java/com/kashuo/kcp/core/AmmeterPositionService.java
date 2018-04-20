@@ -36,6 +36,10 @@ public class AmmeterPositionService {
         return ammeterPositionMapper.selectByPrimaryKey(id);
     }
 
+    public AmmeterPosition selectByDeviceId(String deviceId){
+        return ammeterPositionMapper.selectByDeviceId(deviceId);
+    }
+
     public Page<AmmeterPosition> getPositionList(AmmeterPositionCondition condition){
         PageHelper.startPage(condition.getPageIndex(),condition.getPageSize());
         return ammeterPositionMapper.getPositionList(condition);

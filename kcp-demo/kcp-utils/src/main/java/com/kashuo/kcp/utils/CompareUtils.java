@@ -12,6 +12,11 @@ public class CompareUtils {
         if(param1 == null||param2 ==null){
             return false;
         }
+        try{
+            Integer.parseInt(param1);
+        }catch (NumberFormatException e){
+            param1 ="0";
+        }
         if(">".equals(operator)){
              return Integer.parseInt(param1)>Integer.parseInt(param2) ;
         }else if(">=".equals(operator)){

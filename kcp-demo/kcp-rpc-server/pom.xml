@@ -6,7 +6,7 @@
     <parent>
         <artifactId>kcp-demo</artifactId>
         <groupId>com.kashuo.kcp</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-RELEASE</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>com.kashuo.kcp</groupId>
             <artifactId>kcp-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

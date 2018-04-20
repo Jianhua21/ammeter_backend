@@ -7,6 +7,7 @@ import com.huawei.iotplatform.client.dto.AuthRefreshInDTO;
 import com.huawei.iotplatform.client.dto.AuthRefreshOutDTO;
 import com.huawei.iotplatform.client.dto.ClientInfo;
 import com.huawei.iotplatform.client.invokeapi.Authentication;
+import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.AmmeterAuthMapper;
 import com.kashuo.kcp.domain.AmmeterAuth;
@@ -105,15 +106,22 @@ public class AuthService {
         NorthApiClient northApiClient = new NorthApiClient();
         //2初始化ClientInfo
         ClientInfo ci = new ClientInfo();
-        ci.setAppId(sysDictionaryService.getDynamicSystemValue("appId"));
-        ci.setPlatformIp(sysDictionaryService.getDynamicSystemValue("platformIp"));
-        ci.setPlatformPort(sysDictionaryService.getDynamicSystemValue("platformPort"));
-        ci.setSecret(sysDictionaryService.getDynamicSystemValue("secret"));
+        ci.setAppId(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_APPID));
+        ci.setPlatformIp(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_PLATFORM_IP));
+        ci.setPlatformPort(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_PLATFORM_PORT));
+        ci.setSecret(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_SECRET));
         northApiClient.setClientInfo(ci);
         //证书配置，使用默认调试证书可以如下配置
         northApiClient.initSSLConfig();
         //4 新建服务对象，并初始化，以鉴权为例
         Authentication auth = new Authentication(northApiClient);
         return auth;
+    }
+
+    public AmmeterAuth getPlatIomAuth(){
+        if(auth_init.getAppId() != null) {
+            auth_init.setAppId(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_APPID));
+        }
+        return auth_init;
     }
 }

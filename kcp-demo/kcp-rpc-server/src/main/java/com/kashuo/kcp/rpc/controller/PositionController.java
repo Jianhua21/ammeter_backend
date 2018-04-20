@@ -52,14 +52,14 @@ public class PositionController extends BaseController{
         return Results.success("位置信息录入成功!");
 
     }
-    @GetMapping("/ammeterPositionInfo/{positionId}")
+    @GetMapping("/ammeterPositionInfo/{positionId}/{sn}")
     @ApiOperation(value="单个电表位置信息获取")
-    public Results getAmmeterPosition(@ApiParam("电表信息位置Id")@PathVariable("positionId") Integer positionId){
+    public Results getAmmeterPosition(@ApiParam("电表信息位置Id")@PathVariable("positionId") Integer positionId,@PathVariable("sn")String sn){
          AmmeterPosition ammeterPosition = ammeterPositionService.getAmmeterPositionInfo(positionId);
          if(ammeterPosition != null){
-             return Results.success(ammeterPosition);
+             return Results.success(ammeterPosition,sn);
          }else{
-             return Results.error("未获取到电表位置信息!");
+             return Results.error("未获取到电表位置信息!",sn);
          }
     }
     @PostMapping("/update")

@@ -45,6 +45,16 @@ public class AmmeterPosition {
     private String verifyCode;
     @ApiModelProperty("psk码，用于生成设备鉴权参数")
     private String psk;
+    @ApiModelProperty("激活状态")
+    private boolean Activated;
+
+    public boolean isActivated() {
+        return Activated;
+    }
+
+    public void setActivated(boolean activated) {
+        Activated = activated;
+    }
 
     public String getImei() {
         return imei;

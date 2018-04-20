@@ -4,17 +4,17 @@ import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.huawei.iotplatform.client.NorthApiException;
-import com.huawei.iotplatform.client.dto.AsynCommandDTO;
-import com.huawei.iotplatform.client.dto.PostDeviceCommandInDTO;
-import com.huawei.iotplatform.client.dto.RegDirectDeviceInDTO;
-import com.huawei.iotplatform.client.dto.RegDirectDeviceOutDTO;
+import com.huawei.iotplatform.client.dto.*;
 import com.huawei.iotplatform.client.invokeapi.DeviceManagement;
 import com.kashuo.kcp.api.entity.RegDevice;
+import com.kashuo.kcp.auth.AuthService;
 import com.kashuo.kcp.core.AmmeterHandleService;
 import com.kashuo.kcp.core.AmmeterPositionService;
 import com.kashuo.kcp.dao.condition.AmmeterHandleCondition;
 import com.kashuo.kcp.dao.condition.AmmeterHandleResult;
 import com.kashuo.kcp.dao.condition.AmmeterRegisterDevice;
+import com.kashuo.kcp.dao.condition.ModifyDeviceInfoInCondition;
+import com.kashuo.kcp.domain.AmmeterAuth;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.utils.Results;
 import io.swagger.annotations.Api;
@@ -41,6 +41,9 @@ public class ConnectAppController extends BaseController{
 
     @Autowired
     private AmmeterPositionService positionService;
+
+    @Autowired
+    private AuthService authService;
 
     @PostMapping(value = "/handleData")
     @ApiOperation(value = "与IoM数据交互处理",notes = "created by Legend on 2018-Apr-14")
@@ -74,13 +77,15 @@ public class ConnectAppController extends BaseController{
         if(ammeterPosition != null && ammeterPosition.getStatus() ==1){
            return  Results.error("该设备已注册!",registerDevice.getSn());
         }
+        //获取平台的token信息
+        AmmeterAuth ammeterAuth = authService.getPlatIomAuth();
         DeviceManagement deviceManagement = new DeviceManagement();
         RegDirectDeviceInDTO deviceInDTO = new RegDirectDeviceInDTO();
         deviceInDTO.setDeviceName(ammeterPosition.getName());
         deviceInDTO.setNodeId(ammeterPosition.getImei());
         deviceInDTO.setVerifyCode(ammeterPosition.getImei());
         try {
-            RegDirectDeviceOutDTO response = deviceManagement.regDirectDevice(deviceInDTO, "", "");
+            RegDirectDeviceOutDTO response = deviceManagement.regDirectDevice(deviceInDTO, ammeterAuth.getAppId(), ammeterAuth.getAccessToken());
             AmmeterPosition position = new AmmeterPosition();
             position.setId(ammeterPosition.getId());
             position.setDeviceId(response.getDeviceId());
@@ -98,6 +103,44 @@ public class ConnectAppController extends BaseController{
             return  Results.error("设备注册失败!",registerDevice.getSn());
         }
         return Results.success("设备注册成功!",registerDevice.getSn());
+    }
+
+    @GetMapping("/queryDeviceStatus/{deviceId}/{sn}")
+    @ApiOperation(value = "查询设备激活状态")
+    public Results queryDeviceStatus(@RequestParam("deviceId") String deviceId,@RequestParam("sn") String sn) throws NorthApiException {
+
+        AmmeterPosition ammeterPosition = positionService.selectByDeviceId(deviceId);
+        if(ammeterPosition == null){
+            return Results.error("设备不存在!",sn);
+        }
+        DeviceManagement deviceManagement = new DeviceManagement();
+        AmmeterAuth ammeterAuth = authService.getPlatIomAuth();
+        QueryDeviceStatusOutDTO deviceStatusOutDTO = deviceManagement.queryDeviceStatus(deviceId,ammeterAuth.getAppId(),ammeterAuth.getAccessToken());
+        AmmeterPosition position = new AmmeterPosition();
+        position.setActivated(deviceStatusOutDTO.isActivated());
+        position.setId(ammeterPosition.getId());
+        positionService.updateByPrimaryKeySelective(position);
+        return Results.success("设备已激活",sn);
+    }
+
+    @PostMapping("/modify")
+    @ApiOperation("修改设备信息")
+    public Results modifyDeviceInfo(@RequestBody ModifyDeviceInfoInCondition condition) throws NorthApiException {
+        AmmeterAuth ammeterAuth = authService.getPlatIomAuth();
+        DeviceManagement deviceManagement = new DeviceManagement();
+        ModifyDeviceInfoInDTO deviceInfoInDTO = new ModifyDeviceInfoInDTO();
+        deviceInfoInDTO.setDeviceId(condition.getDeviceId());
+        deviceInfoInDTO.setDeviceConfig(condition.getDeviceConfigDTO());
+        deviceInfoInDTO.setDeviceType(condition.getDeviceType());
+        deviceInfoInDTO.setEndUser(condition.getEndUser());
+        deviceInfoInDTO.setLocation(condition.getLocation());
+        deviceInfoInDTO.setManufacturerId(condition.getManufacturerId());
+        deviceInfoInDTO.setManufacturerName(condition.getManufacturerName());
+        deviceInfoInDTO.setModel(condition.getModel());
+        deviceInfoInDTO.setMute(condition.getMute());
+        deviceInfoInDTO.setName(condition.getName());
+        deviceManagement.modifyDeviceInfo(deviceInfoInDTO,ammeterAuth.getAppId(),ammeterAuth.getAccessToken());
+        return Results.success("更新成功!",condition.getSn());
     }
 
 

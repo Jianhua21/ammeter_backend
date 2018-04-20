@@ -15,7 +15,7 @@
     <result column="create_by" property="createBy" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="imei" property="imei" jdbcType="VARCHAR" />
-
+    <result column="Activated" property="Activated" jdbcType="CHAR" />
   </resultMap>
 
   <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterPosition" >
@@ -34,16 +34,23 @@
     <result column="type" property="type" jdbcType="VARCHAR" />
     <result column="realname" property="realName" jdbcType="VARCHAR" />
     <result column="imei" property="imei" jdbcType="VARCHAR" />
+    <result column="Activated" property="Activated" jdbcType="CHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, number, address, amap_longitude, amap_latitude, gps_longitude, gps_latitude, 
-    remark,status,create_by,create_time,imei,device_id,verifyCode,psk
+    remark,status,create_by,create_time,imei,device_id,verify_code,psk,Activated
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from ammeter_position
     where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByDeviceId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_position
+    where device_id = #{deviceId,jdbcType=VARCHAR}
   </select>
     <select id="getPositionList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterPositionCondition">
         select
@@ -54,16 +61,16 @@
         p.create_by = u.id
         and p.number= d.ammeter_number
         and u.channel_id = d.channel_id
-      <if test="channelId != null" >
+      <if test="channelId != null and channelId != ''" >
         and  u.channel_id =#{channelId,jdbcType=INTEGER}
       </if>
-        <if test="name != null" >
-           and  p.name like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
+        <if test="number != null and number !=''" >
+           and  p.name like CONCAT('%',#{number,jdbcType=VARCHAR},'%')
         </if>
-        <if test="imei != null" >
-            and  p.imei like CONCAT('%',#{number,jdbcType=VARCHAR},'%')
+        <if test="name != null and name !=''" >
+            and  p.imei like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
         </if>
-        <if test="address != null" >
+        <if test="address != null and address != ''" >
             and  p.address like CONCAT('%',#{address,jdbcType=VARCHAR},'%')
         </if>
 
@@ -178,7 +185,9 @@
       <if test="psk != null" >
         psk = #{psk,jdbcType=VARCHAR},
       </if>
-
+      <if test="Activated != null" >
+        psk = #{Activated,jdbcType=CHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>

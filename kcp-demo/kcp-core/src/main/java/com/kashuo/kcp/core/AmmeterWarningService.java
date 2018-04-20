@@ -28,7 +28,9 @@ public class AmmeterWarningService {
     public void updateWarningInfo(){
         List<AmmeterNetwork> networks = networkMapper.selectForWarningReport();
         for (AmmeterNetwork network:networks){
-            ruleService.generateNetWorkWarningInfo(network);
+            if(network.getAmmeterId() != null ) {
+                ruleService.generateNetWorkWarningInfo(network);
+            }
         }
          System.out.println("测试定时器");
 
