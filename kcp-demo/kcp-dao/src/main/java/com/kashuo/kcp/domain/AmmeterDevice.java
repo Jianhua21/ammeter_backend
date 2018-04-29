@@ -144,6 +144,16 @@ public class AmmeterDevice {
 
     private String descMsg;
 
+    private Integer channelId;
+
+    public Integer getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(Integer channelId) {
+        this.channelId = channelId;
+    }
+
     public String getDescMsg() {
         return descMsg;
     }

@@ -7,6 +7,7 @@ import com.kashuo.kcp.utils.Results;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -22,6 +23,9 @@ public class UserSecurityInterceptor extends HandlerInterceptorAdapter {
 
     private static final Log log = LogFactory.getLog(UserSecurityInterceptor.class);
 
+    @Value("${app.constant.loginFlag}")
+    private boolean loginFlag;
+
     @Autowired
     private AmmeterUserService ammeterUserService;
 
@@ -34,8 +38,10 @@ public class UserSecurityInterceptor extends HandlerInterceptorAdapter {
             response.setStatus(HttpServletResponse.SC_OK);
             return true;
         }
-
-        String lesseeId = request.getHeader("X-USER-TOKEN-ID");
+        String lesseeId = "1";
+        if(loginFlag) {
+            lesseeId = request.getHeader("X-USER-TOKEN-ID");
+        }
         if (StringUtils.isEmpty(lesseeId)) {
             response.setCharacterEncoding("utf-8");
             PrintWriter writer = response.getWriter();
@@ -46,7 +52,12 @@ public class UserSecurityInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
 
-        AmmeterUser user = ammeterUserService.checkToken(lesseeId);
+        AmmeterUser user = null;
+        if(loginFlag) {
+           user = ammeterUserService.checkToken(lesseeId);
+        }else{
+            user =ammeterUserService.selectByPrimaryKey(Integer.parseInt(lesseeId));
+        }
         if (user == null) {
             response.setCharacterEncoding("utf-8");
             PrintWriter writer = response.getWriter();

@@ -3,15 +3,13 @@ package com.kashuo.kcp.rpc.controller;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.core.AmmeterWarningService;
 import com.kashuo.kcp.dao.condition.WarningCondition;
+import com.kashuo.kcp.domain.AmmeterWarning;
 import com.kashuo.kcp.domain.AmmeterWarningResult;
 import com.kashuo.kcp.utils.Results;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by dell-pc on 2018/4/10.
@@ -40,5 +38,49 @@ public class WarningController extends BaseController{
             return results;
         }
         return Results.success("获取列表没数据!");
+    }
+
+    /***
+     * 消除警告
+     * @param warningId
+     * @param sn
+     * @return
+     */
+    @GetMapping("/avoid/{warningId}/{sn}")
+    public Results avoidWarning(@PathVariable("warningId") Integer warningId,@PathVariable("sn") String sn){
+        AmmeterWarning  warningDB = warningService.selectWarningByKey(warningId);
+        if(warningDB == null){
+            return Results.error("该警告不存在,请确认!",sn);
+        }
+        AmmeterWarning warning = new AmmeterWarning();
+        warning.setId(warningId);
+        warning.setWarningStatus("1");
+        Integer result = warningService.updateWarning(warning);
+        if(result >0){
+            return Results.success("该警告已消除!",sn);
+        }
+        return Results.error("警告消除失败!",sn);
+    }
+
+    /***
+     * 恢复警告
+     * @param warningId
+     * @param sn
+     * @return
+     */
+    @GetMapping("/restore/{warningId}/{sn}")
+    public Results restoreWarning(@PathVariable("warningId") Integer warningId,@PathVariable("sn") String sn){
+        AmmeterWarning  warningDB = warningService.selectWarningByKey(warningId);
+        if(warningDB == null){
+            return Results.error("该警告不存在,请确认!",sn);
+        }
+        AmmeterWarning warning = new AmmeterWarning();
+        warning.setId(warningId);
+        warning.setWarningStatus("0");
+        Integer result = warningService.updateWarning(warning);
+        if(result >0){
+            return Results.success("该警告已恢复!",sn);
+        }
+        return Results.error("警告恢复失败!",sn);
     }
 }

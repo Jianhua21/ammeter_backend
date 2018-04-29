@@ -10,6 +10,10 @@ import java.util.Date;
 public class AmmeterWarningResult {
     //电表设备唯一id
     private Integer id;
+    //警告Id
+    private Integer warningId;
+    //Iom设备Id
+    private String deviceId;
     //电表设备唯一imsi
     private String imsi;
     //电表编号
@@ -22,6 +26,22 @@ public class AmmeterWarningResult {
     private String ammeterType;
     //警告类型
     private Integer warningType;
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public Integer getWarningId() {
+        return warningId;
+    }
+
+    public void setWarningId(Integer warningId) {
+        this.warningId = warningId;
+    }
 
     public Integer getWarningType() {
         return warningType;

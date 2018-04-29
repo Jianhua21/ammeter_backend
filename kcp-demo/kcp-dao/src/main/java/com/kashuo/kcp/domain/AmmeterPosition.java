@@ -36,7 +36,7 @@ public class AmmeterPosition {
     @ApiModelProperty("电表类型")
     private String type;
     @ApiModelProperty("安装人员")
-    private String realName;
+    private String installer;
     @ApiModelProperty("设备的唯一标识为IMEI号")
     private String imei;
     @ApiModelProperty("IoM平台设备Id")
@@ -47,6 +47,35 @@ public class AmmeterPosition {
     private String psk;
     @ApiModelProperty("激活状态")
     private boolean Activated;
+    @ApiModelProperty("用于列表查询    警告状态  0 -没有警告  1-有警告")
+    private String warningStatus;
+
+    public String getWarningStatus() {
+        return warningStatus;
+    }
+
+    public void setWarningStatus(String warningStatus) {
+        this.warningStatus = warningStatus;
+    }
+
+    public String getWarningDesc() {
+        return warningDesc;
+    }
+
+    public void setWarningDesc(String warningDesc) {
+        this.warningDesc = warningDesc;
+    }
+
+    @ApiModelProperty("用于列表查询    警告说明")
+    private String warningDesc;
+
+    public String getInstaller() {
+        return installer;
+    }
+
+    public void setInstaller(String installer) {
+        this.installer = installer;
+    }
 
     public boolean isActivated() {
         return Activated;
@@ -86,14 +115,6 @@ public class AmmeterPosition {
 
     public void setPsk(String psk) {
         this.psk = psk;
-    }
-
-    public String getRealName() {
-        return realName;
-    }
-
-    public void setRealName(String realName) {
-        this.realName = realName;
     }
 
     public String getType() {

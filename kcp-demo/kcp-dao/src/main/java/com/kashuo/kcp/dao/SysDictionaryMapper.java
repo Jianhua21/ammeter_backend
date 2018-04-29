@@ -9,7 +9,7 @@ public interface SysDictionaryMapper {
 
     List<SysDictionary> selectByCondition();
 
-    List<SysDictionary> querySystemParams();
+    List<SysDictionary> querySystemParams(String typeId);
 
     int updateByName(@Param("name")String name,@Param("value") String value);
 }

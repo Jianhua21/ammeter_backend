@@ -19,7 +19,7 @@
 
         <!-- 连接声明，此处使用 properties 配置的变量名 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/socket"
+                        connectionURL="jdbc:mysql://111.12.59.203:3306/socket"
                         userId="sonar"
                         password="sonar"/>
 
@@ -29,21 +29,21 @@
         </javaTypeResolver>
 
         <!--生成数据表对应的model-->
-        <javaModelGenerator targetProject="C:/GitHubProject/GitHubProject/kcp-demo/kcp-dao/src/main/java"
+        <javaModelGenerator targetProject="C:/GitHubProject/GitHubProject/ammeter_backend/kcp-demo/kcp-dao/src/main/java"
                             targetPackage="com.kashuo.kcp.domain">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <!-- SqlMap XML Files -->
-        <sqlMapGenerator targetProject="C:/GitHubProject/GitHubProject/kcp-demo/kcp-dao"
+        <sqlMapGenerator targetProject="C:/GitHubProject/GitHubProject/ammeter_backend/kcp-demo/kcp-dao"
                          targetPackage="./src/main/resources/mapper">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <!-- 生成 Mapper java文件，targetProject 指定的目录需存在，MBG 不会自动创建 -->
         <javaClientGenerator type="XMLMAPPER"
-                             targetProject="C:/GitHubProject/GitHubProject/kcp-demo/kcp-dao/src/main/java"
+                             targetProject="C:/GitHubProject/GitHubProject/ammeter_backend/kcp-demo/kcp-dao/src/main/java"
                              targetPackage="com.kashuo.kcp.dao">
             <property name="enableSubPackages" value="true"/>
             <property name="exampleMethodVisibility" value="false"/>
@@ -51,7 +51,7 @@
         </javaClientGenerator>
 
         <!-- 表生成映射，tableName 支持通配符，此处使用"%"表示所有表 -->
-        <table schema="MySQL" tableName="ammeter_auth" enableSelectByExample="false" enableDeleteByExample="false"
+        <table schema="MySQL" tableName="ammeter_imei" enableSelectByExample="false" enableDeleteByExample="false"
                enableCountByExample="false" enableUpdateByExample="false" selectByExampleQueryId="false">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>

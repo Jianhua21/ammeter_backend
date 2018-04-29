@@ -6,16 +6,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.huawei.iotplatform.client.NorthApiException;
 import com.huawei.iotplatform.client.dto.*;
 import com.huawei.iotplatform.client.invokeapi.DeviceManagement;
-import com.kashuo.kcp.api.entity.RegDevice;
+import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.auth.AuthService;
+import com.kashuo.kcp.constant.AppConstant;
+import com.kashuo.kcp.core.AmmeterCallBackService;
 import com.kashuo.kcp.core.AmmeterHandleService;
 import com.kashuo.kcp.core.AmmeterPositionService;
-import com.kashuo.kcp.dao.condition.AmmeterHandleCondition;
-import com.kashuo.kcp.dao.condition.AmmeterHandleResult;
-import com.kashuo.kcp.dao.condition.AmmeterRegisterDevice;
-import com.kashuo.kcp.dao.condition.ModifyDeviceInfoInCondition;
+import com.kashuo.kcp.dao.condition.*;
 import com.kashuo.kcp.domain.AmmeterAuth;
+import com.kashuo.kcp.domain.AmmeterCallbackHistory;
 import com.kashuo.kcp.domain.AmmeterPosition;
+import com.kashuo.kcp.manage.DeviceManageService;
 import com.kashuo.kcp.utils.Results;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,8 +32,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/connect")
 @Api("交互管理")
-public class ConnectAppController extends BaseController{
-    private Logger logger = LoggerFactory.getLogger(ConnectAppController.class);
+public class DeviceManagerController extends BaseController{
+    private Logger logger = LoggerFactory.getLogger(DeviceManagerController.class);
     @Value("${app.constant.isDebug}")
     private boolean isDebugFlag;
 
@@ -44,6 +45,11 @@ public class ConnectAppController extends BaseController{
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private AmmeterCallBackService callBackService;
+    @Autowired
+    private DeviceManageService deviceManageService;
 
     @PostMapping(value = "/handleData")
     @ApiOperation(value = "与IoM数据交互处理",notes = "created by Legend on 2018-Apr-14")
@@ -79,68 +85,69 @@ public class ConnectAppController extends BaseController{
         }
         //获取平台的token信息
         AmmeterAuth ammeterAuth = authService.getPlatIomAuth();
-        DeviceManagement deviceManagement = new DeviceManagement();
+        DeviceManagement deviceManagement = new DeviceManagement(authService.getNorthApiClient());
         RegDirectDeviceInDTO deviceInDTO = new RegDirectDeviceInDTO();
-        deviceInDTO.setDeviceName(ammeterPosition.getName());
+//        deviceInDTO.setDeviceName(registerDevice.);
         deviceInDTO.setNodeId(ammeterPosition.getImei());
         deviceInDTO.setVerifyCode(ammeterPosition.getImei());
-        try {
-            RegDirectDeviceOutDTO response = deviceManagement.regDirectDevice(deviceInDTO, ammeterAuth.getAppId(), ammeterAuth.getAccessToken());
-            AmmeterPosition position = new AmmeterPosition();
-            position.setId(ammeterPosition.getId());
-            position.setDeviceId(response.getDeviceId());
-            position.setPsk(response.getPsk());
-            position.setVerifyCode(response.getVerifyCode());
-            position.setStatus(1);
-            positionService.updateByPrimaryKeySelective(position);
-        }catch(NorthApiException e){
-            //注册失败
-            AmmeterPosition position = new AmmeterPosition();
-            position.setId(ammeterPosition.getId());
-            position.setStatus(2);
-            positionService.updateByPrimaryKeySelective(position);
-
-            return  Results.error("设备注册失败!",registerDevice.getSn());
-        }
+        deviceManageService.regDirectDevice(ammeterPosition,deviceManagement,ammeterAuth);
         return Results.success("设备注册成功!",registerDevice.getSn());
     }
 
     @GetMapping("/queryDeviceStatus/{deviceId}/{sn}")
     @ApiOperation(value = "查询设备激活状态")
-    public Results queryDeviceStatus(@RequestParam("deviceId") String deviceId,@RequestParam("sn") String sn) throws NorthApiException {
+    public Results queryDeviceStatus(@PathVariable("deviceId") String deviceId,@PathVariable("sn") String sn) throws NorthApiException {
 
         AmmeterPosition ammeterPosition = positionService.selectByDeviceId(deviceId);
         if(ammeterPosition == null){
             return Results.error("设备不存在!",sn);
         }
-        DeviceManagement deviceManagement = new DeviceManagement();
+        DeviceManagement deviceManagement = new DeviceManagement(authService.getNorthApiClient());
         AmmeterAuth ammeterAuth = authService.getPlatIomAuth();
         QueryDeviceStatusOutDTO deviceStatusOutDTO = deviceManagement.queryDeviceStatus(deviceId,ammeterAuth.getAppId(),ammeterAuth.getAccessToken());
+        logger.info("设备激活状态返回: {}",JSON.toJSONString(deviceStatusOutDTO));
         AmmeterPosition position = new AmmeterPosition();
         position.setActivated(deviceStatusOutDTO.isActivated());
         position.setId(ammeterPosition.getId());
         positionService.updateByPrimaryKeySelective(position);
-        return Results.success("设备已激活",sn);
+        return Results.success(deviceStatusOutDTO.isActivated()?"设备已激活":"设备未激活",sn);
     }
 
     @PostMapping("/modify")
     @ApiOperation("修改设备信息")
     public Results modifyDeviceInfo(@RequestBody ModifyDeviceInfoInCondition condition) throws NorthApiException {
+
+        AmmeterPosition position = positionService.selectByDeviceId(condition.getDeviceId());
+        if(position == null){
+            return Results.error("设备不存在!",condition.getSn());
+        }
         AmmeterAuth ammeterAuth = authService.getPlatIomAuth();
-        DeviceManagement deviceManagement = new DeviceManagement();
-        ModifyDeviceInfoInDTO deviceInfoInDTO = new ModifyDeviceInfoInDTO();
-        deviceInfoInDTO.setDeviceId(condition.getDeviceId());
-        deviceInfoInDTO.setDeviceConfig(condition.getDeviceConfigDTO());
-        deviceInfoInDTO.setDeviceType(condition.getDeviceType());
-        deviceInfoInDTO.setEndUser(condition.getEndUser());
-        deviceInfoInDTO.setLocation(condition.getLocation());
-        deviceInfoInDTO.setManufacturerId(condition.getManufacturerId());
-        deviceInfoInDTO.setManufacturerName(condition.getManufacturerName());
-        deviceInfoInDTO.setModel(condition.getModel());
-        deviceInfoInDTO.setMute(condition.getMute());
-        deviceInfoInDTO.setName(condition.getName());
-        deviceManagement.modifyDeviceInfo(deviceInfoInDTO,ammeterAuth.getAppId(),ammeterAuth.getAccessToken());
+        DeviceManagement deviceManagement = new DeviceManagement(authService.getNorthApiClient());
+        deviceManageService.modifyDeviceInfo2IoT(position,deviceManagement,ammeterAuth);
         return Results.success("更新成功!",condition.getSn());
+    }
+
+    @PostMapping("/history")
+    @ApiOperation("设备推送消息历史")
+    public Results deviceCallBackHistory(@RequestBody CallBackCondition condition){
+        Page<AmmeterCallbackHistory> pages = callBackService.getCallBackHistoryByDeviceId(condition);
+        if(pages != null){
+            Results results = new Results(pages);
+            results.setSn(condition.getSn());
+            return results;
+        }
+        return Results.success("未获取到数据!");
+    }
+    @GetMapping("/delete/{deviceId}/{sn}")
+    public Results deleteDevice(@PathVariable("deviceId") String deviceId,@PathVariable("sn") String sn) throws NorthApiException {
+        AmmeterPosition position = positionService.selectByDeviceId(deviceId);
+        if(position == null){
+            return Results.error("设备不存在!",sn);
+        }
+        AmmeterAuth ammeterAuth = authService.getPlatIomAuth();
+        DeviceManagement deviceManagement = new DeviceManagement(authService.getNorthApiClient());
+        deviceManagement.deleteDirectDevice(deviceId,ammeterAuth.getAppId(),ammeterAuth.getAccessToken());
+        return Results.success("删除设备成功!",sn);
     }
 
 

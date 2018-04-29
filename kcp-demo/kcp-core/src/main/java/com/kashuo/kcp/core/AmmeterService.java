@@ -62,6 +62,14 @@ public class AmmeterService {
         return ammeterDeviceMapper.selectByImsiKey(imsi);
     }
 
+    public void insert(AmmeterDevice ammeterDevice){
+        ammeterDeviceMapper.insert(ammeterDevice);
+    }
+
+    public Integer updateAmmeterDeviceByCondition(AmmeterDevice device){
+        return ammeterDeviceMapper.updateByImsiKeySelective(device);
+    }
+
 
     public Results list(AmmeterCondition ammeterCondition){
         PageHelper.startPage(ammeterCondition.getPageIndex(),ammeterCondition.getPageSize());

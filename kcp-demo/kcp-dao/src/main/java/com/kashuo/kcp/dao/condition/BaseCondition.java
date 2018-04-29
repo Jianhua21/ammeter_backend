@@ -25,6 +25,16 @@ public class BaseCondition {
 
     @ApiModelProperty(hidden = true)
     private Integer userID;
+    @ApiModelProperty("消息唯一码")
+    private String sn;
+
+    public String getSn() {
+        return sn;
+    }
+
+    public void setSn(String sn) {
+        this.sn = sn;
+    }
 
     public Integer getPageIndex() {
         return pageIndex;
@@ -40,10 +50,6 @@ public class BaseCondition {
 
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
-    }
-
-    public Integer getOffset() {
-        return (pageIndex - 1) * pageSize;
     }
 
     public Integer getUserID() {

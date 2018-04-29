@@ -1,9 +1,11 @@
 package com.kashuo.kcp.rpc.controller;
 
 import com.kashuo.kcp.core.AmmeterChannelService;
+import com.kashuo.kcp.core.AmmeterLoginHistoryService;
 import com.kashuo.kcp.core.AmmeterUserService;
 import com.kashuo.kcp.dao.condition.LoginCondition;
 import com.kashuo.kcp.domain.AmmeterChannel;
+import com.kashuo.kcp.domain.AmmeterLoginHistory;
 import com.kashuo.kcp.domain.AmmeterUser;
 import com.kashuo.kcp.rpc.config.AppConstantProperties;
 import com.kashuo.kcp.utils.*;
@@ -15,11 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * 登录
@@ -45,8 +46,13 @@ public class LoginController extends BaseController {
     @Autowired
     private AppConstantProperties properties;
 
+    @Autowired
+    private AmmeterLoginHistoryService loginHistoryService;
+    @Value("${app.constant.gaode.appId}")
+    private String key;
+
     @RequestMapping(value = "login", method = RequestMethod.POST)
-    public Results login(@RequestBody LoginCondition condition, HttpServletResponse response) {
+    public Results login(@RequestBody LoginCondition condition, HttpServletResponse response, HttpServletRequest request) throws IOException {
 
         if ("".equals(condition.getUsername()) || "".equals(condition.getPassword())) {
             return Results.error("用户名或密码不能为空");
@@ -88,7 +94,13 @@ public class LoginController extends BaseController {
         dashboard = StringUtil.isEmpty(dashboard) ? "1,1,1,1,1" : dashboard;
         CookieUtils.addCookie(response, "dashboard", dashboard, liveTime);
 
-
+        AmmeterLoginHistory history = new AmmeterLoginHistory();
+        history.setAccessToken(authToken);
+        history.setLoginName(user.getLoginName());
+        history.setLoginTime(new Date());
+        history.setUserId(user.getId());
+        history.setRemoteIp(request.getRemoteAddr());
+        loginHistoryService.insertLoginHistory(history,key);
 
         Map<String, Object> result = new HashMap<>();
         result.put("userId", user.getId());

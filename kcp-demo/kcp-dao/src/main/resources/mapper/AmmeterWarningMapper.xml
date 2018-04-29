@@ -14,6 +14,8 @@
 
     <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterWarningResult" >
         <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="warning_id" property="warningId" jdbcType="INTEGER"/>
+        <result column="device_id" property="deviceId" jdbcType="VARCHAR"/>
         <result column="imsi" property="imsi" jdbcType="VARCHAR" />
         <result column="ammeter_number" property="number" jdbcType="VARCHAR" />
         <result column="warning_date" property="warningDate" jdbcType="TIMESTAMP" />
@@ -32,10 +34,12 @@
   </select>
     
     <select id="queryWarningList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
-        select d.id,d.imsi,d.ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type
-        from ammeter_warning w,ammeter_device d
-       where w.ammeter_id = d.id
-         and w.warning_status = 0
+        select d.id,w.id as warning_id,p.device_id,d.imsi ,d.ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type
+        from ammeter_warning w,ammeter_device d,ammeter_position p
+       where w.ammeter_id = d.id and d.imsi = p.imei
+      <if test="status != null">
+        and w.warning_status = #{status,jdbcType=INTEGER}
+      </if>
         <if test="channelId != null">
             and d.channel_id =  #{channelId,jdbcType=INTEGER}
         </if>
@@ -45,6 +49,9 @@
         <if test="dateTime!=null and dateTime!=''">
             <![CDATA[ AND w.warning_date >= #{dateTime} ]]>
         </if>
+      <if test="deviceId != null and deviceId !=''">
+        and p.device_id=#{deviceId,jdbcType=VARCHAR}
+      </if>
         order by w.warning_date desc
     </select>
     

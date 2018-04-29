@@ -2,8 +2,10 @@ package com.kashuo.kcp.core;
 
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
+import com.kashuo.kcp.dao.AmmeterLoginHistoryMapper;
 import com.kashuo.kcp.dao.AmmeterUserMapper;
 import com.kashuo.kcp.dao.condition.AmmeterUserCondition;
+import com.kashuo.kcp.domain.AmmeterLoginHistory;
 import com.kashuo.kcp.domain.AmmeterUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ public class AmmeterUserService {
 
     @Autowired
     private AmmeterUserMapper userMapper;
+
 //    @Autowired
 //    private RoleMapper roleMapper;
 //    @Autowired
@@ -71,6 +74,8 @@ public class AmmeterUserService {
 //        return priCode;
 //    }
 //
+
+
     /***
      *
      */

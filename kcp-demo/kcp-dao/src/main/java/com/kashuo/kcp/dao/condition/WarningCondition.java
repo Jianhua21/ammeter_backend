@@ -10,13 +10,32 @@ import io.swagger.annotations.ApiModelProperty;
 public class WarningCondition extends BaseCondition{
     @ApiModelProperty("查询时间")
     private String dateTime;
-
     @ApiModelProperty("每条消息的唯一编号，字符串类型，必要")
     private String sn;
     @ApiModelProperty("电表类型")
     private String ammeterType;
     @ApiModelProperty("机构Id")
     private Integer channelId;
+    @ApiModelProperty("设备Id")
+    private String deviceId;
+    @ApiModelProperty("告警状态 0-未消除告警，1-消除的告警，不传就取所有记录")
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 
     public Integer getChannelId() {
         return channelId;

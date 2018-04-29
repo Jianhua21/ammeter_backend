@@ -126,13 +126,13 @@ info.reverse_active_power,IFNULL(info.`status`,1) as status
       max_current, active_acc_level, reactive_acc_level, 
       active_constant, reactive_constant, type, 
       product_date, protocol_no, software_no, 
-      hardware_no)
+      hardware_no,channel_id)
     values (#{imsi,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{meterNo,jdbcType=VARCHAR}, #{ammeterNumber,jdbcType=VARCHAR},
       #{assManageCode,jdbcType=VARCHAR}, #{ratedVoltage,jdbcType=VARCHAR}, #{ratedCurrent,jdbcType=VARCHAR}, 
       #{maxCurrent,jdbcType=VARCHAR}, #{activeAccLevel,jdbcType=VARCHAR}, #{reactiveAccLevel,jdbcType=VARCHAR}, 
       #{activeConstant,jdbcType=INTEGER}, #{reactiveConstant,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, 
       #{productDate,jdbcType=TIMESTAMP}, #{protocolNo,jdbcType=VARCHAR}, #{softwareNo,jdbcType=VARCHAR}, 
-      #{hardwareNo,jdbcType=VARCHAR})
+      #{hardwareNo,jdbcType=VARCHAR},#{channelId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterDevice" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
@@ -345,6 +345,9 @@ info.reverse_active_power,IFNULL(info.`status`,1) as status
             </if>
             <if test="hardwareNo != null" >
                 hardware_no = #{hardwareNo,jdbcType=VARCHAR},
+            </if>
+            <if test="channelId != null" >
+                channel_id = #{channelId,jdbcType=INTEGER},
             </if>
         </set>
         where imsi = #{imsi,jdbcType=VARCHAR}

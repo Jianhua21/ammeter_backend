@@ -16,10 +16,12 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="imei" property="imei" jdbcType="VARCHAR" />
     <result column="Activated" property="Activated" jdbcType="CHAR" />
+    <result column="installer" property="installer" jdbcType="VARCHAR" />
   </resultMap>
 
   <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterPosition" >
     <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="device_id" property="deviceId" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="number" property="number" jdbcType="VARCHAR" />
     <result column="address" property="address" jdbcType="VARCHAR" />
@@ -32,19 +34,39 @@
     <result column="create_by" property="createBy" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="type" property="type" jdbcType="VARCHAR" />
-    <result column="realname" property="realName" jdbcType="VARCHAR" />
+    <result column="installer" property="installer" jdbcType="VARCHAR" />
     <result column="imei" property="imei" jdbcType="VARCHAR" />
+    <result column="warning_status" property="warningStatus" jdbcType="VARCHAR" />
+    <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
     <result column="Activated" property="Activated" jdbcType="CHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, number, address, amap_longitude, amap_latitude, gps_longitude, gps_latitude, 
-    remark,status,create_by,create_time,imei,device_id,verify_code,psk,Activated
+    remark,status,create_by,create_time,imei,device_id,verify_code,psk,Activated,installer
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from ammeter_position
     where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByImei" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_position
+    where imei = #{imei,jdbcType=VARCHAR}
+  </select>
+  <select id="selectActiveByImei" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_position
+    where imei = #{imei,jdbcType=VARCHAR} and status != 3
+  </select>
+  <select id="selectPositionByStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_position
+    where status = #{status,jdbcType=INTEGER}
   </select>
   <select id="selectByDeviceId" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
@@ -53,14 +75,15 @@
     where device_id = #{deviceId,jdbcType=VARCHAR}
   </select>
     <select id="getPositionList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterPositionCondition">
-        select
-      p.id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude, p.gps_longitude, p.gps_latitude,
-      p.remark,p.status,p.create_by,p.create_time,d.type,u.realname,p.imei
-        from ammeter_position p,ammeter_user u,ammeter_device d
-        where
-        p.create_by = u.id
-        and p.number= d.ammeter_number
-        and u.channel_id = d.channel_id
+      select p.id,p.device_id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude,
+      p.gps_longitude, p.gps_latitude, p.remark,p.status,p.create_by,p.create_time,d.type,p.imei,p.installer,
+      case when f.id is null then '0' else '1' end as warning_status,
+      case when f.id is null then '' else f.warning_desc end as warning_desc
+      from ammeter_position p INNER JOIN ammeter_user u on p.create_by = u.id
+      INNER JOIN ammeter_device d on p.imei= d.imsi
+      LEFT join (select w.* from ammeter_warning w,
+      (select max(id) id from ammeter_warning where warning_status = 0 group by ammeter_id) e
+      where w.id = e.id ) f on f.ammeter_id = d.id WHERE 1=1
       <if test="channelId != null and channelId != ''" >
         and  u.channel_id =#{channelId,jdbcType=INTEGER}
       </if>
@@ -73,7 +96,6 @@
         <if test="address != null and address != ''" >
             and  p.address like CONCAT('%',#{address,jdbcType=VARCHAR},'%')
         </if>
-
     </select>
   <update id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     update  ammeter_position set status =1
@@ -85,11 +107,11 @@
     </selectKey>
     insert into ammeter_position (name, number, address, 
       amap_longitude, amap_latitude, gps_longitude, 
-      gps_latitude, remark,create_by,create_time,imei)
+      gps_latitude, remark,create_by,create_time,imei,installer)
     values (#{name,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
       #{amapLongitude,jdbcType=VARCHAR}, #{amapLatitude,jdbcType=VARCHAR}, #{gpsLongitude,jdbcType=VARCHAR}, 
       #{gpsLatitude,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},#{createBy,jdbcType=INTEGER},
-    #{createTime,jdbcType=TIMESTAMP}, #{imei,jdbcType=VARCHAR})
+    #{createTime,jdbcType=TIMESTAMP}, #{imei,jdbcType=VARCHAR}, #{installer,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterPosition" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
@@ -186,7 +208,10 @@
         psk = #{psk,jdbcType=VARCHAR},
       </if>
       <if test="Activated != null" >
-        psk = #{Activated,jdbcType=CHAR},
+        Activated = #{Activated,jdbcType=CHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER}
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}

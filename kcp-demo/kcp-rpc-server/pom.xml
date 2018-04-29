@@ -36,7 +36,7 @@
         <dependency>
             <groupId>com.kashuo.kcp</groupId>
             <artifactId>kcp-api</artifactId>
-            <version>1.0.0-RELEASE</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -63,6 +63,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.kashuo.kcp</groupId>
+            <artifactId>kcp-api</artifactId>
+            <version>1.0.0-RELEASE</version>
         </dependency>
     </dependencies>
     <build>

@@ -5,7 +5,8 @@ package com.kashuo.kcp.constant;
  */
 public enum  ExceptionConstant {
 
-    ERROR_CODE_100208(401,"100208","appId或secret错误"),
+    ERROR_CODE_100208(403,"100208","appId或secret错误"),
+    ERROR_CODE_1005(403,"1005","app_key or access_token is invalid"),
     ERROR_CODE_100022(400,"100022","输入参数无效"),
     ERROR_CODE_100006(401,"100006","refreshToken无效"),
     ERROR_CODE_100002(401,"100002","错误的token信息"),
@@ -57,7 +58,7 @@ public enum  ExceptionConstant {
                 return  cnum.desc;
             }
         }
-        return null;
+        return "错误代码不存在!";
     }
 
     public Integer getStatusCode() {

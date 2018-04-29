@@ -169,63 +169,63 @@ public class ChannelController extends BaseController {
         return Results.success(list);
     }
 
-    /**
-     * 获取上级渠道商
-     */
-    @RequestMapping(value = "parentChannel/{levelCode}", method = RequestMethod.GET)
-    public Results parentChannel(@PathVariable String levelCode) {
-        Map channel = channelService.selectParentChannel(levelCode);
-        return Results.success(channel);
-    }
+//    /**
+//     * 获取上级渠道商
+//     */
+//    @RequestMapping(value = "parentChannel/{levelCode}", method = RequestMethod.GET)
+//    public Results parentChannel(@PathVariable String levelCode) {
+//        Map channel = channelService.selectParentChannel(levelCode);
+//        return Results.success(channel);
+//    }
 
-    /**
-     * 获取上级渠道商角色列表
-     */
-    @RequestMapping(value = "parentChannelRole", method = RequestMethod.GET)
-    public Results parentChannelRole(@RequestParam(required = false) Integer channelId) {
-        if (channelId == null)
-            channelId = getCuruser() == null ? 0 : getCuruser().getChannelId();
-        List<Map> roleList = channelService.parentChannelRole(channelId);
-        return Results.success(roleList);
-    }
+//    /**
+//     * 获取上级渠道商角色列表
+//     */
+//    @RequestMapping(value = "parentChannelRole", method = RequestMethod.GET)
+//    public Results parentChannelRole(@RequestParam(required = false) Integer channelId) {
+//        if (channelId == null)
+//            channelId = getCuruser() == null ? 0 : getCuruser().getChannelId();
+//        List<Map> roleList = channelService.parentChannelRole(channelId);
+//        return Results.success(roleList);
+//    }
 
 
-    /**
-     * 获取渠道商增加时的渠道商编号
-     *
-     * @return Results
-     */
-    @RequestMapping(value = "/getChannelCodeByAdd", method = RequestMethod.GET)
-    public Results getChannelCodeByAdd() {
-//        String code = baseProviderService.buildChannelCode();
-        return Results.success("0512");
-    }
-
-    /**
-     * 初始化部门名称下拉框
-     *
-     * @return Results
-     */
-    @RequestMapping(value = "/departMentNameList", method = RequestMethod.GET)
-    public Results departMentNameList() {
-        AmmeterUser user = getCuruser();
-        List<AmmeterDepartment> list = departmentService.selectDepartmentByChannelId(user.getChannelId());
-        return Results.success(list);
-    }
-
-    /**
-     * 初始化角色名称下拉框
-     *
-     * @return Results
-     */
-    @RequestMapping(value = "/roleNameList", method = RequestMethod.GET)
-    public Results roleNameList() {
-        //获取当前用户
-        AmmeterUser user = getCuruser();
-        Integer channelId = user == null ? 0 : user.getChannelId();
-        List<AmmeterRole> list = roleService.selectRoleListByChannelId(channelId);
-        return Results.success(list);
-    }
+//    /**
+//     * 获取渠道商增加时的渠道商编号
+//     *
+//     * @return Results
+//     */
+//    @RequestMapping(value = "/getChannelCodeByAdd", method = RequestMethod.GET)
+//    public Results getChannelCodeByAdd() {
+////        String code = baseProviderService.buildChannelCode();
+//        return Results.success("0512");
+//    }
+//
+//    /**
+//     * 初始化部门名称下拉框
+//     *
+//     * @return Results
+//     */
+//    @RequestMapping(value = "/departMentNameList", method = RequestMethod.GET)
+//    public Results departMentNameList() {
+//        AmmeterUser user = getCuruser();
+//        List<AmmeterDepartment> list = departmentService.selectDepartmentByChannelId(user.getChannelId());
+//        return Results.success(list);
+//    }
+/*
+//    *//**
+//     * 初始化角色名称下拉框
+//     *
+//     * @return Results
+//     *//*
+//    @RequestMapping(value = "/roleNameList", method = RequestMethod.GET)
+//    public Results roleNameList() {
+//        //获取当前用户
+//        AmmeterUser user = getCuruser();
+//        Integer channelId = user == null ? 0 : user.getChannelId();
+//        List<AmmeterRole> list = roleService.selectRoleListByChannelId(channelId);
+//        return Results.success(list);
+//    }*/
 
     /**
      * 渠道商管理用户管理列表
@@ -400,20 +400,20 @@ public class ChannelController extends BaseController {
 
 
 
-    /**
-     * 查询渠道商列表2,为了不修改原先的接口
-     *
-     * @return Results
-     */
-    @RequestMapping(value = "/channelList2", method = RequestMethod.POST)
-    public Results channelList2(@RequestBody AmmeterChannel channelName) {
-        ChannelTree rootTree = channelService.channelList2(getCuruser());
-        //输入框渠道商名称搜索
-        if (channelName.getChannelName() != null && !"".equals(channelName.getChannelName())) {
-            rootTree = channelService.getTreeChannelName(rootTree, channelName.getChannelName());
-            return Results.success(rootTree);
-        }
-        return Results.success(rootTree);
-    }
+//    /**
+//     * 查询渠道商列表2,为了不修改原先的接口
+//     *
+//     * @return Results
+//     */
+//    @RequestMapping(value = "/channelList2", method = RequestMethod.POST)
+//    public Results channelList2(@RequestBody AmmeterChannel channelName) {
+//        ChannelTree rootTree = channelService.channelList2(getCuruser());
+//        //输入框渠道商名称搜索
+//        if (channelName.getChannelName() != null && !"".equals(channelName.getChannelName())) {
+//            rootTree = channelService.getTreeChannelName(rootTree, channelName.getChannelName());
+//            return Results.success(rootTree);
+//        }
+//        return Results.success(rootTree);
+//    }
 
 }

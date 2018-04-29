@@ -39,7 +39,7 @@ public class Server {
 //
 //        }).start();
 //    }
-    @Autowired
+//    @Autowired
     private void startServer(){
             System.out.println("Socket 服务器启动...\n"+SOCKET_PORT);
             new Thread(()->

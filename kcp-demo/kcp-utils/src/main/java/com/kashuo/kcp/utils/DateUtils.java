@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DateUtils {
 
@@ -15,6 +16,8 @@ public class DateUtils {
     private static final String formatPatternDateTime = "yyyy-MM-dd HH:mm:ss";
 
     static final String formatPattern_Short = "yyyyMMdd";
+
+    private static final String IoT_format_PatternDateTime="yyyyMMdd'T'HHmmss'Z'";
 
     /**
      * 获取当前日期
@@ -208,8 +211,31 @@ public class DateUtils {
 //        System.out.println(getWeeks(stringToDate("2016-04-14")));
 //        System.out.println(getWeeks(stringToDate("2016-04-15")));
 //        System.out.println(getWeeks(stringToDate("2016-04-16")));
-        System.out.println(getLastDayDate());
+//        System.out.println(getLastDayDate());
+
+        SimpleDateFormat df = new SimpleDateFormat(IoT_format_PatternDateTime);
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+        try {
+            System.out.println(df.parse("20140823T092005Z"));
+        } catch (ParseException e) {
+        }
     }
+
+    public static Date getDateByIoT(String dateStr){
+        if(dateStr == null){
+            return null;
+        }
+        Date date = null;
+        SimpleDateFormat df = new SimpleDateFormat(IoT_format_PatternDateTime);
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+        try {
+            date = df.parse(dateStr);
+        } catch (ParseException e) {
+
+        }
+        return date;
+    }
+
 
     //根据当前时间获取当天的起始日期
     public static Long getDateLongTimeStart(Date date) {
@@ -222,6 +248,8 @@ public class DateUtils {
         String dateStr = dateToString(date) + " 23:59:59";
         return stringToDate(dateStr, formatPatternDateTime).getTime();
     }
+
+
 
 
 }

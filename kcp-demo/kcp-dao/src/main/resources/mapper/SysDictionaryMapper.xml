@@ -17,12 +17,12 @@
   <select id="selectByCondition" resultMap="BaseResultMap">
   select
   <include refid="Base_Column_List" />
-  from sys_dictionary and type != 7 where status = 0
+  from sys_dictionary where  status = 0 and type != 7 and type != 8
 </select>
 
-  <select id="querySystemParams" resultMap="BaseResultMap">
+  <select id="querySystemParams" resultMap="BaseResultMap" resultType="java.lang.String">
     select
     <include refid="Base_Column_List" />
-    from sys_dictionary and type = 7 where status = 0
+    from sys_dictionary  where status = 0 and type = #{typeId, jdbcType=INTEGER}
   </select>
 </mapper>

@@ -1,5 +1,6 @@
 package com.kashuo.kcp.rpc.config;
 
+import com.kashuo.kcp.rpc.schedule.IoMRegSync;
 import com.kashuo.kcp.rpc.schedule.WarningInfoSync;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,8 @@ public class QuartzConfiguration {
 
     @Autowired
     private WarningInfoSync warningInfoSync;
+    @Autowired
+    private IoMRegSync regSync;
 
     /**
      * 定时更新订购方案状态，每天凌晨一点执行
@@ -34,6 +37,13 @@ public class QuartzConfiguration {
     public void reportCurrentByCron() throws Exception {
         if (offSet) {
             warningInfoSync.updateWarningInfoByCron();
+        }
+    }
+
+    @Scheduled(cron = "${app.constant.quartz}")
+    public void registerSync() throws Exception {
+        if (offSet) {
+            regSync.regInfo2IoM();
         }
     }
 }
