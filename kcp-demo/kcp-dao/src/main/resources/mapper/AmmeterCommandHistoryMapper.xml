@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterCommandHistoryMapper" >
+  <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterCommandHistory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="command_id" property="commandId" jdbcType="VARCHAR" />
+    <result column="device_id" property="deviceId" jdbcType="VARCHAR" />
+    <result column="callback_url" property="callbackUrl" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="execute_time" property="executeTime" jdbcType="TIMESTAMP" />
+    <result column="platform_issued_time" property="platformIssuedTime" jdbcType="TIMESTAMP" />
+    <result column="delivered_time" property="deliveredTime" jdbcType="TIMESTAMP" />
+    <result column="command" property="command" jdbcType="VARCHAR" />
+    <result column="result" property="result" jdbcType="VARCHAR" />
+    <result column="expireTime" property="expiretime" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, command_id, device_id, callback_url, status, create_time, execute_time, platform_issued_time, 
+    delivered_time, command, result, expireTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ammeter_command_history
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByCommandIdAndDeviceId" resultMap="BaseResultMap" parameterType="com.kashuo.kcp.domain.AmmeterCommandHistory" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_command_history
+    where command_id = #{commandId,jdbcType=VARCHAR}
+    and device_id =#{deviceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ammeter_command_history
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterCommandHistory" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_command_history (command_name,command_id, device_id, callback_url,
+      status, create_time, execute_time, 
+      platform_issued_time, delivered_time, 
+      command, result, expireTime
+      )
+    values (#{commandName,jdbcType=VARCHAR},#{commandId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{callbackUrl,jdbcType=VARCHAR},
+      #{status,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{executeTime,jdbcType=TIMESTAMP}, 
+      #{platformIssuedTime,jdbcType=TIMESTAMP}, #{deliveredTime,jdbcType=TIMESTAMP}, 
+      #{command,jdbcType=VARCHAR}, #{result,jdbcType=VARCHAR}, #{expiretime,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterCommandHistory" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_command_history
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="commandId != null" >
+        command_id,
+      </if>
+      <if test="deviceId != null" >
+        device_id,
+      </if>
+      <if test="callbackUrl != null" >
+        callback_url,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="executeTime != null" >
+        execute_time,
+      </if>
+      <if test="platformIssuedTime != null" >
+        platform_issued_time,
+      </if>
+      <if test="deliveredTime != null" >
+        delivered_time,
+      </if>
+      <if test="command != null" >
+        command,
+      </if>
+      <if test="result != null" >
+        result,
+      </if>
+      <if test="expiretime != null" >
+        expireTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="commandId != null" >
+        #{commandId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="callbackUrl != null" >
+        #{callbackUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="executeTime != null" >
+        #{executeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="platformIssuedTime != null" >
+        #{platformIssuedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deliveredTime != null" >
+        #{deliveredTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="command != null" >
+        #{command,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null" >
+        #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="expiretime != null" >
+        #{expiretime,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterCommandHistory" >
+    update ammeter_command_history
+    <set >
+      <if test="commandId != null" >
+        command_id = #{commandId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null" >
+        device_id = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="callbackUrl != null" >
+        callback_url = #{callbackUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="executeTime != null" >
+        execute_time = #{executeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="platformIssuedTime != null" >
+        platform_issued_time = #{platformIssuedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deliveredTime != null" >
+        delivered_time = #{deliveredTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="command != null" >
+        command = #{command,jdbcType=VARCHAR},
+      </if>
+      <if test="result != null" >
+        result = #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="expiretime != null" >
+        expireTime = #{expiretime,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterCommandHistory" >
+    update ammeter_command_history
+    set command_id = #{commandId,jdbcType=VARCHAR},
+      device_id = #{deviceId,jdbcType=VARCHAR},
+      callback_url = #{callbackUrl,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      execute_time = #{executeTime,jdbcType=TIMESTAMP},
+      platform_issued_time = #{platformIssuedTime,jdbcType=TIMESTAMP},
+      delivered_time = #{deliveredTime,jdbcType=TIMESTAMP},
+      command = #{command,jdbcType=VARCHAR},
+      result = #{result,jdbcType=VARCHAR},
+      expireTime = #{expiretime,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateStatusByCommandId" parameterType="com.kashuo.kcp.domain.AmmeterCommandHistory">
+    update ammeter_command_history
+    set status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateStatusBySubscrible" parameterType="com.kashuo.kcp.domain.AmmeterCommandHistory">
+    update ammeter_command_history
+    set status = #{status,jdbcType=VARCHAR}
+    where command_name = #{commandName,jdbcType=VARCHAR}
+    and device_id = #{deviceId,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

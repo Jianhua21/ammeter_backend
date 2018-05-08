@@ -11,8 +11,18 @@ public class CommandCondition {
 
     @ApiModelProperty("设备Id")
     private String deviceId;
+    @ApiModelProperty("保活时间设定,按秒来发送60s,90s,120s")
+    private String keepTime;
     @ApiModelProperty("sn消息唯一码")
     private String sn;
+
+    public String getKeepTime() {
+        return keepTime;
+    }
+
+    public void setKeepTime(String keepTime) {
+        this.keepTime = keepTime;
+    }
 
     public String getDeviceId() {
         return deviceId;

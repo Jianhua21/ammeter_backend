@@ -22,6 +22,8 @@
         <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
         <result column="ammeter_type" property="ammeterType" jdbcType="VARCHAR" />
         <result column="warning_type" property="warningType" jdbcType="INTEGER" />
+      <result column="warning_status" property="warningStatus" jdbcType="INTEGER" />
+      <result column="status_name" property="statusName" jdbcType="VARCHAR" />
     </resultMap>
   <sql id="Base_Column_List" >
     id, ammeter_id, warning_status, warning_date, create_date, create_by, warning_desc,warning_type
@@ -34,11 +36,21 @@
   </select>
     
     <select id="queryWarningList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
-        select d.id,w.id as warning_id,p.device_id,d.imsi ,d.ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type
-        from ammeter_warning w,ammeter_device d,ammeter_position p
-       where w.ammeter_id = d.id and d.imsi = p.imei
+      select d.id,w.id as warning_id,p.device_id,d.imsi ,p.name as ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type,
+      w.warning_status,
+      case when w.warning_status = 0 then '待处理'
+      else '已消除' end as status_name
+      from ammeter_warning w,ammeter_device d,ammeter_position p
+      where w.ammeter_id = d.id and d.imsi = p.imei
+      and p.status !=3
       <if test="status != null">
         and w.warning_status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="imei != null">
+        and p.imei like CONCAT('%',#{imei,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="name != null">
+        and p.name like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
       </if>
         <if test="channelId != null">
             and d.channel_id =  #{channelId,jdbcType=INTEGER}
@@ -149,5 +161,10 @@
       create_by = #{createBy,jdbcType=VARCHAR},
       warning_desc = #{warningDesc,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateStatusByType" parameterType="com.kashuo.kcp.domain.AmmeterWarning">
+    UPDATE ammeter_warning
+    set warning_status = #{warningStatus,jdbcType=CHAR}
+    where ammeter_id = #{ammeterId,jdbcType=INTEGER} and warning_type = #{warningType,jdbcType=VARCHAR}
   </update>
 </mapper>

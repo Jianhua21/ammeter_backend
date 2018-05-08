@@ -87,7 +87,7 @@ public class AmmeterHandleService {
                     //截取AmmeterNumber
                     //无线参数判断
                     if(sysDictionary.getParamId()>=40 && sysDictionary.getParamId() <=42){
-                        netWorkService.insertNetWorkInfo(device,result);
+//                        netWorkService.insertNetWorkInfo(device,result);
                         return ammeterService.getSocketRequestParam(device,
                                 ammeterWorkingInfoMapper.selectByAmmeterId(device.getId()),false);
                     }
@@ -169,7 +169,7 @@ public class AmmeterHandleService {
         result.setData(data.substring(26,28));
         result.setCrcValue(data.substring(28));
         //命令转换
-        result.setRealCommnd(AmmeterUtils.exchangeCommand(result.getCommand()));
+//        result.setRealCommnd(AmmeterUtils.exchangeCommand(result.getCommand()));
         return result;
     }
 

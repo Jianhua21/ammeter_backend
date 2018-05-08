@@ -20,10 +20,30 @@ public class AmmeterCondition implements Serializable{
     private String imsi;
     @ApiModelProperty(value = "通讯地址")
     private String address;
+    @ApiModelProperty("设备名称")
+    private String name;
+    @ApiModelProperty("安装人员")
+    private String installer;
     @ApiModelProperty("每条消息的唯一编号，字符串类型，必要")
     private String sn;
     @ApiModelProperty("机构Id")
     private Integer channelId;
+
+    public String getInstaller() {
+        return installer != null? installer.trim() :"";
+    }
+
+    public void setInstaller(String installer) {
+        this.installer = installer;
+    }
+
+    public String getName() {
+        return name != null ? name.trim():"";
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Integer getChannelId() {
         return channelId;
@@ -50,7 +70,7 @@ public class AmmeterCondition implements Serializable{
     }
 
     public String getImsi() {
-        return imsi;
+        return imsi != null? imsi.trim():"";
     }
 
     public void setImsi(String imsi) {
@@ -58,7 +78,7 @@ public class AmmeterCondition implements Serializable{
     }
 
     public String getAddress() {
-        return address;
+        return address != null ? address.trim():"";
     }
 
     public void setAddress(String address) {

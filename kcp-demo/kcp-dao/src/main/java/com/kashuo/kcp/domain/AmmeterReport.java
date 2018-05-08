@@ -9,6 +9,10 @@ public class AmmeterReport {
 
     private String activeEnergy;
 
+    private String voltage;
+
+    private String current;
+
     private String reactiveEnergy;
 
     private Date sendTime;
@@ -21,6 +25,22 @@ public class AmmeterReport {
 
     public Integer getType() {
         return type;
+    }
+
+    public String getVoltage() {
+        return voltage;
+    }
+
+    public void setVoltage(String voltage) {
+        this.voltage = voltage;
+    }
+
+    public String getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(String current) {
+        this.current = current;
     }
 
     public void setType(Integer type) {

@@ -18,5 +18,7 @@ public interface AmmeterWarningMapper {
 
     int updateByPrimaryKey(AmmeterWarning record);
 
+    int updateStatusByType(AmmeterWarning record);
+
     Page<AmmeterWarningResult> queryWarningList(WarningCondition condition);
 }

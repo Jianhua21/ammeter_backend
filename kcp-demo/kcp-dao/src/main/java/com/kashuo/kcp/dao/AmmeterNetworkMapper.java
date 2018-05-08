@@ -24,6 +24,10 @@ public interface AmmeterNetworkMapper {
 
     List<AmmeterNetwork> selectForWarningReport();
 
+    List<AmmeterNetwork> selectOfflineDevice();
+
+    List<AmmeterNetwork> selectOnlineDeviceWithWarning();
+
     int updateByPrimaryKeySelective(AmmeterNetwork record);
 
     int updateByPrimaryKey(AmmeterNetwork record);

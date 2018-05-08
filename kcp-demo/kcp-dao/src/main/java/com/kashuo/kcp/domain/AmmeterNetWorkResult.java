@@ -1,5 +1,7 @@
 package com.kashuo.kcp.domain;
 
+import com.kashuo.kcp.utils.StringUtil;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,6 +11,8 @@ import java.util.Date;
 public class AmmeterNetWorkResult implements Serializable {
     private Integer id;
 
+    private String name;
+
     private String imsi;
 
     private String celli;
@@ -16,6 +20,24 @@ public class AmmeterNetWorkResult implements Serializable {
     private String rsrq;
 
     private String rssi;
+
+    private String rsrp;
+
+    public String getRsrp() {
+        return StringUtil.nullToEmpty(rsrp);
+    }
+
+    public void setRsrp(String rsrp) {
+        this.rsrp = rsrp;
+    }
+
+    public String getName() {
+        return StringUtil.nullToEmpty(name);
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     private Date createTime;
 
@@ -36,7 +58,7 @@ public class AmmeterNetWorkResult implements Serializable {
     }
 
     public String getCelli() {
-        return celli;
+        return StringUtil.nullToEmpty(celli);
     }
 
     public void setCelli(String celli) {
@@ -44,7 +66,7 @@ public class AmmeterNetWorkResult implements Serializable {
     }
 
     public String getRsrq() {
-        return rsrq;
+        return StringUtil.nullToEmpty(rsrq);
     }
 
     public void setRsrq(String rsrq) {
@@ -52,7 +74,7 @@ public class AmmeterNetWorkResult implements Serializable {
     }
 
     public String getRssi() {
-        return rssi;
+        return StringUtil.nullToEmpty(rssi);
     }
 
     public void setRssi(String rssi) {

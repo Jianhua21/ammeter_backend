@@ -4,6 +4,7 @@ import com.kashuo.common.mybatis.helper.PageHelper;
 import com.kashuo.kcp.dao.AmmeterDeviceMapper;
 import com.kashuo.kcp.dao.AmmeterWorkingInfoMapper;
 import com.kashuo.kcp.dao.condition.AmmeterCondition;
+import com.kashuo.kcp.dao.result.AmmeterDeviceResult;
 import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.utils.Results;
 import org.slf4j.Logger;
@@ -37,6 +38,14 @@ public class AmmeterService {
     @Autowired
     private NetWorkService netWorkService;
 
+    public List<AmmeterDeviceResult> checkAmmeterMeterNo(){
+         return ammeterDeviceMapper.checkAmmeterMeterNo();
+    }
+
+    public List<AmmeterDeviceResult> validAmmeterDevice(){
+        return ammeterDeviceMapper.validAmmeterDevice();
+    }
+
     public Results updateAmmeterStatus(Integer status, Integer id){
 
         AmmeterWorkingInfo ammeterWorkingInfo = ammeterWorkingInfoMapper.selectByAmmeterId(id);
@@ -61,6 +70,14 @@ public class AmmeterService {
     public AmmeterDevice selectDeviceByImsi(String imsi){
         return ammeterDeviceMapper.selectByImsiKey(imsi);
     }
+
+    public AmmeterDevice selectByPrimaryKey(Integer id){
+        return ammeterDeviceMapper.selectByPrimaryKey(id);
+    }
+
+
+    public Integer updateWarningStatusByPrimaryKey(AmmeterDevice ammeterDevice){
+        return ammeterDeviceMapper.updateWarningStatusByPrimaryKey(ammeterDevice);}
 
     public void insert(AmmeterDevice ammeterDevice){
         ammeterDeviceMapper.insert(ammeterDevice);

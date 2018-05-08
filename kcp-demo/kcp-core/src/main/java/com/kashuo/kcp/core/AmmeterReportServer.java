@@ -5,6 +5,7 @@ import com.kashuo.kcp.dao.AmmeterReportMapper;
 import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterMonthlyReport;
 import com.kashuo.kcp.domain.AmmeterReport;
+import com.kashuo.kcp.utils.AmmeterUtils;
 import com.kashuo.kcp.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,53 @@ public class AmmeterReportServer {
         report.setSendTime(new Date());
        return  reportMapper.insert(report);
     }
+
+
+    public int processDailyReportServer(AmmeterDevice device, String response,Integer type) throws Exception {
+        //解包645命令
+        String result = AmmeterUtils.unPackageAnalysis(response);
+
+        logger.info("处理回调的数据，数据类型:{},解包前:{},解包后:{}",type,response,result);
+        AmmeterReport reportDB = reportMapper.queryMaxDailyReportByCondition(device.getId(),
+                DateUtils.getCurrentDate(),DateUtils.getHour());
+        AmmeterReport report = new AmmeterReport();
+        report.setAmmeterId(device.getId());
+        report.setDateTime(DateUtils.getCurrentDate());
+        Float f = 0f;
+        boolean updateFlag = false;
+        try{
+            if(reportDB != null) {
+                updateFlag = true;
+            }
+            f = Float.parseFloat(result);
+        }catch (Exception e){
+            logger.error("parse Float error ",e);
+        }
+        if(type ==1){
+            report.setActiveEnergy(String.valueOf(f));
+        }else if(type ==2){
+            report.setVoltage(String.valueOf(f));
+        }else if(type ==3){
+            report.setCurrent(String.valueOf(f));
+        }
+
+        Integer results  =0 ;
+        if(updateFlag) {
+            report.setId(reportDB.getId());
+            results = reportMapper.updateByPrimaryKeySelective(report);
+        }else{
+            if (DateUtils.getHour() == 0) {
+                report.setHour(24);
+            } else {
+                report.setHour(DateUtils.getHour());
+            }
+            report.setType(3);
+            report.setSendTime(new Date());
+            results = reportMapper.insertSelective(report);
+        }
+        return results;
+    }
+
 
 
     public String sendReponseParamsForReport(AmmeterReport report){

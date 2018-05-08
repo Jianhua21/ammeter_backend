@@ -1,9 +1,17 @@
 package com.kashuo.kcp.rpc.controller.api;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.kashuo.kcp.api.entity.CommandDetail;
+import com.kashuo.kcp.api.entity.callback.DeviceCommandCallBack;
+import com.kashuo.kcp.api.entity.callback.DeviceDataChange;
+import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.constant.IoTConstant;
 import com.kashuo.kcp.core.AmmeterCallBackService;
+import com.kashuo.kcp.core.NetWorkService;
 import com.kashuo.kcp.domain.AmmeterCallbackHistory;
+import com.kashuo.kcp.domain.SysDictionary;
+import com.kashuo.kcp.utils.CRC16x25Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -30,6 +38,12 @@ public class CallBackController {
     @Autowired
     private AmmeterCallBackService callBackService;
 
+    @Autowired
+    private NetWorkService netWorkService;
+
+    @Autowired
+    private CommandService commandService;
+
     @PostMapping("/command")
     @ApiOperation("命令下发回调")
     public void CommandCallBack(HttpServletRequest request) throws IOException {
@@ -38,11 +52,12 @@ public class CallBackController {
         logger.info("--------IoM request data Start----------------------");
         logger.info(result);
         logger.info("--------IoM request data End------------------------");
-        JSONObject params =JSONObject.parseObject(result);
+        DeviceCommandCallBack params =JSONObject.parseObject(result,DeviceCommandCallBack.class);
+        commandService.updateCommandHistory(params);
     }
     @PostMapping("/subscribe")
     @ApiOperation("订阅回调")
-    public void SubscribeCallBack(HttpServletRequest request) throws IOException {
+    public void SubscribeCallBack(HttpServletRequest request) throws Exception {
         InputStream inputStream = request.getInputStream();
         String result = org.apache.commons.io.IOUtils.toString(inputStream);
         logger.info("--------IoM subscribe request data Start----------------------");
@@ -53,6 +68,41 @@ public class CallBackController {
         logger.info("正在处理通知类型为:{} 的数据",notifyType);
         if(IoTConstant.IOT_NOTIFY_TYPE_DEVICE_DATA_CHANGED.equals(notifyType)){
 
+            DeviceDataChange dataChange = JSON.parseObject(result,DeviceDataChange.class);
+            String response = dataChange.getService().getData().getMeter();
+            //处理CallBack 命令参数
+            CommandDetail detail = commandService.processDeviceCallBackResponse(response);
+
+            String crc_new = CRC16x25Utils.CRC16_Check(detail.getContext().getBytes(),detail.getContext().length());
+            if(!crc_new.toUpperCase().equals(detail.getCrcValue())){
+                logger.info("CRC值 不正确:{}",JSON.toJSONString(detail));
+                return ;
+            }
+            System.out.println("------------------------");
+            if(IoTConstant.Command.DEVICE_COMMAND_NBM001.equals(detail.getCommand())){
+                //处理保活数据
+                netWorkService.insertNetWorkInfo(detail.getData(),deviceId);
+            }else if(IoTConstant.Command.DEVICE_COMMAND_NBM002.equals(detail.getCommand())){
+                //设置CDP服务器IP
+
+            }else if(IoTConstant.Command.DEVICE_COMMAND_NBM003.equals(detail.getCommand())){
+                //设置APN地址
+            }else if(IoTConstant.Command.DEVICE_COMMAND_STM001.equals(detail.getCommand())){
+                //处理设备软重启CallBack
+            }else if(IoTConstant.Command.DEVICE_COMMAND_STM002.equals(detail.getCommand())){
+                //恢复出厂设置
+            }else if(IoTConstant.Command.DEVICE_COMMAND_STM003.equals(detail.getCommand())){
+                //保存系统配置
+            }else if(IoTConstant.Command.DEVICE_COMMAND_STM004.equals(detail.getCommand())){
+                //配置NB处理流程时间
+            }else if(IoTConstant.Command.DEVICE_COMMAND_IEM001.equals(detail.getCommand())){
+
+            }else if(detail.getCommand().startsWith(IoTConstant.Command.DEVICE_COMMAND_FEFEFEFE)){
+                //电表645命令
+                logger.info("+++++++++++++++++++++++++++++++++");
+                callBackService.process645dltData(detail,deviceId);
+            }
+            commandService.updateCommandHistoryBySubscrible(dataChange,detail);
         }
         AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
         callbackHistory.setDeviceId(deviceId);
@@ -64,6 +114,29 @@ public class CallBackController {
     }
 
 
+    public static void main(String[] args) {
+        String s ="{\n" +
+                "\t\"notifyType\": \"deviceDataChanged\",\n" +
+                "\t\"deviceId\": \"1584d933-19e0-47a6-b38a-0fabe1caae7a\",\n" +
+                "\t\"gatewayId\": \"1584d933-19e0-47a6-b38a-0fabe1caae7a\",\n" +
+                "\t\"requestId\": null,\n" +
+                "\t\"service\": {\n" +
+                "\t\t\"serviceId\": \"elect_meter\",\n" +
+                "\t\t\"serviceType\": \"elect_meter\",\n" +
+                "\t\t\"data\": {\n" +
+                "\t\t\t\"meter\": \"89010320FEFEFEFE68111111111111681104333435351c1646FEFEFEFE68111111111111689107333435353333333816EF81FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\"\n" +
+                "\t\t},\n" +
+                "\t\t\"eventTime\": \"20180505T095800Z\"\n" +
+                "\t}\n" +
+                "}";
+    DeviceDataChange dataChange = JSON.parseObject(s,DeviceDataChange.class);
+        System.out.println(JSON.toJSONString(dataChange));
+        String response = dataChange.getService().getData().getMeter();
+        int commandLength = Integer.parseInt(response.substring(6,8));
+        System.out.println(commandLength);
+        String command  = response.substring(8,8+commandLength);
+        System.out.println(command);
 
+    }
 
 }

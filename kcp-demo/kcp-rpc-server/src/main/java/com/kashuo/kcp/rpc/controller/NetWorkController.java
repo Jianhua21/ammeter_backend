@@ -59,7 +59,7 @@ public class NetWorkController {
             }
             for (int i =1; i <=24; i++){
                 try {
-                    dataRsrq.add(Float.parseFloat(String.valueOf(rsrqMap.get(String.valueOf(i)))));
+                    dataRsrq.add(Float.parseFloat(String.valueOf(rsrqMap.get(String.valueOf(i-1)))));
                 }catch (Exception e){
                     dataRsrq.add(-50.0f);
                 }

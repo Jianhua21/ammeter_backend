@@ -20,6 +20,26 @@ public class WarningCondition extends BaseCondition{
     private String deviceId;
     @ApiModelProperty("告警状态 0-未消除告警，1-消除的告警，不传就取所有记录")
     private Integer status;
+    @ApiModelProperty("设备IMEI号")
+    private String imei;
+    @ApiModelProperty("设备名称")
+    private String name;
+
+    public String getImei() {
+        return imei != null ? imei.trim():null;
+    }
+
+    public void setImei(String imei) {
+        this.imei = imei;
+    }
+
+    public String getName() {
+        return name != null ? name.trim():null;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Integer getStatus() {
         return status;

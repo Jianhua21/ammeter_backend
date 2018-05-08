@@ -2,6 +2,7 @@ package com.kashuo.kcp.dao;
 
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.dao.condition.AmmeterPositionCondition;
+import com.kashuo.kcp.dao.result.PosotionHome;
 import com.kashuo.kcp.domain.AmmeterPosition;
 
 import java.util.List;
@@ -28,5 +29,10 @@ public interface AmmeterPositionMapper {
 
     int updateByPrimaryKey(AmmeterPosition record);
 
+    int updateStatusByDeviceId(AmmeterPosition record);
+
+
     Page<AmmeterPosition> getPositionList(AmmeterPositionCondition condition);
+
+    Page<PosotionHome> getGISList(AmmeterPositionCondition condition);
 }

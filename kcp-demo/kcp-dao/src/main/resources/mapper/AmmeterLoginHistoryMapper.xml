@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterLoginHistoryMapper" >
+  <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterLoginHistory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="login_name" property="loginName" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="access_token" property="accessToken" jdbcType="VARCHAR" />
+    <result column="login_time" property="loginTime" jdbcType="TIMESTAMP" />
+    <result column="remote_ip" property="remoteIp" jdbcType="VARCHAR" />
+    <result column="login_address" property="loginAddress" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, login_name, user_id, access_token, login_time, remote_ip, login_address
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ammeter_login_history
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ammeter_login_history
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterLoginHistory" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_login_history (login_name, user_id, access_token, 
+      login_time, remote_ip, login_address
+      )
+    values (#{loginName,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{accessToken,jdbcType=VARCHAR}, 
+      #{loginTime,jdbcType=TIMESTAMP}, #{remoteIp,jdbcType=VARCHAR}, #{loginAddress,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterLoginHistory" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_login_history
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="loginName != null" >
+        login_name,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="accessToken != null" >
+        access_token,
+      </if>
+      <if test="loginTime != null" >
+        login_time,
+      </if>
+      <if test="remoteIp != null" >
+        remote_ip,
+      </if>
+      <if test="loginAddress != null" >
+        login_address,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="loginName != null" >
+        #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="accessToken != null" >
+        #{accessToken,jdbcType=VARCHAR},
+      </if>
+      <if test="loginTime != null" >
+        #{loginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remoteIp != null" >
+        #{remoteIp,jdbcType=VARCHAR},
+      </if>
+      <if test="loginAddress != null" >
+        #{loginAddress,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterLoginHistory" >
+    update ammeter_login_history
+    <set >
+      <if test="loginName != null" >
+        login_name = #{loginName,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="accessToken != null" >
+        access_token = #{accessToken,jdbcType=VARCHAR},
+      </if>
+      <if test="loginTime != null" >
+        login_time = #{loginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remoteIp != null" >
+        remote_ip = #{remoteIp,jdbcType=VARCHAR},
+      </if>
+      <if test="loginAddress != null" >
+        login_address = #{loginAddress,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterLoginHistory" >
+    update ammeter_login_history
+    set login_name = #{loginName,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      access_token = #{accessToken,jdbcType=VARCHAR},
+      login_time = #{loginTime,jdbcType=TIMESTAMP},
+      remote_ip = #{remoteIp,jdbcType=VARCHAR},
+      login_address = #{loginAddress,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

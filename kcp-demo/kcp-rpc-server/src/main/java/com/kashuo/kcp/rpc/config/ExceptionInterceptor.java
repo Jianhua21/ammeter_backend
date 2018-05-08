@@ -38,7 +38,7 @@ public class ExceptionInterceptor {
             return Results.error(50002, "请求参数缺失");
         }
         if(exception instanceof NorthApiException){
-            return authExceptionService.handleException((NorthApiException)exception);
+            return authExceptionService.handleException((NorthApiException)exception,null);
 
         }
         logger.error("系统错误：" + exception.getMessage(), exception);

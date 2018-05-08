@@ -57,7 +57,7 @@ public class DeviceManageService {
             position.setId(ammeterPosition.getId());
             position.setStatus(2);
             positionService.updateByPrimaryKeySelective(position);
-            authExceptionService.handleException(e);
+            authExceptionService.handleException(e,null);
         }
         return result;
     }
@@ -84,7 +84,7 @@ public class DeviceManageService {
             position_db.setId(ammeterPosition.getId());
             position_db.setStatus(4);
             positionService.updateByPrimaryKeySelective(position_db);
-            authExceptionService.handleException(e);
+            authExceptionService.handleException(e,deviceInfoInDTO.getDeviceId());
         }
         return result;
 

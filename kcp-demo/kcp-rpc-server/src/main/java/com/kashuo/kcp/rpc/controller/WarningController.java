@@ -1,8 +1,10 @@
 package com.kashuo.kcp.rpc.controller;
 
 import com.kashuo.common.base.domain.Page;
+import com.kashuo.kcp.core.AmmeterService;
 import com.kashuo.kcp.core.AmmeterWarningService;
 import com.kashuo.kcp.dao.condition.WarningCondition;
+import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterWarning;
 import com.kashuo.kcp.domain.AmmeterWarningResult;
 import com.kashuo.kcp.utils.Results;
@@ -21,6 +23,9 @@ public class WarningController extends BaseController{
 
     @Autowired
     private AmmeterWarningService warningService;
+
+    @Autowired
+    private AmmeterService ammeterService;
 
     @PostMapping("/list")
     @ApiOperation(value = "列表查询",notes = "created by Legend on 2018-Apr-10")
@@ -56,6 +61,15 @@ public class WarningController extends BaseController{
         warning.setId(warningId);
         warning.setWarningStatus("1");
         Integer result = warningService.updateWarning(warning);
+        if(warningDB.getWarningType() == 0) {
+            AmmeterDevice device = ammeterService.selectByPrimaryKey(warningDB.getId());
+            if (device != null) {
+                AmmeterDevice device_2 = new AmmeterDevice();
+                device_2.setRsrqWarningFlag(0);
+                device_2.setId(device.getId());
+                ammeterService.updateWarningStatusByPrimaryKey(device_2);
+            }
+        }
         if(result >0){
             return Results.success("该警告已消除!",sn);
         }

@@ -3,6 +3,7 @@
 <mapper namespace="com.kashuo.kcp.dao.AmmeterPositionMapper" >
   <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterPosition" >
     <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="device_id" property="deviceId" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="number" property="number" jdbcType="VARCHAR" />
     <result column="address" property="address" jdbcType="VARCHAR" />
@@ -17,6 +18,7 @@
     <result column="imei" property="imei" jdbcType="VARCHAR" />
     <result column="Activated" property="Activated" jdbcType="CHAR" />
     <result column="installer" property="installer" jdbcType="VARCHAR" />
+    <result column="status_name" property="statusName" jdbcType="VARCHAR" />
   </resultMap>
 
   <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterPosition" >
@@ -31,6 +33,7 @@
     <result column="gps_latitude" property="gpsLatitude" jdbcType="VARCHAR" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="status_name" property="statusName" jdbcType="VARCHAR"/>
     <result column="create_by" property="createBy" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="type" property="type" jdbcType="VARCHAR" />
@@ -42,13 +45,14 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, number, address, amap_longitude, amap_latitude, gps_longitude, gps_latitude, 
-    remark,status,create_by,create_time,imei,device_id,verify_code,psk,Activated,installer
+    remark,status,create_by,create_time,imei,device_id,verify_code,psk,Activated,installer,'-' as status_name
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
-    <include refid="Base_Column_List" />
-    from ammeter_position
-    where id = #{id,jdbcType=INTEGER}
+    p.id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude, p.gps_longitude, p.gps_latitude,
+    p.remark,p.status,p.create_by,p.create_time,p.imei,p.device_id,p.verify_code,p.psk,p.Activated,p.installer,s.desc as status_name
+    from ammeter_position p ,ammeter_status s
+    where p.status = s.code and id = #{id,jdbcType=INTEGER}
   </select>
   <select id="selectByImei" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
@@ -76,14 +80,17 @@
   </select>
     <select id="getPositionList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterPositionCondition">
       select p.id,p.device_id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude,
-      p.gps_longitude, p.gps_latitude, p.remark,p.status,p.create_by,p.create_time,d.type,p.imei,p.installer,
+      p.gps_longitude, p.gps_latitude, p.remark,p.status,
+      s.desc as status_name,
+      p.create_by,p.create_time,d.type,p.imei,p.installer,
       case when f.id is null then '0' else '1' end as warning_status,
       case when f.id is null then '' else f.warning_desc end as warning_desc
       from ammeter_position p INNER JOIN ammeter_user u on p.create_by = u.id
+      INNER JOIN ammeter_status s on p.status = s.code
       INNER JOIN ammeter_device d on p.imei= d.imsi
       LEFT join (select w.* from ammeter_warning w,
       (select max(id) id from ammeter_warning where warning_status = 0 group by ammeter_id) e
-      where w.id = e.id ) f on f.ammeter_id = d.id WHERE 1=1
+      where w.id = e.id ) f on f.ammeter_id = d.id WHERE p.status !=3
       <if test="channelId != null and channelId != ''" >
         and  u.channel_id =#{channelId,jdbcType=INTEGER}
       </if>
@@ -91,12 +98,48 @@
            and  p.name like CONCAT('%',#{number,jdbcType=VARCHAR},'%')
         </if>
         <if test="name != null and name !=''" >
-            and  p.imei like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
+            and  p.name like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
         </if>
+      <if test="imei != null and imei !=''" >
+        and  p.imei like CONCAT('%',#{imei,jdbcType=VARCHAR},'%')
+      </if>
         <if test="address != null and address != ''" >
             and  p.address like CONCAT('%',#{address,jdbcType=VARCHAR},'%')
         </if>
+      order by p.create_time desc
     </select>
+
+  <resultMap id="BaseHomeResultMap" type="com.kashuo.kcp.dao.result.PosotionHome"  >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="device_id" property="deviceId" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="amap_longitude" property="amapLongitude" jdbcType="VARCHAR" />
+    <result column="amap_latitude" property="amapLatitude" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="status_name" property="statusName" jdbcType="VARCHAR"/>
+    <result column="warning_status" property="warningStatus" jdbcType="VARCHAR" />
+    <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
+    <result column="imei" property="imei" jdbcType="VARCHAR" />
+    </resultMap>
+
+  <select id="getGISList" resultMap="BaseHomeResultMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterPositionCondition">
+    select p.id,p.device_id, p.name, p.amap_longitude, p.amap_latitude,
+    p.remark,
+    s.desc as status_name,
+    p.imei,
+    case when f.id is null then '0' else '1' end as warning_status,
+    case when f.id is null then '' else f.warning_desc end as warning_desc
+    from ammeter_position p INNER JOIN ammeter_user u on p.create_by = u.id
+    INNER JOIN ammeter_device d on p.imei= d.imsi
+    INNER JOIN ammeter_status s on p.status = s.code
+    LEFT join (select w.* from ammeter_warning w,
+    (select max(id) id from ammeter_warning where warning_status = 0 group by ammeter_id) e
+    where w.id = e.id ) f on f.ammeter_id = d.id WHERE p.status !=3
+    <if test="channelId != null and channelId != ''" >
+      and  u.channel_id =#{channelId,jdbcType=INTEGER}
+    </if>
+
+      </select>
   <update id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     update  ammeter_position set status =1
     where id = #{id,jdbcType=INTEGER}
@@ -198,6 +241,9 @@
       <if test="remark != null" >
         remark = #{remark,jdbcType=VARCHAR},
       </if>
+      <if test="installer != null">
+        installer = #{installer,jdbcType=VARCHAR},
+      </if>
       <if test="deviceId != null" >
         device_id = #{deviceId,jdbcType=VARCHAR},
       </if>
@@ -228,4 +274,10 @@
       remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <update id="updateStatusByDeviceId" parameterType="com.kashuo.kcp.domain.AmmeterPosition">
+    update ammeter_position set status = #{status,jdbcType=INTEGER}
+    where device_id = #{deviceId,jdbcType=VARCHAR}
+  </update>
+
 </mapper>

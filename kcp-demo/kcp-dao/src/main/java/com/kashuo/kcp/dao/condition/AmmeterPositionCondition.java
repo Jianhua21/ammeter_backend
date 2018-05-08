@@ -18,10 +18,20 @@ public class AmmeterPositionCondition implements Serializable {
     private String number;
     @ApiModelProperty(value = "通讯地址")
     private String address;
+    @ApiModelProperty
+    private String imei;
     @ApiModelProperty("每条消息的唯一编号 ")
     private String sn;
     @ApiModelProperty("机构Id")
     private Integer channelId;
+
+    public String getImei() {
+        return imei != null ? imei.trim():"";
+    }
+
+    public void setImei(String imei) {
+        this.imei = imei;
+    }
 
     public Integer getChannelId() {
         return channelId;

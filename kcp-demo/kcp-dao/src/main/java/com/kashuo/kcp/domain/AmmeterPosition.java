@@ -8,37 +8,17 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.Date;
 
 @ApiModel(value = "电表位置信息")
-public class AmmeterPosition {
-    @ApiModelProperty(value = "位置信息Id,创建时不需要传!")
-    private Integer id;
-    @ApiModelProperty(value = "电表名称")
-    private String name;
-    @ApiModelProperty(value = "电表编号")
-    private String number;
-    @ApiModelProperty(value = "电表地址")
-    private String address;
-    @ApiModelProperty(value = "高德经度")
-    private String amapLongitude;
-    @ApiModelProperty(value = "高德纬度")
-    private String amapLatitude;
-    @ApiModelProperty(value = "GPS经度")
-    private String gpsLongitude;
-    @ApiModelProperty(value = "GPS纬度")
-    private String gpsLatitude;
-    @ApiModelProperty(value = "备注")
-    private String remark;
+public class AmmeterPosition extends AmmeterPositionBaseInfo{
     @ApiModelProperty(value = "状态,创建时可不传!默认为0")
     private Integer status;
+    @ApiModelProperty
+    private String statusName;
     @ApiModelProperty("创建人")
     private Integer createBy;
     @ApiModelProperty("创建时间")
     private Date createTime;
     @ApiModelProperty("电表类型")
     private String type;
-    @ApiModelProperty("安装人员")
-    private String installer;
-    @ApiModelProperty("设备的唯一标识为IMEI号")
-    private String imei;
     @ApiModelProperty("IoM平台设备Id")
     private String deviceId;
     @ApiModelProperty("申请的临时验证码，设备可以通过验证码获取id和密码")
@@ -49,6 +29,14 @@ public class AmmeterPosition {
     private boolean Activated;
     @ApiModelProperty("用于列表查询    警告状态  0 -没有警告  1-有警告")
     private String warningStatus;
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
 
     public String getWarningStatus() {
         return warningStatus;
@@ -69,14 +57,6 @@ public class AmmeterPosition {
     @ApiModelProperty("用于列表查询    警告说明")
     private String warningDesc;
 
-    public String getInstaller() {
-        return installer;
-    }
-
-    public void setInstaller(String installer) {
-        this.installer = installer;
-    }
-
     public boolean isActivated() {
         return Activated;
     }
@@ -85,13 +65,6 @@ public class AmmeterPosition {
         Activated = activated;
     }
 
-    public String getImei() {
-        return imei;
-    }
-
-    public void setImei(String imei) {
-        this.imei = imei;
-    }
 
     public String getDeviceId() {
         return deviceId;
@@ -147,77 +120,5 @@ public class AmmeterPosition {
 
     public void setStatus(Integer status) {
         this.status = status;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number == null ? null : number.trim();
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address == null ? null : address.trim();
-    }
-
-    public String getAmapLongitude() {
-        return amapLongitude;
-    }
-
-    public void setAmapLongitude(String amapLongitude) {
-        this.amapLongitude = amapLongitude == null ? null : amapLongitude.trim();
-    }
-
-    public String getAmapLatitude() {
-        return amapLatitude;
-    }
-
-    public void setAmapLatitude(String amapLatitude) {
-        this.amapLatitude = amapLatitude == null ? null : amapLatitude.trim();
-    }
-
-    public String getGpsLongitude() {
-        return gpsLongitude;
-    }
-
-    public void setGpsLongitude(String gpsLongitude) {
-        this.gpsLongitude = gpsLongitude == null ? null : gpsLongitude.trim();
-    }
-
-    public String getGpsLatitude() {
-        return gpsLatitude;
-    }
-
-    public void setGpsLatitude(String gpsLatitude) {
-        this.gpsLatitude = gpsLatitude == null ? null : gpsLatitude.trim();
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark == null ? null : remark.trim();
     }
 }

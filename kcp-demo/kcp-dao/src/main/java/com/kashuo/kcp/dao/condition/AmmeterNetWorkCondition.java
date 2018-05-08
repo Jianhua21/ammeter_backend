@@ -17,7 +17,7 @@ public class AmmeterNetWorkCondition implements Serializable {
     private Integer pageSize =10;
 
     public String getImsi() {
-        return imsi;
+        return imsi != null ? imsi.trim():"";
     }
 
     public void setImsi(String imsi) {

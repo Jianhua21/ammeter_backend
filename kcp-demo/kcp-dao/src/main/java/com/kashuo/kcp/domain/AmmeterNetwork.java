@@ -11,6 +11,8 @@ public class AmmeterNetwork {
 
     private String rsrq;
 
+    private String rsrp;
+
     private String celli;
 
     private Integer recordHour;
@@ -20,6 +22,36 @@ public class AmmeterNetwork {
     private Date createdTime;
 
     private Integer warningFlag;
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    private String deviceId;
+
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    private Integer status;
+
+
+    public String getRsrp() {
+        return rsrp;
+    }
+
+    public void setRsrp(String rsrp) {
+        this.rsrp = rsrp;
+    }
 
     public Integer getWarningFlag() {
         return warningFlag;

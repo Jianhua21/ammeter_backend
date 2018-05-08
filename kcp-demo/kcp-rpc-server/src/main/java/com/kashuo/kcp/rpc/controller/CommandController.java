@@ -8,6 +8,7 @@ import com.huawei.iotplatform.client.dto.AsynCommandDTO;
 import com.huawei.iotplatform.client.dto.PostDeviceCommandInDTO;
 import com.huawei.iotplatform.client.dto.PostDeviceCommandOutDTO;
 import com.kashuo.kcp.api.entity.AmmeterCommand;
+import com.kashuo.kcp.api.entity.CommandParams;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.AmmeterPositionService;
@@ -44,24 +45,20 @@ public class CommandController {
     public Results resetAmmeter(@RequestBody CommandCondition commandCondition) throws Exception {
         PostDeviceCommandInDTO deviceCommandInDTO = new PostDeviceCommandInDTO();
         deviceCommandInDTO.setDeviceId(commandCondition.getDeviceId());
-        deviceCommandInDTO.setCallbackUrl(sysDictionaryService.getDynamicSystemValue(AppConstant.COMMAND_RESET_CALLBACK_URL, AppConstant.CALLBACK_URLS_TYPE_ID));
-        AsynCommandDTO commandDTO = new AsynCommandDTO();
-        String command = sysDictionaryService.getDynamicSystemValue(AppConstant.COMMAND_RESET_KEY, AppConstant.CALLBACK_URLS_TYPE_ID);
-        commandDTO.setServiceId(AppConstant.COMMAND_SERVICEID_PARAM_NAME);
-        commandDTO.setMethod(AppConstant.COMMAND_METHOD_PARAM_NAME);
-        AmmeterCommand ammeterCommand = new AmmeterCommand();
-        ammeterCommand.setDown_command(command);
-        ObjectNode paras = JsonUtil.convertObject2ObjectNode(ammeterCommand);
-        commandDTO.setParas(paras);
-        deviceCommandInDTO.setCommand(commandDTO);
-        logger.info("命令reset下发 参数:{}", JsonUtil.jsonObj2Sting(deviceCommandInDTO));
+        CommandParams params = new CommandParams();
+        params.setCommandKey(AppConstant.COMMAND_RESET_KEY);
+        params.setCallBackKey(AppConstant.COMMAND_COMMON_CALLBACK_URL);
+        params.setDataFlag(true);
+        params.setCommandType(1);
+        params.setData(AppConstant.COMMAND_RESET_KEY.toUpperCase());
+        deviceCommandInDTO = commandService.prepareCommand(params,deviceCommandInDTO);
         PostDeviceCommandOutDTO deviceCommandOutDTO = commandService.postDeviceCommand(deviceCommandInDTO);
         if(deviceCommandOutDTO != null){
             //插入命令历史记录
-            commandService.insertCommandHistory(deviceCommandOutDTO);
+            commandService.insertCommandHistory(deviceCommandOutDTO,
+                    sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID));
             return Results.success("设备软重启发送成功!",commandCondition.getSn());
         }
-
         return Results.error("设备软重启发送失败!",commandCondition.getSn());
     }
     @PostMapping("/restore")
@@ -69,14 +66,19 @@ public class CommandController {
     public Results restoreDevice(@RequestBody CommandCondition commandCondition) throws Exception {
         PostDeviceCommandInDTO deviceCommandInDTO = new PostDeviceCommandInDTO();
         deviceCommandInDTO.setDeviceId(commandCondition.getDeviceId());
-        deviceCommandInDTO.setCallbackUrl(sysDictionaryService.getDynamicSystemValue(AppConstant.COMMAND_RESTORE_CALLBACK_URL,
-                AppConstant.CALLBACK_URLS_TYPE_ID));
-        deviceCommandInDTO = commandService.prepareCommand(AppConstant.COMMAND_RESTORE_KEY,
-                AppConstant.COMMAND_RESTORE_CALLBACK_URL,deviceCommandInDTO);
+        CommandParams params = new CommandParams();
+        params.setCommandKey(AppConstant.COMMAND_RESTORE_KEY);
+        params.setCallBackKey(AppConstant.COMMAND_COMMON_CALLBACK_URL);
+        params.setDataFlag(true);
+        params.setData(AppConstant.COMMAND_RESTORE_KEY.toUpperCase());
+        params.setCommandType(1);
+        deviceCommandInDTO = commandService.prepareCommand(params,deviceCommandInDTO);
         PostDeviceCommandOutDTO deviceCommandOutDTO = commandService.postDeviceCommand(deviceCommandInDTO);
         if(deviceCommandOutDTO != null){
             //插入命令历史记录
-            commandService.insertCommandHistory(deviceCommandOutDTO);
+            commandService.insertCommandHistory(deviceCommandOutDTO,
+                    sysDictionaryService.getDynamicSystemValue(params.getCommandKey(),
+                            sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID)));
             return Results.success("设备恢复出厂设置发送成功!",commandCondition.getSn());
         }
         return Results.error("设备恢复出厂设置发送失败!",commandCondition.getSn());
@@ -87,14 +89,18 @@ public class CommandController {
     public Results keepAliveDevice(@RequestBody CommandCondition commandCondition) throws Exception {
         PostDeviceCommandInDTO deviceCommandInDTO = new PostDeviceCommandInDTO();
         deviceCommandInDTO.setDeviceId(commandCondition.getDeviceId());
-        deviceCommandInDTO.setCallbackUrl(sysDictionaryService.getDynamicSystemValue(AppConstant.COMMAND_COMMON_CALLBACK_URL,
-                AppConstant.CALLBACK_URLS_TYPE_ID));
-        deviceCommandInDTO = commandService.prepareCommand(AppConstant.COMMAND_NB_KEEPALIVE_KEY,
-                AppConstant.COMMAND_COMMON_CALLBACK_URL,deviceCommandInDTO);
+        CommandParams params = new CommandParams();
+        params.setCommandKey(AppConstant.COMMAND_NB_KEEPALIVE_KEY);
+        params.setCallBackKey(AppConstant.COMMAND_COMMON_CALLBACK_URL);
+        params.setDataFlag(true);
+        params.setData(commandCondition.getKeepTime());
+        params.setCommandType(1);
+        deviceCommandInDTO = commandService.prepareCommand(params,deviceCommandInDTO);
         PostDeviceCommandOutDTO deviceCommandOutDTO = commandService.postDeviceCommand(deviceCommandInDTO);
         if(deviceCommandOutDTO != null){
             //插入命令历史记录
-            commandService.insertCommandHistory(deviceCommandOutDTO);
+            commandService.insertCommandHistory(deviceCommandOutDTO,
+                    sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID));
             return Results.success("向设备修改保活间隔设置发送成功!",commandCondition.getSn());
         }
         return Results.error("向设备修改保活间隔设置发送失败!",commandCondition.getSn());
@@ -102,19 +108,26 @@ public class CommandController {
 
     @PostMapping("/test")
     @ApiOperation("测试命令")
-    public Results testIoTCommand(@RequestParam String command) throws Exception {
+    public Results testIoTCommand(@RequestParam String command,@RequestParam String data,@RequestParam Integer electric) throws Exception {
         logger.info(command+"------------------");
         PostDeviceCommandInDTO deviceCommandInDTO = new PostDeviceCommandInDTO();
         AmmeterPosition position = positionService.selectByImei("863703033404885");
         deviceCommandInDTO.setDeviceId(position.getDeviceId());
-        deviceCommandInDTO.setCallbackUrl(sysDictionaryService.getDynamicSystemValue(AppConstant.COMMAND_COMMON_CALLBACK_URL,
-                AppConstant.CALLBACK_URLS_TYPE_ID));
-        deviceCommandInDTO = commandService.prepareCommand(command,
-                AppConstant.COMMAND_COMMON_CALLBACK_URL,deviceCommandInDTO,true);
+        CommandParams params = new CommandParams();
+        params.setCommandKey(command);
+        params.setCallBackKey(AppConstant.COMMAND_COMMON_CALLBACK_URL);
+        if(data != null && !"1".equals(data.trim())) {
+            params.setData(data);
+        }else{
+            params.setIsChanged("1");
+        }
+        params.setDataFlag(true);
+        params.setCommandType(electric);
+        deviceCommandInDTO = commandService.prepareCommand(params,deviceCommandInDTO,true);
         PostDeviceCommandOutDTO deviceCommandOutDTO = commandService.postDeviceCommand(deviceCommandInDTO);
         if(deviceCommandOutDTO != null){
             //插入命令历史记录
-            commandService.insertCommandHistory(deviceCommandOutDTO);
+            commandService.insertCommandHistory(deviceCommandOutDTO,command);
             return Results.success("向设备发送测试命令成功!","测试");
         }
         return Results.error("向设备发送测试命令失败!","测试");

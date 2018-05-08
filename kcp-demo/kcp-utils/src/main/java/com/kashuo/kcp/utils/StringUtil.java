@@ -29,7 +29,7 @@ public class StringUtil {
     }
 
     public static String nullToEmpty(String str) {
-        return str == null ? "" : str;
+        return str == null ? "-" : str;
     }
 
     public static String convertEncoding(String value) {

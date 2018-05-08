@@ -2,13 +2,11 @@ package com.kashuo.kcp.core;
 
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
-import com.kashuo.kcp.dao.AmmeterNetworkMapper;
+import com.kashuo.kcp.constant.AppConstant;
+import com.kashuo.kcp.dao.*;
 import com.kashuo.kcp.dao.condition.AmmeterHandleResult;
 import com.kashuo.kcp.dao.condition.AmmeterNetWorkCondition;
-import com.kashuo.kcp.domain.AmmeterDevice;
-import com.kashuo.kcp.domain.AmmeterNetWorkResult;
-import com.kashuo.kcp.domain.AmmeterNetwork;
-import com.kashuo.kcp.domain.SysDictionary;
+import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,17 @@ public class NetWorkService {
     private AmmeterNetworkMapper networkMapper;
     @Autowired
     private SysDictionaryService dictionaryService;
+
+    @Autowired
+    private AmmeterDeviceMapper ammeterDeviceMapper;
+    @Autowired
+    private AmmeterRuleService ammeterRuleService;
+
+    @Autowired
+    private AmmeterPositionMapper ammeterPositionMapper;
+
+    @Autowired
+    private AmmeterWarningMapper ammeterWarningMapper;
 
 
     public String getNetWorkResponseByAmmeterId(Integer ammeterId,String ammeterNumber){
@@ -68,39 +77,72 @@ public class NetWorkService {
         return networkMapper.selectByAmmeterId(ammeterId);
     }
 
-    public void insertNetWorkInfo(AmmeterDevice device, AmmeterHandleResult result){
-        AmmeterNetwork networkDB = networkMapper.selectByAmmeterId(device.getId());
-        List<SysDictionary> list = dictionaryService.getDictionartLists();
+    public void insertNetWorkInfo(String message, String deviceId){
+        AmmeterDevice ammeterDevice = ammeterDeviceMapper.selectByDeviceId(deviceId);
+        AmmeterNetwork networkDB = networkMapper.selectByAmmeterId(ammeterDevice.getId());
+        String[] params = message.split(";");
         if(networkDB != null){
             if(DateUtils.getCurrentDate().equals(networkDB.getRecordDay()) && networkDB.getRecordHour() == DateUtils.getHour()){
-                for (SysDictionary sysDictionary:list) {
-                    if (sysDictionary.getName().contains("RSSI") && networkDB.getRssi() == null) {
-                        networkDB.setRssi(result.getData());
-                    } else if (sysDictionary.getName().contains("RSRQ") && networkDB.getRsrq() == null) {
-                        networkDB.setRsrq(result.getData());
-                    } else if (sysDictionary.getName().contains("CELLI") && networkDB.getCelli() == null) {
-                        networkDB.setCelli(result.getData());
-                    }
-                }
+                setNetworkInfo(networkDB,params,ammeterDevice);
                 networkMapper.updateByPrimaryKeySelective(networkDB);
+            }else{
+                insertNetWork(params,ammeterDevice);
             }
+        }else{
+            insertNetWork(params,ammeterDevice);
         }
+        //更新在线状态
+        AmmeterPosition position = new AmmeterPosition();
+        position.setDeviceId(deviceId);
+        position.setStatus(6);
+        ammeterPositionMapper.updateStatusByDeviceId(position);
+
+    }
+
+    public void insertNetWork(String[] params,AmmeterDevice ammeterDevice){
         AmmeterNetwork network = new AmmeterNetwork();
-        for (SysDictionary sysDictionary:list) {
-            if (sysDictionary.getName().contains("RSSI")) {
-                network.setRssi(result.getData());
-            } else if (sysDictionary.getName().contains("RSRQ")) {
-                network.setRsrq(result.getData());
-            } else if (sysDictionary.getName().contains("CELLI")) {
-                network.setCelli(result.getData());
-            }
-        }
+        setNetworkInfo(network,params,ammeterDevice);
         network.setCreatedTime(new Timestamp(new Date().getTime()));
-        network.setAmmeterId(device.getId());
+        network.setAmmeterId(ammeterDevice.getId());
         network.setRecordDay(DateUtils.getCurrentDate());
         network.setRecordHour(DateUtils.getHour());
         networkMapper.insert(network);
     }
+
+    public  void setNetworkInfo(AmmeterNetwork network,String[] params,AmmeterDevice ammeterDevice){
+        for (String param : params) {
+            if(param.startsWith(AppConstant.METER_RSSI_KEY)){
+                network.setRssi(param.substring(5));
+            }else if(param.startsWith(AppConstant.METER_RSRQ_KEY)){
+                network.setRsrq(param.substring(5));
+            }else if(param.startsWith(AppConstant.METER_CELLI_KEY)){
+                network.setCelli(param.substring(7));
+            }else if(param.startsWith(AppConstant.METER_RSRP_KEY)){
+                network.setRsrp(param.substring(5));
+            }
+        }
+        network.setCreatedTime(new Date());
+        //对RSRQ无线信号 告警判断
+        boolean flag = ammeterRuleService.checkNetWorkWarning(network,AppConstant.METER_RSRQ_KEY.toLowerCase());
+        if(flag){
+            if(ammeterDevice.getRsrqWarningFlag()< 3) {
+                ammeterDevice.setRsrqWarningFlag(ammeterDevice.getRsrqWarningFlag() + 1);
+                ammeterDeviceMapper.updateWarningStatusByPrimaryKey(ammeterDevice);
+            }
+        }else {
+            if(ammeterDevice.getRsrqWarningFlag()>0) {
+                ammeterDevice.setRsrqWarningFlag(0);
+                ammeterDeviceMapper.updateWarningStatusByPrimaryKey(ammeterDevice);
+                AmmeterWarning warning = new AmmeterWarning();
+                warning.setWarningType(0);
+                warning.setWarningStatus("1");
+                warning.setAmmeterId(ammeterDevice.getId());
+                ammeterWarningMapper.updateStatusByType(warning);
+            }
+        }
+    }
+
+
 
     public List<AmmeterNetwork>  queryNetWorkParams(AmmeterNetwork network){
         return networkMapper.queryNetWorkParams(network);

@@ -46,4 +46,32 @@ public class QuartzConfiguration {
             regSync.regInfo2IoM();
         }
     }
+
+    @Scheduled(cron = "${app.constant.quartz}")
+    public void sendAddressCommand() throws Exception {
+        if (offSet) {
+            regSync.sendAddressCommand();
+        }
+    }
+
+    @Scheduled(cron = "${app.constant.quartz.hour.one}")
+    public void send645PowerDeviceCommand() throws Exception {
+        if (offSet) {
+            regSync.send645PowerDeviceCommand();
+        }
+    }
+
+    @Scheduled(cron = "${app.constant.quartz.hour.two}")
+    public void send645VoltageDeviceCommand() throws Exception {
+        if (offSet) {
+            regSync.send645VoltageDeviceCommand();
+        }
+    }
+    @Scheduled(cron = "${app.constant.quartz.hour.three}")
+    public void send645CurrentDeviceCommand() throws Exception {
+        if (offSet) {
+            regSync.send645CurrentDeviceCommand();
+        }
+    }
+
 }

@@ -27,6 +27,28 @@ public class AmmeterWarningResult {
     //警告类型
     private Integer warningType;
 
+    private Integer warningStatus;
+
+    public Integer getWarningStatus() {
+        return warningStatus;
+    }
+
+    public void setWarningStatus(Integer warningStatus) {
+        this.warningStatus = warningStatus;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
+    private String statusName;
+
+
+
     public String getDeviceId() {
         return deviceId;
     }

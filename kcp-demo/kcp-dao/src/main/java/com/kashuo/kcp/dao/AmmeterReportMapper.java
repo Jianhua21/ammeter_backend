@@ -16,6 +16,9 @@ public interface AmmeterReportMapper {
 
     AmmeterReport queryMaxDailyReportByAmmeterId(@Param("ammeterId") Integer ammeterId, @Param("date") String date);
 
+    AmmeterReport queryMaxDailyReportByCondition(@Param("ammeterId") Integer ammeterId, @Param("date") String date,
+    @Param("hour") Integer hour);
+
     AmmeterReport queryByParams(AmmeterReport record);
 
     List<AmmeterReport> dailyReportByParams(AmmeterReport record);

@@ -1,5 +1,7 @@
 package com.kashuo.kcp.auth;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.huawei.iotplatform.client.NorthApiClient;
 import com.huawei.iotplatform.client.NorthApiException;
 import com.huawei.iotplatform.client.dto.AuthOutDTO;
@@ -11,11 +13,14 @@ import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.AmmeterAuthMapper;
 import com.kashuo.kcp.domain.AmmeterAuth;
+import com.kashuo.kcp.redis.RedisServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by dell-pc on 2018/4/16.
@@ -30,11 +35,16 @@ public class AuthService {
     @Autowired
     private AmmeterAuthMapper authMapper;
 
-    private static AmmeterAuth auth_init;
+//    private static AmmeterAuth auth_init;
+
+    @Autowired
+    private RedisServiceImpl redisService;
+
 
     @Autowired
     public void initPlatIomAuth(){
-        auth_init = authMapper.selectAuthDetail();
+        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM, JSON.toJSONString(authMapper.selectAuthDetail()));
+//        auth_init = authMapper.selectAuthDetail();
     }
 
     /***
@@ -55,20 +65,24 @@ public class AuthService {
         ammeterAuth.setScope(authOutDTO.getScope());
         ammeterAuth.setTokenType(authOutDTO.getTokenType());
         ammeterAuth.setStatus("0");
-        if(auth_init == null){
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        if(authCache == null){
             authMapper.insert(ammeterAuth);
         }else{
-            ammeterAuth.setId(auth_init.getId());
+            ammeterAuth.setId(JSONObject.parseObject(authCache,AmmeterAuth.class).getId());
             authMapper.updateByPrimaryKeySelective(ammeterAuth);
         }
-        auth_init = authMapper.selectAuthDetail();
+//        auth_init = authMapper.selectAuthDetail();
+        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM,JSON.toJSONString(authMapper.selectAuthDetail()));
     }
 
     public void refreshAuthInfo() throws NorthApiException {
         //初始化鉴权对象
         Authentication auth = initAuth();
         AuthRefreshInDTO arid = new AuthRefreshInDTO();
-        arid.setRefreshToken(auth_init.getRefreshToken());
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        AmmeterAuth ammeterAuthCache =JSONObject.parseObject(authCache,AmmeterAuth.class);
+        arid.setRefreshToken(ammeterAuthCache.getRefreshToken());
         arid.setAppId(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_APPID,AppConstant.SYSTEM_PARAMS_TYPE_ID));
         arid.setSecret(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_SECRET,AppConstant.SYSTEM_PARAMS_TYPE_ID));
         //5 调用SDK API
@@ -82,9 +96,10 @@ public class AuthService {
         ammeterAuth.setScope(authOutDTO.getScope());
         ammeterAuth.setTokenType(authOutDTO.getTokenType());
         ammeterAuth.setStatus("1");
-        ammeterAuth.setId(auth_init.getId());
+        ammeterAuth.setId(ammeterAuthCache.getId());
         authMapper.updateByPrimaryKeySelective(ammeterAuth);
-        auth_init = authMapper.selectAuthDetail();
+        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM,JSON.toJSONString(authMapper.selectAuthDetail()));
+//        auth_init = authMapper.selectAuthDetail();
     }
 
     /***
@@ -93,8 +108,10 @@ public class AuthService {
      */
     public void logoutAuth() throws NorthApiException{
         //初始化鉴权对象
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        AmmeterAuth ammeterAuthCache =JSONObject.parseObject(authCache,AmmeterAuth.class);
         Authentication auth = initAuth();
-        auth.logoutAuthToken(auth_init.getAccessToken());
+        auth.logoutAuthToken(ammeterAuthCache.getAccessToken());
     }
 
     /***
@@ -125,15 +142,18 @@ public class AuthService {
     }
 
     public AmmeterAuth getPlatIomAuth() throws NorthApiException {
-        if(auth_init == null){
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        AmmeterAuth ammeterAuthCache = new AmmeterAuth();
+        if(authCache == null){
             getAuthInfo();
         }else{
-            checkPlatAccessToken(auth_init);
+            ammeterAuthCache = JSONObject.parseObject(authCache,AmmeterAuth.class);
+            checkPlatAccessToken(ammeterAuthCache);
         }
-        if(auth_init.getAppId() == null) {
-            auth_init.setAppId(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_APPID,AppConstant.SYSTEM_PARAMS_TYPE_ID));
+        if(ammeterAuthCache.getAppId() == null) {
+            ammeterAuthCache.setAppId(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_APPID,AppConstant.SYSTEM_PARAMS_TYPE_ID));
         }
-        return auth_init;
+        return ammeterAuthCache;
     }
     public void checkPlatAccessToken(AmmeterAuth auth) throws NorthApiException {
           if((new Date().getTime() - auth.getCreateTime().getTime())/1000 >= auth.getExpiresIn()){

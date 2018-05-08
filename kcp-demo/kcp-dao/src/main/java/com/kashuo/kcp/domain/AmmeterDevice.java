@@ -2,6 +2,7 @@ package com.kashuo.kcp.domain;
 
 import com.kashuo.kcp.utils.DateUtils;
 import io.swagger.annotations.ApiModelProperty;
+import org.omg.PortableInterceptor.INACTIVE;
 
 import java.util.Date;
 
@@ -145,6 +146,16 @@ public class AmmeterDevice {
     private String descMsg;
 
     private Integer channelId;
+
+    private Integer rsrqWarningFlag;
+
+    public Integer getRsrqWarningFlag() {
+        return rsrqWarningFlag != null ? rsrqWarningFlag:0;
+    }
+
+    public void setRsrqWarningFlag(Integer rsrqWarningFlag) {
+        this.rsrqWarningFlag = rsrqWarningFlag;
+    }
 
     public Integer getChannelId() {
         return channelId;

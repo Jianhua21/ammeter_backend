@@ -1,5 +1,6 @@
 package com.kashuo.kcp.core;
 
+import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.dao.AmmeterNetworkMapper;
 import com.kashuo.kcp.dao.AmmeterRuleMapper;
 import com.kashuo.kcp.dao.AmmeterWarningMapper;
@@ -48,32 +49,48 @@ public class AmmeterRuleService {
 
 
     public void  generateNetWorkWarningInfo(AmmeterNetwork network){
+        for (AmmeterRule rule:netWorkRuleList) {
+            if (AppConstant.METER_RSRQ_KEY.equals(rule.getRuleParams().toUpperCase())) {
+                insertWarningInfo(network, rule.getRuleDesc(),0);
+            }
+        }
+    }
+
+    public void offLineDeviceWarning(AmmeterNetwork network){
+        insertWarningInfo(network,"当前设备不在线",1);
+    }
+
+    public void insertWarningInfo(AmmeterNetwork network,String desc,Integer type) {
+        AmmeterWarning warning = new AmmeterWarning();
+        warning.setCreateBy("system");
+        warning.setAmmeterId(network.getAmmeterId());
+        warning.setWarningDate(new Date());
+        warning.setCreateDate(new Date());
+        warning.setWarningDesc(desc);
+        warning.setWarningStatus("0");
+        warning.setWarningType(type);
+        try {
+            warningMapper.insert(warning);
+        }catch (Exception e){
+            logger.error("batch insert warning info failure...network.id={}",network.getId());
+        }
+}
+
+
+    public boolean checkNetWorkWarning(AmmeterNetwork network,String name){
+        boolean flag =false;
         for (AmmeterRule rule:netWorkRuleList){
             Field[] fields = network.getClass().getDeclaredFields();
             for (Field f:fields){
-                if(f.getName().equals(rule.getRuleParams())){
-                    boolean flag = CompareUtils.compareParams(
+                if(f.getName().equals(rule.getRuleParams()) && f.getName().equals(name)){
+                    flag = CompareUtils.compareParams(
                             String.valueOf(getFieldValueByName(f.getName(),network)),
                             rule.getRuleValue(),
                             rule.getRuleKey());
-                    if(flag){
-                        AmmeterWarning warning = new AmmeterWarning();
-                        warning.setCreateBy("system");
-                        warning.setAmmeterId(network.getAmmeterId());
-                        warning.setWarningDate(network.getCreatedTime());
-                        warning.setCreateDate(new Date());
-                        warning.setWarningDesc(rule.getRuleDesc());
-                        warning.setWarningStatus("0");
-                        try {
-                            warningMapper.insert(warning);
-                            networkMapper.updateStatusByPrimaryKey(network.getId());
-                        }catch (Exception e){
-                            logger.error("batch insert warning info failure...network.id={}",network.getId());
-                        }
-                    }
                 }
             }
         }
+        return flag;
     }
 
     public static void main(String[] args) {

@@ -34,4 +34,29 @@ public class IoTConstant {
     //设备数据批量变化
     public static final String IOT_NOTIFY_TYPE_DEVICE_DATAS_CHANGED = "deviceDatasChanged";
 
+
+
+    public class Command{
+        //设备软重启
+        public static final String DEVICE_COMMAND_STM001 ="STM001";
+        //恢复出厂设置
+        public static final String DEVICE_COMMAND_STM002 ="STM002";
+        //保存系统配置
+        public static final String DEVICE_COMMAND_STM003 ="STM003";
+        //配置NB处理流程时间
+        public static final String DEVICE_COMMAND_STM004 ="STM004";
+
+        //获取模块信号值
+        public static final String DEVICE_COMMAND_NBM001 ="NBM001";
+        //设置CDP服务器IP
+        public static final String DEVICE_COMMAND_NBM002 ="NBM002";
+        //设置APN地址
+        public static final String DEVICE_COMMAND_NBM003 ="NBM003";
+
+        public static final String DEVICE_COMMAND_IEM001 ="IEM001";
+
+        public static final String DEVICE_COMMAND_FEFEFEFE ="FEFEFEFE";
+
+    }
+
 }

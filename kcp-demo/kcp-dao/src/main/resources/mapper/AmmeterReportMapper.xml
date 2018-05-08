@@ -29,6 +29,16 @@
   and date_time =#{date,jdbcType=VARCHAR })
 </select>
 
+
+  <select id="queryMaxDailyReportByCondition" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_report
+    where id =(select max(id) as id from ammeter_report
+    where ammeter_id = #{ammeterId,jdbcType=INTEGER}
+    and date_time =#{date,jdbcType=VARCHAR })
+   and hour =#{hour,jdbcType=INTEGER}
+  </select>
     <select id="dailyReportByParams"  resultMap="BaseResultMap" parameterType="com.kashuo.kcp.domain.AmmeterReport">
         select
         <include refid="Base_Column_List" />
@@ -61,10 +71,11 @@
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into ammeter_report (ammeter_id, active_energy, reactive_energy, 
+    insert into ammeter_report (ammeter_id, active_energy, reactive_energy,voltage,current,
       send_time, hour, date_time,type
       )
-    values (#{ammeterId,jdbcType=INTEGER}, #{activeEnergy,jdbcType=VARCHAR}, #{reactiveEnergy,jdbcType=VARCHAR}, 
+    values (#{ammeterId,jdbcType=INTEGER}, #{activeEnergy,jdbcType=VARCHAR}, #{reactiveEnergy,jdbcType=VARCHAR},
+     #{voltage,jdbcType=VARCHAR}, #{current,jdbcType=VARCHAR},
       #{sendTime,jdbcType=TIMESTAMP}, #{hour,jdbcType=INTEGER}, #{dateTime,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}
       )
   </insert>
@@ -82,6 +93,12 @@
       </if>
       <if test="reactiveEnergy != null" >
         reactive_energy,
+      </if>
+      <if test="voltage != null" >
+        voltage,
+      </if>
+      <if test="current != null" >
+        current,
       </if>
       <if test="sendTime != null" >
         send_time,
@@ -105,6 +122,12 @@
       </if>
       <if test="reactiveEnergy != null" >
         #{reactiveEnergy,jdbcType=VARCHAR},
+      </if>
+      <if test="voltage != null" >
+        #{voltage,jdbcType=VARCHAR},
+      </if>
+      <if test="current != null" >
+        #{current,jdbcType=VARCHAR},
       </if>
       <if test="sendTime != null" >
         #{sendTime,jdbcType=TIMESTAMP},
@@ -131,6 +154,12 @@
       </if>
       <if test="reactiveEnergy != null" >
         reactive_energy = #{reactiveEnergy,jdbcType=VARCHAR},
+      </if>
+      <if test="voltage != null" >
+        voltage = #{voltage,jdbcType=VARCHAR},
+      </if>
+      <if test="current != null" >
+        current = #{current,jdbcType=VARCHAR},
       </if>
       <if test="sendTime != null" >
         send_time = #{sendTime,jdbcType=TIMESTAMP},

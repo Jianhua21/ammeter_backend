@@ -5,6 +5,7 @@ import com.kashuo.common.mybatis.helper.PageHelper;
 import com.kashuo.kcp.dao.AmmeterImeiMapper;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.condition.AmmeterPositionCondition;
+import com.kashuo.kcp.dao.result.PosotionHome;
 import com.kashuo.kcp.domain.AmmeterImei;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import org.slf4j.Logger;
@@ -47,6 +48,10 @@ public class AmmeterPositionService {
         return ammeterPositionMapper.selectByImei(imei);
     }
 
+    public AmmeterPosition selectByPrimaryKey(Integer id){
+        return ammeterPositionMapper.selectByPrimaryKey(id);
+    }
+
     public AmmeterPosition selectActiveByImei(String imei){
         return ammeterPositionMapper.selectActiveByImei(imei);
     }
@@ -62,6 +67,11 @@ public class AmmeterPositionService {
     public Page<AmmeterPosition> getPositionList(AmmeterPositionCondition condition){
         PageHelper.startPage(condition.getPageIndex(),condition.getPageSize());
         return ammeterPositionMapper.getPositionList(condition);
+    }
+
+    public Page<PosotionHome> getGISList(AmmeterPositionCondition condition){
+        PageHelper.startPage(condition.getPageIndex(),condition.getPageSize());
+        return ammeterPositionMapper.getGISList(condition);
     }
 
     public AmmeterImei selectIMEIbyKey(String IMEI){
