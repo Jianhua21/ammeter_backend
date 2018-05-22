@@ -42,6 +42,7 @@
     <result column="warning_status" property="warningStatus" jdbcType="VARCHAR" />
     <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
     <result column="Activated" property="Activated" jdbcType="CHAR" />
+    <result column="work_status" property="workStatus" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, number, address, amap_longitude, amap_latitude, gps_longitude, gps_latitude, 
@@ -81,13 +82,15 @@
     <select id="getPositionList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterPositionCondition">
       select p.id,p.device_id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude,
       p.gps_longitude, p.gps_latitude, p.remark,p.status,
-      s.desc as status_name,
+      s.desc as status_name,IFNULL(info.`status`,2) as work_status,
       p.create_by,p.create_time,d.type,p.imei,p.installer,
       case when f.id is null then '0' else '1' end as warning_status,
       case when f.id is null then '' else f.warning_desc end as warning_desc
       from ammeter_position p INNER JOIN ammeter_user u on p.create_by = u.id
       INNER JOIN ammeter_status s on p.status = s.code
       INNER JOIN ammeter_device d on p.imei= d.imsi
+      left JOIN
+      ammeter_working_info info on d.id = info.ammeter_id
       LEFT join (select w.* from ammeter_warning w,
       (select max(id) id from ammeter_warning where warning_status = 0 group by ammeter_id) e
       where w.id = e.id ) f on f.ammeter_id = d.id WHERE p.status !=3

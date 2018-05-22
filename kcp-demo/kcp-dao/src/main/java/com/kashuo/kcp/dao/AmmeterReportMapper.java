@@ -23,6 +23,8 @@ public interface AmmeterReportMapper {
 
     List<AmmeterReport> dailyReportByParams(AmmeterReport record);
 
+    List<AmmeterReport>  getMonthlyPowers();
+
     int updateByPrimaryKeySelective(AmmeterReport record);
 
     int updateByPrimaryKey(AmmeterReport record);

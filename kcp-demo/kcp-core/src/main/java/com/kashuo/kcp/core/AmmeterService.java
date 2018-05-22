@@ -1,7 +1,11 @@
 package com.kashuo.kcp.core;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
+import com.kashuo.kcp.api.entity.CommandParams;
+import com.kashuo.kcp.command.CommandService;
+import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.dao.AmmeterDeviceMapper;
+import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterWorkingInfoMapper;
 import com.kashuo.kcp.dao.condition.AmmeterCondition;
 import com.kashuo.kcp.dao.result.AmmeterDeviceResult;
@@ -38,6 +42,13 @@ public class AmmeterService {
     @Autowired
     private NetWorkService netWorkService;
 
+    @Autowired
+    private CommandService commandService;
+
+    @Autowired
+    private AmmeterPositionMapper positionMapper;
+
+
     public List<AmmeterDeviceResult> checkAmmeterMeterNo(){
          return ammeterDeviceMapper.checkAmmeterMeterNo();
     }
@@ -46,26 +57,36 @@ public class AmmeterService {
         return ammeterDeviceMapper.validAmmeterDevice();
     }
 
-    public Results updateAmmeterStatus(Integer status, Integer id){
-
-        AmmeterWorkingInfo ammeterWorkingInfo = ammeterWorkingInfoMapper.selectByAmmeterId(id);
+    public Results updateAmmeterStatus(Integer status, Integer id) throws Exception {
+        AmmeterDevice device = ammeterDeviceMapper.selectByPositionId(id);
+        AmmeterWorkingInfo ammeterWorkingInfo = ammeterWorkingInfoMapper.selectByAmmeterId(device.getId());
         if(ammeterWorkingInfo != null && (ammeterWorkingInfo.getStatus() == null ||
                 (ammeterWorkingInfo.getStatus() != 4 && ammeterWorkingInfo.getStatus() != 3)
                )){
-            ammeterWorkingInfoMapper.updateByAmmeterId(id,status+2);
+            ammeterWorkingInfoMapper.updateByAmmeterId(device.getId(),status+2);
+
         }else{
-            if( (status == 2 || status == 1) && ammeterDeviceMapper.selectByPrimaryKey(id) != null) {
+            if( (status == 2 || status == 1) && ammeterDeviceMapper.selectByPrimaryKey(device.getId()) != null) {
                 ammeterWorkingInfo = new AmmeterWorkingInfo();
-                ammeterWorkingInfo.setAmmeterId(id);
+                ammeterWorkingInfo.setAmmeterId(device.getId());
                 ammeterWorkingInfo.setStatus(status + 2);
                 ammeterWorkingInfoMapper.insert(ammeterWorkingInfo);
             }else{
-                return Results.error("拉闸正在操作中!");
+                return Results.error("正在操作中!");
             }
         }
-
+        //---------开始想IoM平台发送开关闸命令
+        CommandParams params = new CommandParams();
+        //没有数据发送
+        params.setIsChanged("2");
+        AmmeterPosition position = positionMapper.selectByPrimaryKey(id);
+        String command = status == 1 ? AppConstant.COMMAND_SWTICH_OFF_KEY:AppConstant.COMMAND_SWTICH_ON_KEY;
+        commandService.commonCommandSend(position, command, params);
         return Results.success(status == 1 ? "正在拉闸" :"正在合闸");
     }
+
+
+
 
     public AmmeterDevice selectDeviceByImsi(String imsi){
         return ammeterDeviceMapper.selectByImsiKey(imsi);

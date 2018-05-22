@@ -19,6 +19,12 @@
     from ammeter_login_history
     where id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="selectByAccessToken" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_login_history
+    where access_token = #{token,jdbcType=VARCHAR} limit 1
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from ammeter_login_history
     where id = #{id,jdbcType=INTEGER}

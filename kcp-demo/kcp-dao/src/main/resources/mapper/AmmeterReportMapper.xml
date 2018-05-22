@@ -9,10 +9,12 @@
     <result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
     <result column="hour" property="hour" jdbcType="INTEGER" />
       <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="voltage" property="voltage" jdbcType="VARCHAR" />
+    <result column="current" property="current" jdbcType="VARCHAR" />
     <result column="date_time" property="dateTime" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, ammeter_id, active_energy, reactive_energy, send_time, hour, date_time,type
+    id, ammeter_id, active_energy, reactive_energy, send_time, hour, date_time,type,voltage,current
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -187,4 +189,11 @@
       type = #{type,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="getMonthlyPowers" resultMap="BaseResultMap">
+    select r.id, r.ammeter_id, r.active_energy, r.reactive_energy, r.send_time, r.hour, r.date_time,r.type
+    from ammeter_report r INNER JOIN
+(select max(id) id from ammeter_report group by ammeter_id) b
+on r.id = b.id
+  </select>
 </mapper>

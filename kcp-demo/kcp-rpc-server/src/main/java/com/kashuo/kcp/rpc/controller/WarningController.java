@@ -1,15 +1,20 @@
 package com.kashuo.kcp.rpc.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.core.AmmeterService;
 import com.kashuo.kcp.core.AmmeterWarningService;
 import com.kashuo.kcp.dao.condition.WarningCondition;
+import com.kashuo.kcp.dao.result.WarningHome;
 import com.kashuo.kcp.domain.AmmeterDevice;
+import com.kashuo.kcp.domain.AmmeterUser;
 import com.kashuo.kcp.domain.AmmeterWarning;
 import com.kashuo.kcp.domain.AmmeterWarningResult;
 import com.kashuo.kcp.utils.Results;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,15 +26,28 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/warning")
 public class WarningController extends BaseController{
 
+    private static Logger logger = LoggerFactory.getLogger(WarningController.class);
     @Autowired
     private AmmeterWarningService warningService;
 
     @Autowired
     private AmmeterService ammeterService;
 
+
+    @PostMapping("/home")
+    @ApiOperation("告警总览")
+    public Results getWarningHome() throws Exception {
+        AmmeterUser user = getCuruser();
+        WarningHome warningHome = warningService.reportWarningInfo();
+        logger.info("告警总览数据 :{}",JSON.toJSONString(warningHome));
+        return  Results.success(warningHome);
+    }
+
+
     @PostMapping("/list")
     @ApiOperation(value = "列表查询",notes = "created by Legend on 2018-Apr-10")
     public Results list(@RequestBody WarningCondition warningCondition){
+        logger.info("告警列表查询参数:{}", JSON.toJSONString(warningCondition));
         if(isAdmin(getCuruser().getChannelId())){
             warningCondition.setChannelId(null);
         }else {

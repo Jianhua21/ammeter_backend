@@ -31,6 +31,14 @@ public class AppConstant {
 
     public static final String COMMAND_RESTORE_KEY ="restore";
 
+    public static final String COMMAND_SWTICH_ON_KEY = "switch_on";
+
+    public static final String COMMAND_SWTICH_OFF_KEY = "switch_off";
+
+    public static final String COMMAND_CDP_IP_KEY ="cdp_ip";
+
+    public static final String COMMAND_APN_ADDRESS_KEY ="apn_address";
+
     public static final String COMMAND_RESTORE_CALLBACK_URL = "restore_url";
 
     public static final String COMMAND_SUBSCRIBE_CALLBACK_URL ="subscribe_url";

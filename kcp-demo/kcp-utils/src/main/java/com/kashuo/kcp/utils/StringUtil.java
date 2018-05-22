@@ -15,7 +15,7 @@ public class StringUtil {
      * @return true 空 false 非空
      */
     public static boolean isEmpty(String str) {
-        return null == str || "".equals(str);
+        return null == str || "".equals(str.trim());
     }
 
     /**

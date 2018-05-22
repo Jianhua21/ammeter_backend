@@ -51,6 +51,18 @@
       #{sendDate,jdbcType=TIMESTAMP}, #{activeEnergy,jdbcType=VARCHAR}, #{reactiveEnergy,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}
       )
   </insert>
+
+  <insert id="batchInsert">
+    insert into ammeter_monthly_report (ammeter_id, day, month,send_date, active_energy,type)
+    values
+    <foreach collection="list" item="a" separator=",">
+      (
+      #{a.ammeterId,jdbcType=INTEGER}, #{a.day,jdbcType=INTEGER},
+      #{a.month,jdbcType=VARCHAR},#{a.sendDate,jdbcType=TIMESTAMP},
+      #{a.activeEnergy,jdbcType=VARCHAR}, #{a.type,jdbcType=INTEGER}
+      )
+    </foreach>
+  </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterMonthlyReport" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()

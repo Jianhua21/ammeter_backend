@@ -26,6 +26,8 @@ public interface AmmeterDeviceMapper {
 
     AmmeterDevice selectByDeviceId(String deviceId);
 
+    AmmeterDevice selectByPositionId(Integer positionId);
+
     Page<AmmeterInfoResult> selectAmmeterInfo(AmmeterCondition condition);
 
     List<AmmeterDeviceResult> checkAmmeterMeterNo();

@@ -43,68 +43,171 @@ public class CommandController {
     @PostMapping("/reset")
     @ApiOperation("设备软重启")
     public Results resetAmmeter(@RequestBody CommandCondition commandCondition) throws Exception {
-        PostDeviceCommandInDTO deviceCommandInDTO = new PostDeviceCommandInDTO();
-        deviceCommandInDTO.setDeviceId(commandCondition.getDeviceId());
-        CommandParams params = new CommandParams();
-        params.setCommandKey(AppConstant.COMMAND_RESET_KEY);
-        params.setCallBackKey(AppConstant.COMMAND_COMMON_CALLBACK_URL);
-        params.setDataFlag(true);
-        params.setCommandType(1);
-        params.setData(AppConstant.COMMAND_RESET_KEY.toUpperCase());
-        deviceCommandInDTO = commandService.prepareCommand(params,deviceCommandInDTO);
-        PostDeviceCommandOutDTO deviceCommandOutDTO = commandService.postDeviceCommand(deviceCommandInDTO);
-        if(deviceCommandOutDTO != null){
-            //插入命令历史记录
-            commandService.insertCommandHistory(deviceCommandOutDTO,
-                    sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID));
-            return Results.success("设备软重启发送成功!",commandCondition.getSn());
+
+        if(commandCondition.getPositionId() == null){
+            return Results.error("设备不存在!");
         }
-        return Results.error("设备软重启发送失败!",commandCondition.getSn());
+        AmmeterPosition position = positionService.selectByPrimaryKey(commandCondition.getPositionId());
+        if(position == null ||position.getDeviceId() == null ){
+            return Results.error("设备不存在!");
+        }else if(position.getStatus() == 8){
+            return Results.error("异常设备,不可操作!");
+        }
+//        PostDeviceCommandInDTO deviceCommandInDTO = new PostDeviceCommandInDTO();
+//        deviceCommandInDTO.setDeviceId(position.getDeviceId());
+//        CommandParams params = new CommandParams();
+//        params.setCommandKey(AppConstant.COMMAND_RESET_KEY);
+//        params.setCallBackKey(AppConstant.COMMAND_COMMON_CALLBACK_URL);
+//        params.setDataFlag(true);
+//        params.setCommandType(1);
+//        params.setData(AppConstant.COMMAND_RESET_KEY.toUpperCase());
+//        deviceCommandInDTO = commandService.prepareCommand(params,deviceCommandInDTO);
+//        PostDeviceCommandOutDTO deviceCommandOutDTO = commandService.postDeviceCommand(deviceCommandInDTO);
+//        if(deviceCommandOutDTO != null){
+//            //插入命令历史记录
+//            commandService.insertCommandHistory(deviceCommandOutDTO,
+//                    sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID));
+        CommandParams params = new CommandParams();
+        params.setData(AppConstant.COMMAND_RESET_KEY.toUpperCase());
+        commandService.commonCommandSend(position,AppConstant.COMMAND_RESET_KEY,params);
+        return Results.success("设备软重启发送成功!",commandCondition.getSn());
     }
     @PostMapping("/restore")
     @ApiOperation("设备恢复出厂设置")
     public Results restoreDevice(@RequestBody CommandCondition commandCondition) throws Exception {
-        PostDeviceCommandInDTO deviceCommandInDTO = new PostDeviceCommandInDTO();
-        deviceCommandInDTO.setDeviceId(commandCondition.getDeviceId());
-        CommandParams params = new CommandParams();
-        params.setCommandKey(AppConstant.COMMAND_RESTORE_KEY);
-        params.setCallBackKey(AppConstant.COMMAND_COMMON_CALLBACK_URL);
-        params.setDataFlag(true);
-        params.setData(AppConstant.COMMAND_RESTORE_KEY.toUpperCase());
-        params.setCommandType(1);
-        deviceCommandInDTO = commandService.prepareCommand(params,deviceCommandInDTO);
-        PostDeviceCommandOutDTO deviceCommandOutDTO = commandService.postDeviceCommand(deviceCommandInDTO);
-        if(deviceCommandOutDTO != null){
-            //插入命令历史记录
-            commandService.insertCommandHistory(deviceCommandOutDTO,
-                    sysDictionaryService.getDynamicSystemValue(params.getCommandKey(),
-                            sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID)));
-            return Results.success("设备恢复出厂设置发送成功!",commandCondition.getSn());
+
+        if(commandCondition.getPositionId() == null){
+            return Results.error("设备不存在!");
         }
-        return Results.error("设备恢复出厂设置发送失败!",commandCondition.getSn());
+        AmmeterPosition position = positionService.selectByPrimaryKey(commandCondition.getPositionId());
+        if(position == null ||position.getDeviceId() == null){
+            return Results.error("设备不存在!");
+        }else if(position.getStatus() == 8){
+            return Results.error("异常设备,不可操作!");
+        }
+
+//        PostDeviceCommandInDTO deviceCommandInDTO = new PostDeviceCommandInDTO();
+//        deviceCommandInDTO.setDeviceId(position.getDeviceId());
+//        CommandParams params = new CommandParams();
+//        params.setCommandKey(AppConstant.COMMAND_RESTORE_KEY);
+//        params.setCallBackKey(AppConstant.COMMAND_COMMON_CALLBACK_URL);
+//        params.setDataFlag(true);
+//        params.setData(AppConstant.COMMAND_RESTORE_KEY.toUpperCase());
+//        params.setCommandType(1);
+//        deviceCommandInDTO = commandService.prepareCommand(params,deviceCommandInDTO);
+//        PostDeviceCommandOutDTO deviceCommandOutDTO = commandService.postDeviceCommand(deviceCommandInDTO);
+//        if(deviceCommandOutDTO != null){
+//            //插入命令历史记录
+//            commandService.insertCommandHistory(deviceCommandOutDTO,
+//                    sysDictionaryService.getDynamicSystemValue(params.getCommandKey(),
+//                            sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID)));
+        CommandParams params = new CommandParams();
+        params.setData(AppConstant.COMMAND_RESTORE_KEY.toUpperCase());
+        commandService.commonCommandSend(position,AppConstant.COMMAND_RESTORE_KEY,params);
+        return Results.success("设备恢复出厂设置发送成功!",commandCondition.getSn());
     }
 
+    @PostMapping("/switchOn")
+    @ApiOperation("设备开闸")
+    public Results switchOnDevice(@RequestBody CommandCondition commandCondition) throws Exception {
+
+        if(commandCondition.getPositionId() == null){
+            return Results.error("设备不存在!");
+        }
+        AmmeterPosition position = positionService.selectByPrimaryKey(commandCondition.getPositionId());
+        if(position == null ||position.getDeviceId() == null){
+            return Results.error("设备不存在!");
+        }else if(position.getStatus() == 8){
+            return Results.error("异常设备,不可操作!");
+        }
+        CommandParams params = new CommandParams();
+        //没有数据发送
+        params.setIsChanged("2");
+        commandService.commonCommandSend(position,AppConstant.COMMAND_SWTICH_ON_KEY,params);
+        return Results.success("开闸命令发送成功!",commandCondition.getSn());
+    }
+
+
+    @PostMapping("/switchOff")
+    @ApiOperation("设备关闸")
+    public Results switchOffDevice(@RequestBody CommandCondition commandCondition) throws Exception {
+
+        if(commandCondition.getPositionId() == null){
+            return Results.error("设备不存在!");
+        }
+        AmmeterPosition position = positionService.selectByPrimaryKey(commandCondition.getPositionId());
+        if(position == null ||position.getDeviceId() == null){
+            return Results.error("设备不存在!");
+        }else if(position.getStatus() == 8){
+            return Results.error("异常设备,不可操作!");
+        }
+        CommandParams params = new CommandParams();
+        //没有数据发送
+        params.setIsChanged("2");
+        commandService.commonCommandSend(position,AppConstant.COMMAND_SWTICH_OFF_KEY,params);
+        return Results.success("关闸命令发送成功!",commandCondition.getSn());
+    }
     @PostMapping("/modifyKeepAlive")
     @ApiOperation("设备保活时间间隔设置")
     public Results keepAliveDevice(@RequestBody CommandCondition commandCondition) throws Exception {
-        PostDeviceCommandInDTO deviceCommandInDTO = new PostDeviceCommandInDTO();
-        deviceCommandInDTO.setDeviceId(commandCondition.getDeviceId());
-        CommandParams params = new CommandParams();
-        params.setCommandKey(AppConstant.COMMAND_NB_KEEPALIVE_KEY);
-        params.setCallBackKey(AppConstant.COMMAND_COMMON_CALLBACK_URL);
-        params.setDataFlag(true);
-        params.setData(commandCondition.getKeepTime());
-        params.setCommandType(1);
-        deviceCommandInDTO = commandService.prepareCommand(params,deviceCommandInDTO);
-        PostDeviceCommandOutDTO deviceCommandOutDTO = commandService.postDeviceCommand(deviceCommandInDTO);
-        if(deviceCommandOutDTO != null){
-            //插入命令历史记录
-            commandService.insertCommandHistory(deviceCommandOutDTO,
-                    sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID));
-            return Results.success("向设备修改保活间隔设置发送成功!",commandCondition.getSn());
+        if(commandCondition.getPositionId() == null){
+            return Results.error("设备不存在!");
         }
-        return Results.error("向设备修改保活间隔设置发送失败!",commandCondition.getSn());
+        AmmeterPosition position = positionService.selectByPrimaryKey(commandCondition.getPositionId());
+        if(position == null||position.getDeviceId() == null){
+            return Results.error("设备不存在!");
+        }else if(position.getStatus() == 8){
+            return Results.error("异常设备,不可操作!");
+        }
+//        CommandParams params = new CommandParams();
+//        //发送保活数据
+//        params.setData(commandCondition.getKeepTime());
+//        commandService.commonCommandSend(position,AppConstant.COMMAND_NB_KEEPALIVE_KEY,params);
+        commandService.configKeepAlive(position,commandCondition.getKeepTime());
+        return Results.success("向设备修改保活间隔设置发送成功!",commandCondition.getSn());
     }
+
+    @PostMapping("/saveConfig")
+    @ApiOperation("保存系统配置")
+    public Results saveConfigDevice(@RequestBody CommandCondition commandCondition) throws Exception {
+
+        if(commandCondition.getPositionId() == null){
+            return Results.error("设备不存在!");
+        }
+        AmmeterPosition position = positionService.selectByPrimaryKey(commandCondition.getPositionId());
+        if(position == null ||position.getDeviceId() == null){
+            return Results.error("设备不存在!");
+        }else if(position.getStatus() == 8){
+            return Results.error("异常设备,不可操作!");
+        }
+        CommandParams params = new CommandParams();
+        //只发送配置命令 不发送数据
+        params.setIsChanged("2");
+        commandService.commonCommandSend(position,AppConstant.COMMAND_SAVE_CONFIG_KEY,params);
+        return Results.success("保存系统配置命令发送成功!",commandCondition.getSn());
+    }
+
+    @PostMapping("/getDeviceAddress")
+    @ApiOperation("获取电表地址")
+    public Results getDeviceAddress(@RequestBody CommandCondition commandCondition) throws Exception {
+
+        if(commandCondition.getPositionId() == null){
+            return Results.error("设备不存在!");
+        }
+        AmmeterPosition position = positionService.selectByPrimaryKey(commandCondition.getPositionId());
+        if(position == null ||position.getDeviceId() == null){
+            return Results.error("设备不存在!");
+        }else if(position.getStatus() == 8){
+            return Results.error("异常设备,不可操作!");
+        }
+        //只发送配置命令 不发送数据
+        commandService.getAmmeterAddress(position.getDeviceId());
+        return Results.success("获取电表地址命令发送成功!",commandCondition.getSn());
+    }
+
+
+
+
 
     @PostMapping("/test")
     @ApiOperation("测试命令")

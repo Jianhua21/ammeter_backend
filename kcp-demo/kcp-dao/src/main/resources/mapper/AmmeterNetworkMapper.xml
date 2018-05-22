@@ -105,7 +105,7 @@ and w.warning_status =0)
     </select>
 <select id="networkList" parameterType="com.kashuo.kcp.dao.condition.AmmeterNetWorkCondition"
 resultType="com.kashuo.kcp.domain.AmmeterNetWorkResult">
-    select a.imsi,p.name, a.id,b.celli,b.rsrq,b.rssi,b.rsrp,b.created_time  from ammeter_device a
+    select a.imsi,p.name, p.id,b.celli,b.rsrq,b.rssi,b.rsrp,b.created_time  from ammeter_device a
      INNER join ammeter_position p on a.imsi = p.imei
     left join
     (select b1.* from ammeter_network b1 ,

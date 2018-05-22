@@ -84,9 +84,10 @@ public class CallBackController {
                 netWorkService.insertNetWorkInfo(detail.getData(),deviceId);
             }else if(IoTConstant.Command.DEVICE_COMMAND_NBM002.equals(detail.getCommand())){
                 //设置CDP服务器IP
-
+                callBackService.processRunningConfig(detail,deviceId);
             }else if(IoTConstant.Command.DEVICE_COMMAND_NBM003.equals(detail.getCommand())){
                 //设置APN地址
+                callBackService.processRunningConfig(detail,deviceId);
             }else if(IoTConstant.Command.DEVICE_COMMAND_STM001.equals(detail.getCommand())){
                 //处理设备软重启CallBack
             }else if(IoTConstant.Command.DEVICE_COMMAND_STM002.equals(detail.getCommand())){
@@ -95,11 +96,15 @@ public class CallBackController {
                 //保存系统配置
             }else if(IoTConstant.Command.DEVICE_COMMAND_STM004.equals(detail.getCommand())){
                 //配置NB处理流程时间
+                callBackService.processRunningConfig(detail,deviceId);
             }else if(IoTConstant.Command.DEVICE_COMMAND_IEM001.equals(detail.getCommand())){
-
+                //拉闸处理
+                callBackService.processSwitchPower(detail,deviceId,false);
+            }else if(IoTConstant.Command.DEVICE_COMMAND_IEM002.equals(detail.getCommand())){
+               //合闸处理
+                callBackService.processSwitchPower(detail,deviceId,true);
             }else if(detail.getCommand().startsWith(IoTConstant.Command.DEVICE_COMMAND_FEFEFEFE)){
                 //电表645命令
-                logger.info("+++++++++++++++++++++++++++++++++");
                 callBackService.process645dltData(detail,deviceId);
             }
             commandService.updateCommandHistoryBySubscrible(dataChange,detail);
@@ -117,16 +122,16 @@ public class CallBackController {
     public static void main(String[] args) {
         String s ="{\n" +
                 "\t\"notifyType\": \"deviceDataChanged\",\n" +
-                "\t\"deviceId\": \"1584d933-19e0-47a6-b38a-0fabe1caae7a\",\n" +
-                "\t\"gatewayId\": \"1584d933-19e0-47a6-b38a-0fabe1caae7a\",\n" +
+                "\t\"deviceId\": \"9f25fafd-61ce-4e91-acdd-e58acc646e7a\",\n" +
+                "\t\"gatewayId\": \"9f25fafd-61ce-4e91-acdd-e58acc646e7a\",\n" +
                 "\t\"requestId\": null,\n" +
                 "\t\"service\": {\n" +
                 "\t\t\"serviceId\": \"elect_meter\",\n" +
                 "\t\t\"serviceType\": \"elect_meter\",\n" +
                 "\t\t\"data\": {\n" +
-                "\t\t\t\"meter\": \"89010320FEFEFEFE68111111111111681104333435351c1646FEFEFEFE68111111111111689107333435353333333816EF81FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\"\n" +
+                "\t\t\t\"meter\": \"89010320FEFEFEFE6806010000000068110433343535bd1646FEFEFEFE6806010000000068910733343535333333D91630D0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\"\n" +
                 "\t\t},\n" +
-                "\t\t\"eventTime\": \"20180505T095800Z\"\n" +
+                "\t\t\"eventTime\": \"20180520T150030Z\"\n" +
                 "\t}\n" +
                 "}";
     DeviceDataChange dataChange = JSON.parseObject(s,DeviceDataChange.class);

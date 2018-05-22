@@ -4,16 +4,18 @@ import com.kashuo.kcp.plus.dlt645_pack;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by dell-pc on 2018/4/14.
  */
 public class AmmeterUtils {
 
-    public void analysis(String command,char buff[]) throws Exception {
+    public void analysis(String command,char buff[]) throws Exception{
+        analysis(command,buff,null);
+    }
+
+    public void analysis(String command,char buff[],Map<String,String> addressDevice) throws Exception {
         String[] commands=command.trim().split(" ");
         List<String> list =new ArrayList<String>();
         for (int i = 0; i <commands.length ; i++) {
@@ -36,7 +38,11 @@ public class AmmeterUtils {
             System.out.println("您的输入：" + command);
             System.out.println("原始地址：" + list);
             System.out.println("帧起始符：" + newCommands[0]);
-            System.out.println("电表地址：" + Byte.parseByte(newCommands[6]) + Byte.parseByte(newCommands[5]) + Byte.parseByte(newCommands[4]) + Byte.parseByte(newCommands[3]) + Byte.parseByte(newCommands[2]) + Byte.parseByte(newCommands[1]));
+            if(addressDevice != null) {
+                addressDevice.put("address", newCommands[6] + newCommands[5] + newCommands[4] + newCommands[3] + newCommands[2] + newCommands[1]);
+                System.out.println("电表地址："+addressDevice);
+            }
+            System.out.println("电表地址：" + Byte.parseByte(newCommands[6]) +""+ Byte.parseByte(newCommands[5])  +""+  Byte.parseByte(newCommands[4])  +""+  Byte.parseByte(newCommands[3])  +""+  Byte.parseByte(newCommands[2])  +""+  Byte.parseByte(newCommands[1]));
             System.out.println("控制域：" + newCommands[8]);
             System.out.println("数据域长度：" + newCommands[9]);
             System.out.println("校验码：" + newCommands[newCommands.length - 2]);
@@ -288,6 +294,13 @@ public class AmmeterUtils {
         return sb.toString().trim();
     }
 
+    public static String commandAddress(String address){
+        StringBuilder sb = new StringBuilder();
+        sb.append(address.substring(10,12)).append(address.substring(8,10)).append(
+                address.substring(6,8)).append(address.substring(4,6)).append(address.substring(2,4)).append(address.substring(0,2));
+        return sb.toString();
+    }
+
     public static String getPackageCommand(String address,String commandId){
         byte [] frame = new byte[255];
         dlt645_pack pkt = new dlt645_pack();
@@ -295,16 +308,23 @@ public class AmmeterUtils {
         pkt.GetContrlCode((byte)0);
         pkt.GetDataLen((byte)4);
         pkt.GetRealLen((byte)4);
-        pkt.GetAddrStr(address);
+        pkt.GetAddrStr(commandAddress(address));
         dlt645_pack.pack_any_frame_by_data(pkt, frame);
         StringBuilder sb = new StringBuilder();
         for(int i = 0;i < frame.length; i++) {
-            if(!"0".equals(String.valueOf(Integer.toHexString(frame[i])))){
-                if(String.valueOf(Integer.toHexString(frame[i])).length() ==1){
-                    sb.append("0"+String.valueOf(Integer.toHexString(frame[i])));
+            String data = Integer.toHexString(frame[i]);
+            if(!"0".equals(data)){
+                if(data.length() ==1){
+                    sb.append("0"+data);
                 }else {
-                    sb.append(String.valueOf(Integer.toHexString(frame[i])));
+                    if(data.startsWith("ffffff")){
+                        sb.append(data.substring(6,8));
+                    }else {
+                        sb.append(data);
+                    }
                 }
+            }else if(i<16){
+                sb.append("00");
             }
         }
         System.out.println("FEFEFEFE"+sb.toString());
@@ -324,6 +344,25 @@ public class AmmeterUtils {
     }
 
 
+    public static String unPackageAnalysis(String data,Map address) throws Exception {
+        char buf[] = new char[64];
+        new AmmeterUtils().analysis(unpackDeviceData(data),buf,address);
+        StringBuilder sb =new StringBuilder();
+        for (char c : buf) {
+            if('\u0000' != c) {
+                sb.append(c);
+            }
+        }
+        return String.valueOf(sb.toString());
+    }
+
+    public static Map unPackageAnalysisForAddress(String data) throws Exception {
+        char buf[] = new char[64];
+        Map<String,String> address = new HashMap<>();
+        new AmmeterUtils().analysis(unpackDeviceData(data),buf,address);
+        return address;
+    }
+
     public static void main(String[] args) {
         try {
             char buf[] = new char[64];
@@ -334,16 +373,20 @@ public class AmmeterUtils {
 //            String s ="FEFEFEFE681111111111116893064444444444446716";//电表地址
 //            String s ="FEFEFEFE6811111111111168D101353D16";
 //              String s="FEFEFEFE68111111111111681104333334331816";
-            String s ="FEFEFEFE681111111111116891063334343569565C16";
-//            new AmmeterUtils().analysis(unpackDeviceData(s),buf);
-            String sb =AmmeterUtils.unPackageAnalysis(s);
-            System.out.println("电量++"+sb);
+//            String s ="FEFEFEFE6806010000000068110433333433ffffffb916";
+////            new AmmeterUtils().analysis(unpackDeviceData(s),buf);
+////            String address =String.valueOf(AmmeterUtils.unPackageAnalysisForAddress(s).get("address"));
+////            System.out.println("返回结果++"+address);
+//            System.out.println("返回结果++"+AmmeterUtils.unPackageAnalysis(s));
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("解析出错！");
         }
 
-        getPackageCommand("111111111111","00010000");
+//        System.out.println(getPackageCommand("000000000106","00010000")+"==================");
+//        System.out.println(getPackageCommand("111111111111","00010000")+"==================");
+        System.out.println(Integer.toHexString(-10));
+        System.out.println(Integer.toHexString(16));
     }
 
 }

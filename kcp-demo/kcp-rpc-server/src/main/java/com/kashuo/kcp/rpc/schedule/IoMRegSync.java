@@ -4,14 +4,20 @@ import com.huawei.iotplatform.client.NorthApiException;
 import com.kashuo.kcp.auth.AuthExceptionService;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.core.AmmeterPositionService;
+import com.kashuo.kcp.core.AmmeterReportServer;
 import com.kashuo.kcp.core.AmmeterService;
 import com.kashuo.kcp.dao.result.AmmeterDeviceResult;
+import com.kashuo.kcp.domain.AmmeterMonthlyReport;
 import com.kashuo.kcp.domain.AmmeterPosition;
+import com.kashuo.kcp.domain.AmmeterReport;
+import com.kashuo.kcp.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,6 +37,9 @@ public class IoMRegSync {
 
     @Autowired
     private AuthExceptionService authExceptionService;
+
+    @Autowired
+    private AmmeterReportServer reportServer;
 
     public void regInfo2IoM(){
 
@@ -112,5 +121,26 @@ public class IoMRegSync {
             }
         });
     }
+
+    public void updateMonthPowerReport(){
+
+        List<AmmeterReport> reports = reportServer.getMonthlyPowers();
+        List<AmmeterMonthlyReport> monthlyReports = new ArrayList<>();
+        reports.forEach(r->{
+            AmmeterMonthlyReport report = new AmmeterMonthlyReport();
+            report.setMonth(String.valueOf(DateUtils.getMonth()-1));
+            report.setActiveEnergy(r.getActiveEnergy());
+            report.setAmmeterId(r.getAmmeterId());
+            report.setType(1);
+            report.setDay(DateUtils.getYear());
+            report.setSendDate(new Date());
+            monthlyReports.add(report);
+        });
+        if(monthlyReports.size() > 0) {
+            reportServer.batchInsertPowerMonthlyReport(monthlyReports);
+        }
+
+    }
+
 
 }

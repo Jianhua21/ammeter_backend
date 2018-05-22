@@ -74,4 +74,11 @@ public class QuartzConfiguration {
         }
     }
 
+    @Scheduled(cron = "${app.constant.quartz.report}")
+    public void generateMonthlyReport() throws Exception {
+        if (offSet) {
+            regSync.updateMonthPowerReport();
+        }
+    }
+
 }

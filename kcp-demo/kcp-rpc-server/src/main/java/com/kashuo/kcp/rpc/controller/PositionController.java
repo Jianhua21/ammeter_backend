@@ -8,10 +8,13 @@ import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.AmmeterPositionService;
 import com.kashuo.kcp.core.AmmeterService;
+import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.condition.AmmeterPositionCondition;
+import com.kashuo.kcp.dao.condition.AmmeterUpdateCondition;
 import com.kashuo.kcp.dao.condition.IMEICondition;
 import com.kashuo.kcp.dao.result.PosotionHome;
 import com.kashuo.kcp.domain.*;
+import com.kashuo.kcp.manage.DeviceConfigService;
 import com.kashuo.kcp.utils.Results;
 import com.kashuo.kcp.utils.StringUtil;
 import io.swagger.annotations.Api;
@@ -25,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by dell-pc on 2018/3/20.
@@ -42,6 +46,10 @@ public class PositionController extends BaseController{
 
     @Autowired
     private CommandService commandService;
+
+    @Autowired
+    private DeviceConfigService configService;
+
 
     @PostMapping(value = "/create")
     @ApiOperation(value="电表位置信息录入")
@@ -236,6 +244,76 @@ public class PositionController extends BaseController{
             return Results.error("IMEI 不存在,请重新输入!",condition.getSn());
         }
         return Results.success("IMEI正常",condition.getSn());
+    }
+
+
+    @GetMapping("/config/{positionId}")
+    @ApiOperation("设备的配置信息")
+    public Results getConfigInfo(@PathVariable("positionId") Integer positionId){
+
+    AmmeterConfig config = configService.selectByPositionId(positionId);
+    if(config == null){
+        config = new AmmeterConfig();
+        config.setPositionId(positionId);
+    }
+
+    return Results.success(config);
+
+    }
+    @PostMapping("/config/save")
+    @ApiOperation("保存配置修改")
+    public Results saveConfig(@RequestBody AmmeterConfig config) throws Exception {
+
+        logger.info("更新配置信息:{}",JSON.toJSONString(config));
+        AmmeterPosition position = ammeterPositionService.selectByPrimaryKey(config.getPositionId());
+        if(position == null || position.getStatus() == 8){
+            return Results.error("设备异常,不可操作!");
+        }
+        AmmeterConfig configDB = configService.selectByPositionId(config.getPositionId());
+        AmmeterConfig configUpdate = new AmmeterConfig();
+        if(configDB != null){
+            configUpdate.setId(configDB.getId());
+            if(!StringUtil.isEmpty(config.getApnAddress()) && !config.getApnAddress().trim().equals(configDB.getApnAddress())
+                    && configDB.getApnStatus() != 3 && configDB.getApnStatus() != 2){
+                configUpdate.setApnAddress(config.getApnAddress());
+                configUpdate.setApnStatus(3);
+                commandService.configAPN(position,config.getApnAddress());
+            }
+            if(!StringUtil.isEmpty(config.getCdp())&&!config.getCdp().trim().equals(configDB.getCdp())
+                    && configDB.getCdpStatus() != 3 && configDB.getCdpStatus() != 2){
+                configUpdate.setCdp(config.getCdp());
+                configUpdate.setCdpStatus(3);
+                commandService.configCdpIP(position,config.getCdp());
+            }
+            if(config.getNb()!= null && !config.getNb().equals(configDB.getNb())
+                    && configDB.getNbStatus() != 3 && configDB.getNbStatus() != 2){
+                configUpdate.setNb(config.getNb());
+                configUpdate.setNbStatus(3);
+                commandService.configKeepAlive(position,String.valueOf(config.getNb()));
+            }
+            configService.updateConfig(configUpdate);
+        }else{
+            if(!StringUtil.isEmpty(config.getApnAddress())){
+                config.setApnStatus(3);
+                commandService.configAPN(position,config.getApnAddress());
+            }
+            if(!StringUtil.isEmpty(config.getCdp())){
+                config.setCdpStatus(3);
+                commandService.configCdpIP(position,config.getCdp());
+            }
+            if(config.getNb() != null){
+                config.setNbStatus(3);
+                commandService.configKeepAlive(position,String.valueOf(config.getNb()));
+            }
+            configService.insertConfig(config);
+        }
+        return Results.success("配置保存成功!");
+    }
+
+    @PostMapping(value = "/updateStatus")
+    @ApiOperation(value="电表开闸合闸操作")
+    public Results updateAmmeterStatus(@RequestBody AmmeterUpdateCondition condition) throws Exception {
+        return ammeterService.updateAmmeterStatus(condition.getStatus(),condition.getPositionId());
     }
 
 }

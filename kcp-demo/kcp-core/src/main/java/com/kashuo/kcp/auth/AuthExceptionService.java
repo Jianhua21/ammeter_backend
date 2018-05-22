@@ -37,6 +37,9 @@ public class AuthExceptionService {
                 //设备状态 为IoT平台已删除
                 position.setStatus(8);
                 positionMapper.updateStatusByDeviceId(position);
+                return Results.error(50003,
+                        ExceptionConstant.getExceptionConstant(exception.getHttpStatusCode(),
+                                exception.getError_code()));
             }else {
                 return Results.error(50003,
                         ExceptionConstant.getExceptionConstant(exception.getHttpStatusCode(),

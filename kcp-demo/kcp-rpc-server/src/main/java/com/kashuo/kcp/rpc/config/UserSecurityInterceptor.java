@@ -1,11 +1,12 @@
 package com.kashuo.kcp.rpc.config;
 
 import com.kashuo.kcp.core.AmmeterUserService;
+import com.kashuo.kcp.domain.AmmeterLoginHistory;
 import com.kashuo.kcp.domain.AmmeterUser;
 import com.kashuo.kcp.rpc.rest.RequestUtil;
 import com.kashuo.kcp.utils.Results;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,7 @@ import java.io.PrintWriter;
 public class UserSecurityInterceptor extends HandlerInterceptorAdapter {
 
 
-    private static final Log log = LogFactory.getLog(UserSecurityInterceptor.class);
+    private static final Logger log = LoggerFactory.getLogger(UserSecurityInterceptor.class);
 
     @Value("${app.constant.loginFlag}")
     private boolean loginFlag;
@@ -33,6 +34,8 @@ public class UserSecurityInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         RequestUtil.setRequest(request);
+        String s =request.getHeader("user-agent");
+        log.info("user-agent :请求客户端 >>>>{}",s);
         String method = request.getMethod();
         if ("OPTIONS".equals(method)) {
             response.setStatus(HttpServletResponse.SC_OK);
@@ -59,12 +62,34 @@ public class UserSecurityInterceptor extends HandlerInterceptorAdapter {
             user =ammeterUserService.selectByPrimaryKey(Integer.parseInt(lesseeId));
         }
         if (user == null) {
-            response.setCharacterEncoding("utf-8");
-            PrintWriter writer = response.getWriter();
-            response.setContentType("application/json;charset=utf-8");
-            writer.print(Results.error(50000, "请求无效，请尝试重新登录"));
-            writer.close();
-            return false;
+            /***
+             * 判断App登陆
+             */
+            if(s.startsWith("okhttp")){  //App登陆验证
+                AmmeterLoginHistory history = ammeterUserService.selectLoginHistoryByToken(lesseeId);
+                if(history != null) {
+                    user = ammeterUserService.selectByPrimaryKey(history.getUserId());
+                }else{
+                    response.setCharacterEncoding("utf-8");
+                    PrintWriter writer = response.getWriter();
+                    response.setContentType("application/json;charset=utf-8");
+                    writer.print(Results.error(50000, "请求无效，请尝试重新登录"));
+                    writer.close();
+                    return false;
+                }
+            }else {      //网页版登陆验证
+                response.setCharacterEncoding("utf-8");
+                PrintWriter writer = response.getWriter();
+                response.setContentType("application/json;charset=utf-8");
+                AmmeterLoginHistory history = ammeterUserService.selectLoginHistoryByToken(lesseeId);
+                if (history != null) {
+                    writer.print(Results.error(50000, "您的账号已经在别的地方登录，您已经被挤掉线，请重新登录"));
+                } else {
+                    writer.print(Results.error(50000, "请求无效，请尝试重新登录"));
+                }
+                writer.close();
+                return false;
+            }
         }
 
         RequestUtil.setUser(user);

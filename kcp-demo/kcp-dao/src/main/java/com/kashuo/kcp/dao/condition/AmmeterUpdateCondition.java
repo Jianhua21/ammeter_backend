@@ -9,16 +9,16 @@ import java.io.Serializable;
 public class AmmeterUpdateCondition implements Serializable {
 
     @NotNull(message="id 不能为空")
-    private Integer id;
+    private Integer positionId;
     @NotNull(message = "状态 不能为空")
     private Integer status;
 
-    public Integer getId() {
-        return id;
+    public Integer getPositionId() {
+        return positionId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setPositionId(Integer positionId) {
+        this.positionId = positionId;
     }
 
     public Integer getStatus() {

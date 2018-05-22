@@ -132,7 +132,10 @@ public class DateUtils {
         cal.setTime(date);
         return cal.get(Calendar.DAY_OF_WEEK);
     }
-
+    public static  int getHour(String date){
+        SimpleDateFormat format = new SimpleDateFormat("HH");
+        return Integer.parseInt(format.format(date));
+    }
     public static  int getHour(){
         SimpleDateFormat format = new SimpleDateFormat("HH");
         return Integer.parseInt(format.format(new Date()));
@@ -211,7 +214,7 @@ public class DateUtils {
 //        System.out.println(getWeeks(stringToDate("2016-04-14")));
 //        System.out.println(getWeeks(stringToDate("2016-04-15")));
 //        System.out.println(getWeeks(stringToDate("2016-04-16")));
-//        System.out.println(getLastDayDate());
+        System.out.println(getHour());
 
         SimpleDateFormat df = new SimpleDateFormat(IoT_format_PatternDateTime);
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -248,6 +251,8 @@ public class DateUtils {
         String dateStr = dateToString(date) + " 23:59:59";
         return stringToDate(dateStr, formatPatternDateTime).getTime();
     }
+
+
 
 
 

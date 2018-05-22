@@ -11,6 +11,8 @@ public interface AmmeterLoginHistoryMapper {
 
     AmmeterLoginHistory selectByPrimaryKey(Integer id);
 
+    AmmeterLoginHistory selectByAccessToken(String token);
+
     int updateByPrimaryKeySelective(AmmeterLoginHistory record);
 
     int updateByPrimaryKey(AmmeterLoginHistory record);

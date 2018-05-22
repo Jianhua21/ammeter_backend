@@ -37,11 +37,7 @@ public class AmmeterController extends BaseController{
     @Autowired
     private AmmeterChannelService channelService;
 
-    @PostMapping(value = "/updateStatus")
-    @ApiOperation(value="电表开闸合闸操作")
-    public Results updateAmmeterStatus(@RequestBody AmmeterUpdateCondition condition){
-        return ammeterService.updateAmmeterStatus(condition.getStatus(),condition.getId());
-    }
+
 
     @PostMapping(value = "/list")
     @ApiOperation(value="电表信息列表")
@@ -55,56 +51,50 @@ public class AmmeterController extends BaseController{
     @GetMapping(value = "/dailyReport/{imsi}/{reportDate}")
     @ApiOperation(value = "根据时间获取用电量报表",notes = "Legend")
     public Results dailyReport(@PathVariable("imsi") String imsi, @PathVariable("reportDate") String reportDate){
+
+        return dailyOrMonthlyReport(imsi,reportDate,1);
+    }
+
+    public Results dailyOrMonthlyReport(String imsi,String reportDate,Integer reportType){
         Results result = null;
-        List<Float> data = new ArrayList<>();
         AmmeterDevice device = ammeterService.selectDeviceByImsi(imsi);
         if(device == null){
             return Results.error("设备不存在");
         }
         if(reportDate.length() == 10) {
             if(DateUtils.stringToDate(reportDate) == null){
-                 return  Results.error("时间有误!");
+                return  Results.error("时间有误!");
             }
 
-            List<AmmeterReport> dailyReport = reportServer.listDailyReport(reportDate, device.getId());
-            Map<String, Object> dailyMap = StringUtils.initDailyReportMap();
-            if (dailyReport != null) {
-                for (AmmeterReport report : dailyReport) {
-                    dailyMap.put(String.valueOf(report.getHour()), report.getActiveEnergy());
-                }
-            }
-
-            for (int i =1;i<=dailyMap.size();i++){
-                try {
-                    data.add(Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(i)))));
-                }catch (Exception e){
-                    data.add(0f);
-                }
-            }
+            List<Float> data  = reportServer.list645DailyReport(reportDate,device.getId(),reportType);
             result = Results.success(data);
         }else if(reportDate.length() == 7){
             if(DateUtils.stringYearMonthToDate(reportDate) == null){
                 return  Results.error("时间有误!");
             }
-            Integer month = Integer.parseInt(reportDate.substring(reportDate.indexOf("-")+1));
-            List<AmmeterMonthlyReport> monthlyReports = reportServer.listMonthReport(reportDate,device.getId());
-            Map<String, Object> monthMap = StringUtils.initMonthReportMap(month);
-            if(monthlyReports != null) {
-                for (AmmeterMonthlyReport monthlyReport : monthlyReports) {
-                    monthMap.put(String.valueOf(monthlyReport.getDay()),monthlyReport.getActiveEnergy());
-                }
+            if(reportType ==1) {
+                List<Float> data = reportServer.list645MonthReport(reportDate, device.getId(), reportType);
+                result = Results.success(data);
+            }else {
+                result =Results.error("该数据没有月报表!");
             }
-
-            for (int i = 1; i <= monthMap.size();i++){
-                try {
-                    data.add(Float.parseFloat(String.valueOf(monthMap.get(String.valueOf(i)))));
-                }catch (Exception e){
-                    data.add(0f);
-                }
-            }
-            result = Results.success(data);
         }
         return result == null ? Results.error("获取数据异常!"):result;
+    }
+    @GetMapping(value = "/powerReport/{imsi}/{reportDate}")
+    @ApiOperation(value = "根据时间获取用电量报表,根据时间格式获取月报表(2018-05) 和 日报表(2018-05-05)",notes = "Legend")
+    public Results powerReport(@PathVariable("imsi") String imsi, @PathVariable("reportDate") String reportDate){
+        return dailyOrMonthlyReport(imsi,reportDate,1);
+    }
+    @GetMapping(value = "/voltageReport/{imsi}/{reportDate}")
+    @ApiOperation(value = "根据时间获取电压报表,根据时间格式获取日报表(2018-05-05)",notes = "Legend")
+    public Results voltageReport(@PathVariable("imsi") String imsi, @PathVariable("reportDate") String reportDate){
+        return dailyOrMonthlyReport(imsi,reportDate,2);
+    }
+    @GetMapping(value = "/currentReport/{imsi}/{reportDate}")
+    @ApiOperation(value = "根据时间获取电流报表,根据时间格式获取日报表(2018-05-05)",notes = "Legend")
+    public Results currentReport(@PathVariable("imsi") String imsi, @PathVariable("reportDate") String reportDate){
+        return dailyOrMonthlyReport(imsi,reportDate,3);
     }
 
     public static void main(String[] args) {

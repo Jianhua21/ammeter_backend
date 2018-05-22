@@ -40,6 +40,14 @@
         (select imei  from ammeter_position
         where device_id = #{deviceId,jdbcType=VARCHAR})
     </select>
+    <select id="selectByPositionId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from ammeter_device
+        where imsi =
+        (select imei  from ammeter_position
+        where id = #{positionId,jdbcType=INTEGER})
+    </select>
   <select id="selectByCondition" resultMap="BaseResultMap" >
 
     select
@@ -69,7 +77,7 @@
   </resultMap>
 
   <select id="selectAmmeterInfo" resultMap="AmmeterInfoMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterCondition">
-      select device.id,p.imei,p.name,p.address,device.meter_no,device.ass_manage_code,device.type,device.product_date,
+      select p.id,p.imei,p.name,p.address,device.meter_no,device.ass_manage_code,device.type,device.product_date,
       device.protocol_no,info.id as info_id,
       info.active_power,CONCAT(p.amap_longitude,' , ',p.amap_latitude) as gis_amap,p.installer,p.create_time,p.remark,
       s.desc as online_status,
@@ -86,6 +94,7 @@
     <if test="installer != null and installer != ''">
       and p.installer  like CONCAT('%',#{installer,jdbcType=VARCHAR},'%')
     </if>
+      order by p.create_time desc
   </select>
 
   <select id="selectByImsiKey" resultMap="BaseResultMap" parameterType="java.lang.String" >

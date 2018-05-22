@@ -36,7 +36,7 @@
   </select>
     
     <select id="queryWarningList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
-      select d.id,w.id as warning_id,p.device_id,d.imsi ,p.name as ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type,
+      select p.id,w.id as warning_id,p.device_id,d.imsi ,p.name as ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type,
       w.warning_status,
       case when w.warning_status = 0 then '待处理'
       else '已消除' end as status_name
@@ -45,6 +45,9 @@
       and p.status !=3
       <if test="status != null">
         and w.warning_status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="positionId != null">
+        and p.id = #{positionId,jdbcType=INTEGER}
       </if>
       <if test="imei != null">
         and p.imei like CONCAT('%',#{imei,jdbcType=VARCHAR},'%')
@@ -167,4 +170,42 @@
     set warning_status = #{warningStatus,jdbcType=CHAR}
     where ammeter_id = #{ammeterId,jdbcType=INTEGER} and warning_type = #{warningType,jdbcType=VARCHAR}
   </update>
+
+
+    <resultMap id="BaseWarningHomeResultMap" type="com.kashuo.kcp.dao.result.WarningHome" >
+        <result column="online_devices" property="onlineDevices" jdbcType="INTEGER"/>
+        <result column="offline_devices" property="offlineDevices" jdbcType="INTEGER"/>
+        <result column="problem_devices" property="problemDevices" jdbcType="INTEGER" />
+        <result column="total_devices" property="totalDevices" jdbcType="INTEGER" />
+    </resultMap>
+
+  <select id="getStatisticsDevices"  resultMap="BaseWarningHomeResultMap">
+    select sum(case when `status` in (1,2,4,6,7,8) then 1 else 0 end ) as total_devices,
+sum(case when `status` =6 then 1 else 0 end ) as online_devices,
+sum(case when `status` in (1,7)  then 1 else 0 end ) as offline_devices,
+sum(case when `status` in (2,8)  then 1 else 0 end ) as problem_devices
+ from ammeter_position
+  </select>
+
+    <select id="reportWarningDevices" resultType="map">
+        select sum(case when w11.warning_type = 1 then 1 else 0 end) warningOfflineDevices
+ , sum(case when w11.warning_type = 0 then 1 else 0 end)
+ as warningRsrqDevices
+ , sum(case when w11.ammeter_id is null then 1 else 0 end) as normalDevices
+ ,count(p.id) as totalDevices
+from ammeter_position p INNER JOIN ammeter_device d on d.imsi =p.imei
+LEFT JOIN
+(select w1.* from ammeter_warning w1,(select max(id) id from ammeter_warning w GROUP BY ammeter_id) w2
+where w1.id = w2.id and w1.warning_status =0
+) w11 on w11.ammeter_id = d.id
+where p.status != 3
+    </select>
+    <select id="reportWarningCount" resultType="map">
+        select sum(case when w.warning_status = 0 then 1 else 0 end ) currentWarnings,
+sum(case when w.warning_status = 1 then 1 else 0 end ) historyWarnings,
+count(w.id) as warningNumbers
+ from ammeter_warning w INNER JOIN ammeter_device d on w.ammeter_id = d.id
+INNER JOIN ammeter_position p on d.imsi =p.imei
+where p.status !=3
+    </select>
 </mapper>

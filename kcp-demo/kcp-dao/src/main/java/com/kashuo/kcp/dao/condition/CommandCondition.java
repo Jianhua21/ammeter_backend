@@ -11,10 +11,20 @@ public class CommandCondition {
 
     @ApiModelProperty("设备Id")
     private String deviceId;
+    @ApiModelProperty("设备位置Id")
+    private Integer positionId;
     @ApiModelProperty("保活时间设定,按秒来发送60s,90s,120s")
     private String keepTime;
     @ApiModelProperty("sn消息唯一码")
     private String sn;
+
+    public Integer getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Integer positionId) {
+        this.positionId = positionId;
+    }
 
     public String getKeepTime() {
         return keepTime;

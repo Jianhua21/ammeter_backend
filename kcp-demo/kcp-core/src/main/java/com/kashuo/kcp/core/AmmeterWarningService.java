@@ -1,19 +1,24 @@
 package com.kashuo.kcp.core;
 
+import com.alibaba.fastjson.JSONObject;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
 import com.kashuo.kcp.dao.AmmeterNetworkMapper;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterWarningMapper;
 import com.kashuo.kcp.dao.condition.WarningCondition;
+import com.kashuo.kcp.dao.result.WarningCategory;
+import com.kashuo.kcp.dao.result.WarningHome;
 import com.kashuo.kcp.domain.AmmeterNetwork;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterWarning;
 import com.kashuo.kcp.domain.AmmeterWarningResult;
+import com.kashuo.kcp.utils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dell-pc on 2018/4/9.
@@ -78,4 +83,22 @@ public class AmmeterWarningService {
     public AmmeterWarning selectWarningByKey(Integer warningId){
         return warningMapper.selectByPrimaryKey(warningId);
     }
+
+    public WarningHome reportWarningInfo() throws Exception {
+        WarningHome home = warningMapper.getStatisticsDevices();
+        Map<String,Object> warningInfo = warningMapper.reportWarningCount();
+        home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()) );
+        home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
+        home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
+        Map<String,Object> warningDevices = warningMapper.reportWarningDevices();
+        WarningCategory warningCategories = new WarningCategory();
+        warningCategories.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
+        warningCategories.setNormalDevices(Integer.parseInt(warningDevices.get("normalDevices").toString()));
+        warningCategories.setWarningRsrqDevices(Integer.parseInt(warningDevices.get("warningRsrqDevices").toString()));
+        warningCategories.setWarningOfflineDevices(Integer.parseInt(warningDevices.get("warningOfflineDevices").toString()));
+        home.setWarningCategories(warningCategories);
+        return home;
+
+    }
+
 }

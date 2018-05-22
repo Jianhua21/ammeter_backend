@@ -55,6 +55,8 @@ public class IoTConstant {
 
         public static final String DEVICE_COMMAND_IEM001 ="IEM001";
 
+        public static final String DEVICE_COMMAND_IEM002 ="IEM002";
+
         public static final String DEVICE_COMMAND_FEFEFEFE ="FEFEFEFE";
 
     }

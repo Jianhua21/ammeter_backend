@@ -96,6 +96,12 @@ public class NetWorkService {
         position.setDeviceId(deviceId);
         position.setStatus(6);
         ammeterPositionMapper.updateStatusByDeviceId(position);
+        //设备不在线警告 消除
+        AmmeterWarning warning = new AmmeterWarning();
+        warning.setWarningType(1);
+        warning.setWarningStatus("1");
+        warning.setAmmeterId(ammeterDevice.getId());
+        ammeterWarningMapper.updateStatusByType(warning);
 
     }
 

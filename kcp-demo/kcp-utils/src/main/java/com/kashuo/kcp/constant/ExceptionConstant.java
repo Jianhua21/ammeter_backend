@@ -21,7 +21,7 @@ public enum  ExceptionConstant {
     ERROR_CODE_103026(200,"103026","License不存在"),
     ERROR_CODE_103028(200,"103028","License无资源"),
     ERROR_CODE_103027(200,"103027","License的销售项不存在"),
-    ERROR_CODE_100418(200,"100418","设备数据不存在"),
+    ERROR_CODE_100418(404,"100418","设备数据不存在,异常设备!"),
     ERROR_CODE_100023(500,"100023","数据库中数据异常"),
     ERROR_CODE_102203(400,"102203","命令名称无效"),
     ERROR_CODE_100223(400,"100223","命令数量已达上限"),
@@ -54,8 +54,7 @@ public enum  ExceptionConstant {
     }
     public static  String getExceptionConstant(Integer statusCode,String errorCode){
         for(ExceptionConstant cnum:ExceptionConstant.values()){
-            if(cnum.statusCode.intValue() == statusCode.intValue() &&
-                    cnum.errorCode.equals(errorCode)){
+            if(cnum.errorCode.equals(errorCode)){
                 return  cnum.desc;
             }
         }

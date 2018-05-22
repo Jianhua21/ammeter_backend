@@ -18,12 +18,22 @@ public class WarningCondition extends BaseCondition{
     private Integer channelId;
     @ApiModelProperty("设备Id")
     private String deviceId;
+    @ApiModelProperty("设备位置Id")
+    private Integer positionId;
     @ApiModelProperty("告警状态 0-未消除告警，1-消除的告警，不传就取所有记录")
     private Integer status;
     @ApiModelProperty("设备IMEI号")
     private String imei;
     @ApiModelProperty("设备名称")
     private String name;
+
+    public Integer getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Integer positionId) {
+        this.positionId = positionId;
+    }
 
     public String getImei() {
         return imei != null ? imei.trim():null;

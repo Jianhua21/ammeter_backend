@@ -12,6 +12,7 @@ import com.kashuo.kcp.api.entity.CommandDetail;
 import com.kashuo.kcp.api.entity.CommandParams;
 import com.kashuo.kcp.api.entity.callback.DeviceCommandCallBack;
 import com.kashuo.kcp.api.entity.callback.DeviceDataChange;
+import com.kashuo.kcp.auth.AuthExceptionService;
 import com.kashuo.kcp.auth.AuthService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.AmmeterPositionService;
@@ -46,10 +47,10 @@ public class CommandService {
     private AmmeterCommandHistoryMapper commandHistoryMapper;
 
     @Autowired
-    private AmmeterPositionService positionService;
+    private DeviceManageService deviceManageService;
 
     @Autowired
-    private DeviceManageService deviceManageService;
+    private AuthExceptionService exceptionService;
 
     public PostDeviceCommandOutDTO postDeviceCommand(PostDeviceCommandInDTO deviceCommandInDTO) throws NorthApiException {
         SignalDelivery signalDelivery = new SignalDelivery();
@@ -105,7 +106,7 @@ public class CommandService {
             sb.append(params.commandData(command));
         }
         if(params.isDataFlag()){
-            if("1".equals(params.getIsChanged())){
+            if("1".equals(params.getIsChanged()) || "2".equals(params.getIsChanged())){
                 sb.append("00");
             }else {
             sb.append(params.getDataLength()).append(params.getData());
@@ -313,6 +314,79 @@ public class CommandService {
             //插入命令历史记录
             insertCommandHistory(deviceCommandOutDTO,
                     sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID));
+        }
+    }
+
+    public void commonCommandSend(AmmeterPosition position,String commandKey,CommandParams params) throws Exception {
+        PostDeviceCommandInDTO deviceCommandInDTO = new PostDeviceCommandInDTO();
+        deviceCommandInDTO.setDeviceId(position.getDeviceId());
+        params.setCommandKey(commandKey);
+        params.setCallBackKey(AppConstant.COMMAND_COMMON_CALLBACK_URL);
+        params.setDataFlag(true);
+//        if(data != null){
+//            params.setData(data);
+//        }else {
+//            params.setData(sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID));
+//        }
+        params.setCommandType(1);
+        deviceCommandInDTO = prepareCommand(params,deviceCommandInDTO);
+        PostDeviceCommandOutDTO deviceCommandOutDTO = postDeviceCommand(deviceCommandInDTO);
+        if(deviceCommandOutDTO != null){
+            //插入命令历史记录
+            insertCommandHistory(deviceCommandOutDTO,
+                    sysDictionaryService.getDynamicSystemValue(params.getCommandKey(),
+                            sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID)));
+        }
+    }
+
+    /***
+     * 设置CDP IP
+     * @param position
+     * @param cdpIp
+     * @throws Exception
+     */
+    public void configCdpIP(AmmeterPosition position,String cdpIp) throws Exception {
+        CommandParams params = new CommandParams();
+        //发送CDP IP配置信息
+        params.setData(cdpIp);
+        try {
+            commonCommandSend(position, AppConstant.COMMAND_CDP_IP_KEY, params);
+        }catch (NorthApiException e){
+            exceptionService.handleException(e,position.getDeviceId());
+        }
+    }
+
+    /***
+     * 设置APN 地址
+     * @param position
+     * @param apn
+     * @throws Exception
+     */
+    public void configAPN(AmmeterPosition position,String apn) throws Exception {
+        CommandParams params = new CommandParams();
+        //发送APN 地址配置信息
+        params.setData(apn);
+        try{
+            commonCommandSend(position, AppConstant.COMMAND_APN_ADDRESS_KEY, params);
+        }catch (NorthApiException e){
+            exceptionService.handleException(e,position.getDeviceId());
+        }
+    }
+
+    /***
+     * 设置保活时间配置
+     * @param position
+     * @param keepAliveTime
+     * @throws Exception
+     */
+    public void configKeepAlive(AmmeterPosition position,String keepAliveTime) throws Exception {
+        CommandParams params = new CommandParams();
+        //发送保活时间配置信息
+        params.setData(keepAliveTime);
+        try {
+            commonCommandSend(position, AppConstant.COMMAND_NB_KEEPALIVE_KEY, params);
+        }catch (NorthApiException e){
+            exceptionService.handleException(e,position.getDeviceId());
         }
     }
 

@@ -30,6 +30,17 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     @ApiModelProperty("用于列表查询    警告状态  0 -没有警告  1-有警告")
     private String warningStatus;
 
+    public Integer getWorkStatus() {
+        return workStatus;
+    }
+
+    public void setWorkStatus(Integer workStatus) {
+        this.workStatus = workStatus;
+    }
+
+    @ApiModelProperty("开关闸状态")
+    private Integer workStatus;
+
     public String getStatusName() {
         return statusName;
     }

@@ -31,6 +31,9 @@ public class AmmeterUserService {
     @Autowired
     private AmmeterUserMapper userMapper;
 
+    @Autowired
+    private AmmeterLoginHistoryMapper loginHistoryMapper;
+
 //    @Autowired
 //    private RoleMapper roleMapper;
 //    @Autowired
@@ -195,4 +198,9 @@ public class AmmeterUserService {
     public List<AmmeterUser> selectUserByChannelList(List<Integer> channelIdList,Integer userId){
         return userMapper.selectUserByChannelList(channelIdList,userId);
     }
+
+    public AmmeterLoginHistory selectLoginHistoryByToken(String token){
+        return loginHistoryMapper.selectByAccessToken(token);
+    }
+
 }
