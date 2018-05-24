@@ -396,7 +396,7 @@ and p.device_id is not null
     <select id="validAmmeterDevice"   resultMap="BaseAddressResultMap">
         select d.id,p.imei,d.meter_no,p.device_id,p.`name` from ammeter_device d ,ammeter_position p
         where d.imsi = p.imei
-        and p.status in (1,6) and d.meter_no is not null
+        and p.status in (1,6) and d.meter_no is not null and LENGTH(d.meter_no) =12
         and p.device_id is not null
     </select>
 

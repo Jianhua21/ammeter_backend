@@ -10,15 +10,20 @@ import com.kashuo.kcp.dao.result.AmmeterDeviceResult;
 import com.kashuo.kcp.domain.AmmeterMonthlyReport;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterReport;
+import com.kashuo.kcp.domain.AmmeterWorkingInfo;
 import com.kashuo.kcp.utils.DateUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dell-pc on 2018/4/28.
@@ -42,6 +47,18 @@ public class IoMRegSync {
     private AmmeterReportServer reportServer;
 
     public void regInfo2IoM(){
+
+        //对电表状态容错定时恢复
+        List<AmmeterWorkingInfo> workingInfos = reportServer.getWrongWorkInfo4Update();
+        if(workingInfos != null){
+            workingInfos.forEach(w->{
+                Integer status = 1;
+                if(w.getStatus() ==3){
+                    status = 2;
+                }
+                reportServer.updateByAmmeterId(w.getAmmeterId(),status);
+            });
+        }
 
         //获取注册失败的设备
         List<AmmeterPosition> positions_2 = ammeterPositionService.selectPositionByStatus(2);
@@ -141,6 +158,15 @@ public class IoMRegSync {
         }
 
     }
+    public static void main(String[] args) {
 
+        int i = 3;
+        double j = 7.2;
+        Map<String,Object> order = new HashedMap();
+        order.put("price",38000);
+        BigDecimal bg = new BigDecimal((Integer) order.get("price")*25*1d/100d/1000).setScale(0, RoundingMode.HALF_UP);
+//        BigDecimal bg = new BigDecimal(j*60/100).setScale(0, RoundingMode.HALF_UP);
+        System.out.println(bg.doubleValue());
+    }
 
 }

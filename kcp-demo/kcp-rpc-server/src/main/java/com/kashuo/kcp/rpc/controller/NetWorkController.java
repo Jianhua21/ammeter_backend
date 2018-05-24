@@ -61,7 +61,7 @@ public class NetWorkController {
                 try {
                     dataRsrq.add(Float.parseFloat(String.valueOf(rsrqMap.get(String.valueOf(i-1)))));
                 }catch (Exception e){
-                    dataRsrq.add(-50.0f);
+                    dataRsrq.add(0.0f);
                 }
             }
             data.put("rsrq",dataRsrq);

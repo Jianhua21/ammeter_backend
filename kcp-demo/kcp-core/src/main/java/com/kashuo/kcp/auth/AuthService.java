@@ -148,17 +148,20 @@ public class AuthService {
             getAuthInfo();
         }else{
             ammeterAuthCache = JSONObject.parseObject(authCache,AmmeterAuth.class);
-            checkPlatAccessToken(ammeterAuthCache);
+            ammeterAuthCache = checkPlatAccessToken(ammeterAuthCache);
         }
         if(ammeterAuthCache.getAppId() == null) {
             ammeterAuthCache.setAppId(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_APPID,AppConstant.SYSTEM_PARAMS_TYPE_ID));
         }
         return ammeterAuthCache;
     }
-    public void checkPlatAccessToken(AmmeterAuth auth) throws NorthApiException {
+    public AmmeterAuth checkPlatAccessToken(AmmeterAuth auth) throws NorthApiException {
           if((new Date().getTime() - auth.getCreateTime().getTime())/1000 >= auth.getExpiresIn()){
               getAuthInfo();
+              String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+              auth = JSONObject.parseObject(authCache,AmmeterAuth.class);
           }
+          return auth;
     }
 
     public static void main(String[] args) throws NorthApiException {

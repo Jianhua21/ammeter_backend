@@ -218,4 +218,19 @@
     update ammeter_working_info set status = #{status,jdbcType=INTEGER}
     where ammeter_id = #{ammeterId,jdbcType=INTEGER}
   </update>
+
+  <select id="getWrongStatusforUpdate" resultMap="BaseResultMap">
+    select w.id, w.ammeter_id, w.zero_line_current, w.grid_frequency, w.average_power_minute, w.active_demand,
+    w.reactive_demand, w.apparent_demand, w.temperature, w.clock_cell_voltage, w.no_power_cell_voltage,
+    w.battery_working_time, w.active_power, w.reverse_active_power, w.status from ammeter_command_history c,
+ammeter_position p,ammeter_device e,ammeter_working_info w,
+(select max(id) id from ammeter_command_history where command_name ='IEM001'
+or command_name='IEM002' group by device_id) d
+where
+c.device_id = p.device_id and p.imei =e.imsi
+and e.id = w.ammeter_id and
+(w.`status`= 3 or w.`status` =4) and
+c.id = d.id and c.`status` != 'SUCCESS'
+and round((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(c.create_time))/60)>15
+  </select>
 </mapper>

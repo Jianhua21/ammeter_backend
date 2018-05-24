@@ -61,7 +61,7 @@
     from ammeter_network group by ammeter_id) c  where  n.id = c.id) b
     on d.id = b.ammeter_id
     where p.`status` in(1,6,7) and p.device_id is not null
-     and (TIMESTAMPDIFF(HOUR,b.created_time,NOW())> 1 or b.created_time is null)
+     and (TIMESTAMPDIFF(HOUR,b.created_time,NOW())>= 1 or b.created_time is null)
 and not EXISTS(select * from ammeter_warning w where w.ammeter_id = d.id and w.warning_type=1
 and w.warning_status =0)
   </select>
@@ -77,7 +77,7 @@ and w.warning_status =0)
     on d.id = b.ammeter_id
     where p.`status` in(1,7) and p.device_id is not null
     <![CDATA[
-    and TIMESTAMPDIFF(HOUR,b.created_time,NOW()) <=1
+    and TIMESTAMPDIFF(HOUR,b.created_time,NOW()) <1
     ]]>
     and  EXISTS(select * from ammeter_warning w where w.ammeter_id = d.id and w.warning_type=1
     and w.warning_status =0)
@@ -199,7 +199,7 @@ order by b.created_time desc
         rsrq = #{rsrq,jdbcType=VARCHAR},
       </if>
       <if test="rsrp != null" >
-        rsrq = #{rsrp,jdbcType=VARCHAR},
+        rsrp = #{rsrp,jdbcType=VARCHAR},
       </if>
       <if test="celli != null" >
         celli = #{celli,jdbcType=VARCHAR},

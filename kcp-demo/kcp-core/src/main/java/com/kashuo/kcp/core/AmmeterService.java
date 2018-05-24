@@ -79,6 +79,7 @@ public class AmmeterService {
         CommandParams params = new CommandParams();
         //没有数据发送
         params.setIsChanged("2");
+        params.setCommandType(3);
         AmmeterPosition position = positionMapper.selectByPrimaryKey(id);
         String command = status == 1 ? AppConstant.COMMAND_SWTICH_OFF_KEY:AppConstant.COMMAND_SWTICH_ON_KEY;
         commandService.commonCommandSend(position, command, params);

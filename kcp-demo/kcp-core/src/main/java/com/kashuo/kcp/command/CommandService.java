@@ -15,6 +15,7 @@ import com.kashuo.kcp.api.entity.callback.DeviceDataChange;
 import com.kashuo.kcp.auth.AuthExceptionService;
 import com.kashuo.kcp.auth.AuthService;
 import com.kashuo.kcp.constant.AppConstant;
+import com.kashuo.kcp.constant.IoTConstant;
 import com.kashuo.kcp.core.AmmeterPositionService;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.AmmeterCommandHistoryMapper;
@@ -208,7 +209,12 @@ public class CommandService {
         int commandLength = Integer.parseInt(response.substring(6,8));
 
         if(version ==3) {
-            detail.setCommandLength(commandLength*2);
+            if(response.contains(IoTConstant.Command.DEVICE_COMMAND_IEM001) ||
+                    response.contains(IoTConstant.Command.DEVICE_COMMAND_IEM002)){
+                detail.setCommandLength(commandLength);
+            }else{
+                detail.setCommandLength(commandLength*2);
+            }
         }else{
             detail.setCommandLength(commandLength);
         }
@@ -328,7 +334,9 @@ public class CommandService {
 //        }else {
 //            params.setData(sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID));
 //        }
-        params.setCommandType(1);
+        if(params.getCommandType() == null) {
+            params.setCommandType(1);
+        }
         deviceCommandInDTO = prepareCommand(params,deviceCommandInDTO);
         PostDeviceCommandOutDTO deviceCommandOutDTO = postDeviceCommand(deviceCommandInDTO);
         if(deviceCommandOutDTO != null){
@@ -349,6 +357,7 @@ public class CommandService {
         CommandParams params = new CommandParams();
         //发送CDP IP配置信息
         params.setData(cdpIp);
+        params.setCommandType(2);
         try {
             commonCommandSend(position, AppConstant.COMMAND_CDP_IP_KEY, params);
         }catch (NorthApiException e){
@@ -366,6 +375,7 @@ public class CommandService {
         CommandParams params = new CommandParams();
         //发送APN 地址配置信息
         params.setData(apn);
+        params.setCommandType(2);
         try{
             commonCommandSend(position, AppConstant.COMMAND_APN_ADDRESS_KEY, params);
         }catch (NorthApiException e){

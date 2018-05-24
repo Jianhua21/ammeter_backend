@@ -2,9 +2,11 @@ package com.kashuo.kcp.core;
 
 import com.kashuo.kcp.dao.AmmeterMonthlyReportMapper;
 import com.kashuo.kcp.dao.AmmeterReportMapper;
+import com.kashuo.kcp.dao.AmmeterWorkingInfoMapper;
 import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterMonthlyReport;
 import com.kashuo.kcp.domain.AmmeterReport;
+import com.kashuo.kcp.domain.AmmeterWorkingInfo;
 import com.kashuo.kcp.utils.AmmeterUtils;
 import com.kashuo.kcp.utils.DateUtils;
 import com.kashuo.kcp.utils.StringUtils;
@@ -30,6 +32,9 @@ public class AmmeterReportServer {
 
     @Autowired
     private SysDictionaryService sysDictionaryService;
+
+    @Autowired
+    private AmmeterWorkingInfoMapper workingInfoMapper;
 
     public int insertDailyReportServer(AmmeterDevice device, String result){
         AmmeterReport reportDB = reportMapper.queryMaxDailyReportByAmmeterId(device.getId(),DateUtils.getCurrentDate());
@@ -238,4 +243,13 @@ public class AmmeterReportServer {
         }
         return data;
     }
+
+    public List<AmmeterWorkingInfo> getWrongWorkInfo4Update(){
+        return workingInfoMapper.getWrongStatusforUpdate();
+    }
+
+    public Integer updateByAmmeterId(Integer ammeterId,Integer status){
+        return workingInfoMapper.updateByAmmeterId(ammeterId,status);
+    }
+
 }

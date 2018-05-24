@@ -174,6 +174,8 @@ public class PositionController extends BaseController{
                     positionDB.getStatus() != 2) {
                 position.setDeviceId(positionDB.getDeviceId());
                 commandService.autoSyncDeviceInfo(position);
+            }else if(positionDB.getStatus() ==8 || positionDB.getStatus() ==2){
+                commandService.autoRegDevice(position);
             }
         }catch (Exception e){
             return  Results.error("编辑电表信息位置出错了!");
