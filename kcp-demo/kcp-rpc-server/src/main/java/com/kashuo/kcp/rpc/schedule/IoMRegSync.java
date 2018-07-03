@@ -13,6 +13,7 @@ import com.kashuo.kcp.domain.AmmeterReport;
 import com.kashuo.kcp.domain.AmmeterWorkingInfo;
 import com.kashuo.kcp.utils.DateUtils;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.httpclient.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by dell-pc on 2018/4/28.
@@ -87,6 +89,7 @@ public class IoMRegSync {
 
     public void sendAddressCommand(){
         List<AmmeterDeviceResult>  results = ammeterService.checkAmmeterMeterNo();
+//        results.stream().collect(Collectors.partitioningBy(r->"1".equals(r.getImei())));
         results.forEach(r->{
             try {
                 commandService.getAmmeterAddress(r.getDeviceId());
@@ -163,10 +166,14 @@ public class IoMRegSync {
         int i = 3;
         double j = 7.2;
         Map<String,Object> order = new HashedMap();
-        order.put("price",38000);
-        BigDecimal bg = new BigDecimal((Integer) order.get("price")*25*1d/100d/1000).setScale(0, RoundingMode.HALF_UP);
+        order.put("price",7076000);
+        BigDecimal bg = new BigDecimal((Integer) order.get("price")/100*25/30*8/1000).setScale(0, RoundingMode.HALF_UP);
 //        BigDecimal bg = new BigDecimal(j*60/100).setScale(0, RoundingMode.HALF_UP);
-        System.out.println(bg.doubleValue());
+        String s = String.format("%08d",(int)bg.doubleValue()*1000);
+        System.out.println(s);
+//        System.out.println((int)order.get("price")*(25*18/30/100d));
+
+//        System.out.println(Integer.parseInt(s)*1d/1000);
     }
 
 }

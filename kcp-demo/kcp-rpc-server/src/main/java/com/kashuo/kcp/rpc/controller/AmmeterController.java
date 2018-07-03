@@ -4,22 +4,15 @@ import com.kashuo.kcp.core.AmmeterChannelService;
 import com.kashuo.kcp.core.AmmeterReportServer;
 import com.kashuo.kcp.core.AmmeterService;
 import com.kashuo.kcp.dao.condition.AmmeterCondition;
-import com.kashuo.kcp.dao.condition.AmmeterUpdateCondition;
 import com.kashuo.kcp.domain.AmmeterDevice;
-import com.kashuo.kcp.domain.AmmeterMonthlyReport;
-import com.kashuo.kcp.domain.AmmeterReport;
 import com.kashuo.kcp.domain.AmmeterUser;
 import com.kashuo.kcp.utils.DateUtils;
 import com.kashuo.kcp.utils.Results;
-import com.kashuo.kcp.utils.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by dell-pc on 2017/9/7.

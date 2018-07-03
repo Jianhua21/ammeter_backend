@@ -29,6 +29,46 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     private boolean Activated;
     @ApiModelProperty("用于列表查询    警告状态  0 -没有警告  1-有警告")
     private String warningStatus;
+    @ApiModelProperty("电表型号")
+    private String deviceModel;
+    @ApiModelProperty("用电单位")
+    private String companyName;
+    @ApiModelProperty("合同状态")
+    private String agreementStatus;
+    @ApiModelProperty("联系人信息")
+    private String contactInfo;
+
+    public String getDeviceModel() {
+        return deviceModel;
+    }
+
+    public void setDeviceModel(String deviceModel) {
+        this.deviceModel = deviceModel;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getAgreementStatus() {
+        return agreementStatus;
+    }
+
+    public void setAgreementStatus(String agreementStatus) {
+        this.agreementStatus = agreementStatus;
+    }
+
+    public String getContactInfo() {
+        return contactInfo;
+    }
+
+    public void setContactInfo(String contactInfo) {
+        this.contactInfo = contactInfo;
+    }
 
     public Integer getWorkStatus() {
         return workStatus;

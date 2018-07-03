@@ -28,6 +28,46 @@ public class AmmeterPositionBaseInfo {
     private String installer;
     @ApiModelProperty("设备的唯一标识为IMEI号")
     private String imei;
+    @ApiModelProperty("电表型号")
+    private String deviceModel;
+    @ApiModelProperty("用电单位")
+    private String companyName;
+    @ApiModelProperty("合同状态")
+    private String agreementStatus;
+    @ApiModelProperty("联系人信息")
+    private String contactInfo;
+
+    public String getDeviceModel() {
+        return deviceModel;
+    }
+
+    public void setDeviceModel(String deviceModel) {
+        this.deviceModel = deviceModel;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getAgreementStatus() {
+        return agreementStatus;
+    }
+
+    public void setAgreementStatus(String agreementStatus) {
+        this.agreementStatus = agreementStatus;
+    }
+
+    public String getContactInfo() {
+        return contactInfo;
+    }
+
+    public void setContactInfo(String contactInfo) {
+        this.contactInfo = contactInfo;
+    }
 
     public Integer getId() {
         return id;

@@ -32,6 +32,10 @@ public class StringUtil {
         return str == null ? "-" : str;
     }
 
+    public static String pageViewToEmpty(String str) {
+        return str == null || "".equals(str.trim())  ? "-" : str;
+    }
+
     public static String convertEncoding(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {

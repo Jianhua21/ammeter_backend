@@ -31,9 +31,6 @@ import java.util.*;
 @RequestMapping(value = "login")
 public class LoginController extends BaseController {
 
-    @Value("${website.constant.backendPcesServer}")
-    private String backendPcesServer;
-
     @Autowired
     private AmmeterUserService userService;
 

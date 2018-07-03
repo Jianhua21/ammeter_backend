@@ -164,6 +164,10 @@ public class PositionController extends BaseController{
             position.setGpsLatitude(ammeterPosition.getGpsLatitude());
             position.setName(ammeterPosition.getName());
             position.setNumber(ammeterPosition.getNumber());
+            position.setDeviceModel(ammeterPosition.getDeviceModel());
+            position.setCompanyName(ammeterPosition.getCompanyName());
+            position.setContactInfo(ammeterPosition.getContactInfo());
+            position.setAgreementStatus(ammeterPosition.getAgreementStatus());
             ammeterPositionService.updateByPrimaryKeySelective(position);
 
             /***
@@ -178,6 +182,7 @@ public class PositionController extends BaseController{
                 commandService.autoRegDevice(position);
             }
         }catch (Exception e){
+            logger.error("出错了:{}",e);
             return  Results.error("编辑电表信息位置出错了!");
         }
         return Results.success("编辑电表信息位置成功!");

@@ -19,6 +19,10 @@
     <result column="Activated" property="Activated" jdbcType="CHAR" />
     <result column="installer" property="installer" jdbcType="VARCHAR" />
     <result column="status_name" property="statusName" jdbcType="VARCHAR" />
+    <result column="device_model" property="deviceModel" jdbcType="VARCHAR" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="agreement_status" property="agreementStatus" jdbcType="VARCHAR" />
+    <result column="contact_info" property="contactInfo" jdbcType="VARCHAR" />
   </resultMap>
 
   <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterPosition" >
@@ -46,12 +50,14 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, number, address, amap_longitude, amap_latitude, gps_longitude, gps_latitude, 
-    remark,status,create_by,create_time,imei,device_id,verify_code,psk,Activated,installer,'-' as status_name
+    remark,status,create_by,create_time,imei,device_id,verify_code,psk,Activated,installer,'-' as status_name,
+    device_model,company_name,agreement_status,contact_info
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     p.id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude, p.gps_longitude, p.gps_latitude,
-    p.remark,p.status,p.create_by,p.create_time,p.imei,p.device_id,p.verify_code,p.psk,p.Activated,p.installer,s.desc as status_name
+    p.remark,p.status,p.create_by,p.create_time,p.imei,p.device_id,p.verify_code,p.psk,p.Activated,p.installer,s.desc as status_name,
+    device_model,company_name,agreement_status,contact_info
     from ammeter_position p ,ammeter_status s
     where p.status = s.code and id = #{id,jdbcType=INTEGER}
   </select>
@@ -260,7 +266,19 @@
         Activated = #{Activated,jdbcType=CHAR},
       </if>
       <if test="status != null">
-        status = #{status,jdbcType=INTEGER}
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="deviceModel != null">
+        device_model = #{deviceModel,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null">
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementStatus != null">
+        agreement_status = #{agreementStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="contactInfo != null">
+        contact_info = #{contactInfo,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}

@@ -62,9 +62,49 @@ public class AmmeterInfoResult implements Serializable{
     private String remark;
     //在线状态
     private String onlineStatus;
+    //电表型号
+    private String deviceModel;
+    //用电单位
+    private String companyName;
+    //合同状态
+    private String agreementStatus;
+    //联系人信息
+    private String contactInfo;
+
+    public String getDeviceModel() {
+        return StringUtil.pageViewToEmpty(deviceModel);
+    }
+
+    public void setDeviceModel(String deviceModel) {
+        this.deviceModel = deviceModel;
+    }
+
+    public String getCompanyName() {
+        return StringUtil.pageViewToEmpty(companyName);
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getAgreementStatus() {
+        return StringUtil.pageViewToEmpty(agreementStatus);
+    }
+
+    public void setAgreementStatus(String agreementStatus) {
+        this.agreementStatus = agreementStatus;
+    }
+
+    public String getContactInfo() {
+        return StringUtil.pageViewToEmpty(contactInfo);
+    }
+
+    public void setContactInfo(String contactInfo) {
+        this.contactInfo = contactInfo;
+    }
 
     public String getName() {
-        return StringUtil.nullToEmpty(name);
+        return StringUtil.pageViewToEmpty(name);
     }
 
     public void setName(String name) {
@@ -81,7 +121,7 @@ public class AmmeterInfoResult implements Serializable{
     }
 
     public String getGisAmap() {
-        return StringUtil.nullToEmpty(gisAmap);
+        return StringUtil.pageViewToEmpty(gisAmap);
     }
 
     public void setGisAmap(String gisAmap) {
@@ -89,7 +129,7 @@ public class AmmeterInfoResult implements Serializable{
     }
 
     public String getInstaller() {
-        return StringUtil.nullToEmpty(installer);
+        return StringUtil.pageViewToEmpty(installer);
     }
 
     public void setInstaller(String installer) {
@@ -105,7 +145,7 @@ public class AmmeterInfoResult implements Serializable{
     }
 
     public String getRemark() {
-        return StringUtil.nullToEmpty(remark);
+        return StringUtil.pageViewToEmpty(remark);
     }
 
     public void setRemark(String remark) {
@@ -113,7 +153,7 @@ public class AmmeterInfoResult implements Serializable{
     }
 
     public String getOnlineStatus() {
-        return StringUtil.nullToEmpty(onlineStatus);
+        return StringUtil.pageViewToEmpty(onlineStatus);
     }
 
     public void setOnlineStatus(String onlineStatus) {
@@ -121,7 +161,7 @@ public class AmmeterInfoResult implements Serializable{
     }
 
     public String getAmmeterNumber() {
-        return StringUtil.nullToEmpty(ammeterNumber);
+        return StringUtil.pageViewToEmpty(ammeterNumber);
     }
 
     public void setAmmeterNumber(String ammeterNumber) {
@@ -129,7 +169,7 @@ public class AmmeterInfoResult implements Serializable{
     }
 
     public String getAddress() {
-        return StringUtil.nullToEmpty(address);
+        return StringUtil.pageViewToEmpty(address);
     }
 
     public void setAddress(String address) {
@@ -148,7 +188,7 @@ public class AmmeterInfoResult implements Serializable{
     }
 
     public String getMeterNo() {
-        return StringUtil.nullToEmpty(meterNo);
+        return StringUtil.pageViewToEmpty(meterNo);
     }
 
     public void setMeterNo(String meterNo) {
@@ -156,7 +196,7 @@ public class AmmeterInfoResult implements Serializable{
     }
 
     public String getAssManageCode() {
-        return StringUtil.nullToEmpty(assManageCode);
+        return StringUtil.pageViewToEmpty(assManageCode);
     }
 
     public void setAssManageCode(String assManageCode) {
@@ -165,7 +205,7 @@ public class AmmeterInfoResult implements Serializable{
 
 
     public String getType() {
-        return StringUtil.nullToEmpty(type);
+        return StringUtil.pageViewToEmpty(type);
     }
 
     public void setType(String type) {
@@ -181,7 +221,7 @@ public class AmmeterInfoResult implements Serializable{
     }
 
     public String getProtocolNo() {
-        return StringUtil.nullToEmpty(protocolNo);
+        return StringUtil.pageViewToEmpty(protocolNo);
     }
 
     public void setProtocolNo(String protocolNo) {
@@ -197,7 +237,7 @@ public class AmmeterInfoResult implements Serializable{
     }
 
     public String getActivePower() {
-        return StringUtil.nullToEmpty(activePower);
+        return StringUtil.pageViewToEmpty(activePower);
     }
 
     public void setActivePower(String activePower) {

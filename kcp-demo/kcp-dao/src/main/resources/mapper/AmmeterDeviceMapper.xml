@@ -66,7 +66,7 @@
     <result column="product_date" property="productDate" jdbcType="TIMESTAMP" />
     <result column="protocol_no" property="protocolNo" jdbcType="VARCHAR" />
     <result column="info_id" property="infoId" jdbcType="INTEGER" />
-    <result column="active_power" property="activePower" jdbcType="VARCHAR" />
+    <result column="active_energy" property="activePower" jdbcType="VARCHAR" />
       <result column="gis_amap" property="gisAmap" jdbcType="VARCHAR"/>
       <result column="installer" property="installer" jdbcType="VARCHAR"/>
       <result column="create_time" property="createDate" jdbcType="TIMESTAMP" />
@@ -74,19 +74,28 @@
     <result column="reverse_active_power" property="reverseActivePower" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="INTEGER" />
       <result column="online_status" property="onlineStatus" jdbcType="VARCHAR"/>
+      <result column="device_model" property="deviceModel" jdbcType="VARCHAR"/>
+      <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
+      <result column="agreement_status" property="agreementStatus" jdbcType="VARCHAR"/>
+      <result column="contact_info" property="contactInfo" jdbcType="VARCHAR"/>
   </resultMap>
 
   <select id="selectAmmeterInfo" resultMap="AmmeterInfoMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterCondition">
-      select p.id,p.imei,p.name,p.address,device.meter_no,device.ass_manage_code,device.type,device.product_date,
+      select p.id,p.imei,p.name,p.address,p.number as ammeter_number,device.meter_no,device.ass_manage_code,device.type,device.product_date,
       device.protocol_no,info.id as info_id,
-      info.active_power,CONCAT(p.amap_longitude,' , ',p.amap_latitude) as gis_amap,p.installer,p.create_time,p.remark,
+      r.active_energy,CONCAT(p.amap_longitude,' , ',p.amap_latitude) as gis_amap,p.installer,p.create_time,p.remark,
       s.desc as online_status,
-      info.reverse_active_power,IFNULL(info.`status`,1) as status
+      info.reverse_active_power,IFNULL(info.`status`,1) as status,
+      p.agreement_status,p.company_name,p.contact_info,p.device_model
       from ammeter_device device
       INNER JOIN ammeter_position p on device.imsi = p.imei
       INNER  JOIN ammeter_status s on p.status= s.code
       left JOIN
       ammeter_working_info info on device.id = info.ammeter_id
+      LEFT JOIN
+      (select r11.* from ammeter_report r11,
+      (select max(id) id from ammeter_report r12 where active_energy is not null group by ammeter_id) r13
+      where r11.id = r13.id ) r on device.id = r.ammeter_id
       where device.channel_id =#{channelId,jdbcType=INTEGER} and p.status !=3
     <if test="name != null and name != ''">
       and p.name  like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
