@@ -43,10 +43,17 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.8</version>
         </dependency>
+        <!-- 电信物联网SDK -->
         <dependency>
             <groupId>org.legend.api</groupId>
             <artifactId>api-client</artifactId>
             <version>1.0.0</version>
+        </dependency>
+         <!--移动物联网SDK -->
+        <dependency>
+            <groupId>org.legend.api</groupId>
+            <artifactId>onenet_edp_sdk</artifactId>
+            <version>1.3.0</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
