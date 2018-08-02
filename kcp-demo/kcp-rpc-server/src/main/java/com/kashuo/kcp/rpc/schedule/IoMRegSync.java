@@ -11,6 +11,7 @@ import com.kashuo.kcp.domain.AmmeterMonthlyReport;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterReport;
 import com.kashuo.kcp.domain.AmmeterWorkingInfo;
+import com.kashuo.kcp.redis.RedisServiceImpl;
 import com.kashuo.kcp.utils.DateUtils;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.httpclient.util.DateUtil;
@@ -47,6 +48,8 @@ public class IoMRegSync {
 
     @Autowired
     private AmmeterReportServer reportServer;
+    @Autowired
+    private RedisServiceImpl redisService;
 
     public void regInfo2IoM(){
 
@@ -92,7 +95,16 @@ public class IoMRegSync {
 //        results.stream().collect(Collectors.partitioningBy(r->"1".equals(r.getImei())));
         results.forEach(r->{
             try {
-                commandService.getAmmeterAddress(r.getDeviceId());
+                String limitStr = redisService.get(r.getDeviceId());
+                Integer limit =0;
+                try{
+                    limit = Integer.parseInt(limitStr);
+                }catch (Exception e){
+                    logger.error("获取电表地址限制次数出错= {}",r.getDeviceId());
+                }
+                if(limit <=3) {
+                    commandService.getAmmeterAddress(r.getDeviceId());
+                }
             } catch (NorthApiException e) {
                 authExceptionService.handleException(e,r.getDeviceId());
                 logger.error("下发电表地址出错,deviceId: {}",r.getDeviceId());
