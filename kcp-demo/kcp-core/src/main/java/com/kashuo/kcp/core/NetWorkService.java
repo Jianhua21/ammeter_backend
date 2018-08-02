@@ -1,13 +1,17 @@
 package com.kashuo.kcp.core;
 
+import com.huawei.iotplatform.client.NorthApiException;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
+import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.dao.*;
 import com.kashuo.kcp.dao.condition.AmmeterHandleResult;
 import com.kashuo.kcp.dao.condition.AmmeterNetWorkCondition;
 import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.utils.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,8 @@ import java.util.List;
  */
 @Service
 public class NetWorkService {
+
+    private final static Logger logger = LoggerFactory.getLogger(NetWorkService.class);
 
     @Autowired
     private AmmeterNetworkMapper networkMapper;
@@ -36,7 +42,8 @@ public class NetWorkService {
 
     @Autowired
     private AmmeterWarningMapper ammeterWarningMapper;
-
+    @Autowired
+    private CommandService commandService;
 
     public String getNetWorkResponseByAmmeterId(Integer ammeterId,String ammeterNumber){
         String responseStr ="-1";
@@ -91,17 +98,28 @@ public class NetWorkService {
         }else{
             insertNetWork(params,ammeterDevice);
         }
-        //更新在线状态
-        AmmeterPosition position = new AmmeterPosition();
-        position.setDeviceId(deviceId);
-        position.setStatus(6);
-        ammeterPositionMapper.updateStatusByDeviceId(position);
-        //设备不在线警告 消除
-        AmmeterWarning warning = new AmmeterWarning();
-        warning.setWarningType(1);
-        warning.setWarningStatus("1");
-        warning.setAmmeterId(ammeterDevice.getId());
-        ammeterWarningMapper.updateStatusByType(warning);
+        AmmeterPosition positionDB = ammeterPositionMapper.selectByDeviceId(deviceId);
+        if(positionDB != null && positionDB.getStatus() != 6) {
+            //更新在线状态
+            AmmeterPosition position = new AmmeterPosition();
+            position.setDeviceId(deviceId);
+            position.setStatus(6);
+            ammeterPositionMapper.updateStatusByDeviceId(position);
+            //设备不在线警告 消除
+            AmmeterWarning warning = new AmmeterWarning();
+            warning.setWarningType(1);
+            warning.setWarningStatus("1");
+            warning.setAmmeterId(ammeterDevice.getId());
+            ammeterWarningMapper.updateStatusByType(warning);
+            //下发电表地址
+            try {
+                commandService.getAmmeterAddress(position.getDeviceId());
+            } catch (NorthApiException e) {
+                logger.error("下发电表地址出错,deviceId: {}",position.getDeviceId());
+            }catch (Exception e) {
+                logger.error("下发电表地址出错,deviceId: {}",position.getDeviceId());
+            }
+        }
 
     }
 

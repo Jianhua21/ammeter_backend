@@ -10,6 +10,8 @@ import com.kashuo.kcp.domain.AmmeterCallbackHistory;
 import com.kashuo.kcp.domain.AmmeterConfig;
 import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterPosition;
+import com.kashuo.kcp.redis.RedisService;
+import com.kashuo.kcp.redis.RedisServiceImpl;
 import com.kashuo.kcp.utils.AmmeterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,9 @@ public class AmmeterCallBackService {
     @Autowired
     private AmmeterConfigMapper configMapper;
 
+    @Autowired
+    private RedisServiceImpl redisService;
+
     public Page<AmmeterCallbackHistory> getCallBackHistoryByDeviceId(CallBackCondition condition){
         PageHelper.startPage(condition.getPageIndex(),condition.getPageSize());
         return callbackHistoryMapper.getCallBackHistoryByDeviceId(condition.getDeviceId());
@@ -65,7 +70,19 @@ public class AmmeterCallBackService {
         if(detail.getCommand().equals(sysDictionaryService.getDynamicSystemValue(AppConstant.COMMAND_AMMETER_ADDRESS_KEY,
                 AppConstant.CALLBACK_URLS_TYPE_ID))){
             String address = String.valueOf(AmmeterUtils.unPackageAnalysisForAddress(detail.getData()).get("address"));
-            ammeterDeviceMapper.updateMeterNoByDeviceId(deviceId,address);
+            if(address != null && address.length() ==12) {
+                ammeterDeviceMapper.updateMeterNoByDeviceId(deviceId, address);
+                redisService.set(deviceId,"0");
+            }else{
+                String  limits  = redisService.get(deviceId);
+                if(limits != null){
+                    try {
+                        redisService.set(deviceId,String.valueOf(Integer.parseInt(limits)+1));
+                    }catch (Exception e){
+                        redisService.set(deviceId,"0");
+                    }
+                }
+            }
         }else {
             AmmeterDevice device = ammeterDeviceMapper.selectByDeviceId(deviceId);
             String power = AmmeterUtils.getPackageCommand(device.getMeterNo(),sysDictionaryService.getDynamicSystemValue(AppConstant.COMMAND_AMMETER_POWER_KEY,
