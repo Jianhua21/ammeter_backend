@@ -5,6 +5,7 @@ import com.huawei.iotplatform.client.NorthApiException;
 import com.huawei.iotplatform.client.invokeapi.DeviceManagement;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.command.CommandService;
+import com.kashuo.kcp.command.NbiotCommandService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.AmmeterPositionService;
 import com.kashuo.kcp.core.AmmeterService;
@@ -49,6 +50,9 @@ public class PositionController extends BaseController{
 
     @Autowired
     private DeviceConfigService configService;
+
+    @Autowired
+    private NbiotCommandService nbiotCommandService;
 
 
     @PostMapping(value = "/create")
@@ -130,8 +134,11 @@ public class PositionController extends BaseController{
 
         AmmeterPosition positionDB = ammeterPositionService.selectByImei(ammeterPosition.getImei());
         //向IoT平台注册和设备信息同步
-        Integer result = commandService.autoRegDevice(positionDB);
+        if(properties.isNbiot()){
 
+        }else {
+            Integer result = commandService.autoRegDevice(positionDB);
+        }
         return Results.success("位置信息录入成功!");
 
     }

@@ -16,6 +16,16 @@ public class AppConstantProperties {
 
     private boolean isDebug;
 
+    private boolean nbiot;
+
+    public boolean isNbiot() {
+        return nbiot;
+    }
+
+    public void setNbiot(boolean nbiot) {
+        this.nbiot = nbiot;
+    }
+
     public boolean isDebug() {
         return isDebug;
     }

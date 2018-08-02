@@ -12,7 +12,9 @@ import com.huawei.iotplatform.client.invokeapi.Authentication;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.AmmeterAuthMapper;
+import com.kashuo.kcp.dao.AmmeterNbiotMapper;
 import com.kashuo.kcp.domain.AmmeterAuth;
+import com.kashuo.kcp.domain.AmmeterNbiot;
 import com.kashuo.kcp.redis.RedisServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,8 @@ public class AuthService {
     @Autowired
     private AmmeterAuthMapper authMapper;
 
+    private AmmeterNbiotMapper nbiotMapper;
+
 //    private static AmmeterAuth auth_init;
 
     @Autowired
@@ -44,7 +48,14 @@ public class AuthService {
     @Autowired
     public void initPlatIomAuth(){
         redisService.set(AppConstant.REDIS_KEY_AUTH_IOM, JSON.toJSONString(authMapper.selectAuthDetail()));
-//        auth_init = authMapper.selectAuthDetail();
+        //移动平台
+        List<AmmeterNbiot> nbiots = nbiotMapper.queryAllNbiot();
+        if(nbiots != null){
+            nbiots.forEach(nb->
+                redisService.set(AppConstant.REDIS_KEY_AUTH_IOT+"_"+nb.getProductName(), JSON.toJSONString(nb))
+            );
+        }
+
     }
 
     /***
@@ -162,6 +173,32 @@ public class AuthService {
               auth = JSONObject.parseObject(authCache,AmmeterAuth.class);
           }
           return auth;
+    }
+
+
+    /***
+     * 移动物联网平台信息参数
+     * @param productName
+     * @return
+     * @throws Exception
+     */
+    public AmmeterNbiot getNbiotInformation(String productName) {
+        String nbiot = redisService.get(AppConstant.REDIS_KEY_AUTH_IOT+"_"+productName);
+        AmmeterNbiot nbIot ;
+        if(nbiot != null){
+            nbIot = JSONObject.parseObject(nbiot,AmmeterNbiot.class);
+        }else{
+            List<AmmeterNbiot> nbiots = nbiotMapper.queryAllNbiot();
+            if(nbiots != null){
+                nbiots.forEach(nb->
+                            redisService.set(AppConstant.REDIS_KEY_AUTH_IOT + "_" + nb.getProductName(), JSON.toJSONString(nb))
+                );
+            }
+            nbIot = JSONObject.parseObject(redisService.get(AppConstant.REDIS_KEY_AUTH_IOT+"_"+productName),AmmeterNbiot.class);
+        }
+
+        return nbIot;
+
     }
 
     public static void main(String[] args) throws NorthApiException {

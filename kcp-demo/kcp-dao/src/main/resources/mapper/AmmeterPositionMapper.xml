@@ -23,6 +23,7 @@
     <result column="company_name" property="companyName" jdbcType="VARCHAR" />
     <result column="agreement_status" property="agreementStatus" jdbcType="VARCHAR" />
     <result column="contact_info" property="contactInfo" jdbcType="VARCHAR" />
+    <result column="product_id" property="productId" jdbcType="VARCHAR" />
   </resultMap>
 
   <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterPosition" >

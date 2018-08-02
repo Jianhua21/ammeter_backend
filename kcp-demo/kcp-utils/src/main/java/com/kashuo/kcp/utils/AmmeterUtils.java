@@ -369,8 +369,8 @@ public class AmmeterUtils {
 //            new AmmeterUtils().analysis("FE FE FE FE 68 11 11 11 11 11 11 68 91 0A 37 37 33 37 33 33 89 63 65 65 C5 16",buf);
 //
 //              new AmmeterUtils().analysis("FE FE FE FE 68 11 11 11 11 11 11 68 91 06 33 34 34 35 85 56 78 16",buf);
-              String s ="FEFEFEFE680801000000006891063334343575550A16";//A箱电压
-//            String s ="FEFEFEFE681111111111116893064444444444446716";//电表地址
+//              String s ="FEFEFEFE680801000000006891063334343575550A16";//A箱电压
+            String s ="FEFEFEFE681111111111116893064444444444446716";//电表地址
 //            String s ="FEFEFEFE6811111111111168D101353D16";
 //              String s="FEFEFEFE68111111111111681104333334331816";
 //            String s ="FEFEFEFE6806010000000068110433333433ffffffb916";

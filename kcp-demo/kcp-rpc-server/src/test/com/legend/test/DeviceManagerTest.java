@@ -56,5 +56,6 @@ public class DeviceManagerTest {
         rddod = dm.regDirectDevice(rddid, appId, accessToken);
         System.out.println(rddod.toString());
         String deviceId = rddod.getDeviceId();
+
     }
 }
