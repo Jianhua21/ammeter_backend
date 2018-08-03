@@ -37,9 +37,8 @@ public class AuthService {
     @Autowired
     private AmmeterAuthMapper authMapper;
 
+    @Autowired
     private AmmeterNbiotMapper nbiotMapper;
-
-//    private static AmmeterAuth auth_init;
 
     @Autowired
     private RedisServiceImpl redisService;

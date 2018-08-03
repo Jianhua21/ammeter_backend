@@ -370,14 +370,14 @@ public class AmmeterUtils {
 //
 //              new AmmeterUtils().analysis("FE FE FE FE 68 11 11 11 11 11 11 68 91 06 33 34 34 35 85 56 78 16",buf);
 //              String s ="FEFEFEFE680801000000006891063334343575550A16";//A箱电压
-            String s ="FEFEFEFE681111111111116893064444444444446716";//电表地址
+            String s ="FEFEFEFE68AAAAAAAAAAAA68D30143E316";//电表地址
 //            String s ="FEFEFEFE6811111111111168D101353D16";
 //              String s="FEFEFEFE68111111111111681104333334331816";
 //            String s ="FEFEFEFE6806010000000068110433333433ffffffb916";
 ////            new AmmeterUtils().analysis(unpackDeviceData(s),buf);
-////            String address =String.valueOf(AmmeterUtils.unPackageAnalysisForAddress(s).get("address"));
-////            System.out.println("返回结果++"+address);
-            System.out.println("返回结果++"+AmmeterUtils.unPackageAnalysis(s));
+            String address =String.valueOf(AmmeterUtils.unPackageAnalysisForAddress(s));
+            System.out.println("返回结果++"+address);
+//            System.out.println("返回结果++"+AmmeterUtils.unPackageAnalysis(s));
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("解析出错！");

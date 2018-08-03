@@ -135,7 +135,7 @@ public class PositionController extends BaseController{
         AmmeterPosition positionDB = ammeterPositionService.selectByImei(ammeterPosition.getImei());
         //向IoT平台注册和设备信息同步
         if(properties.isNbiot()){
-
+             nbiotCommandService.createDevice(positionDB);
         }else {
             Integer result = commandService.autoRegDevice(positionDB);
         }
@@ -184,9 +184,15 @@ public class PositionController extends BaseController{
             if(positionDB.getStatus() !=3 && positionDB.getStatus() !=8 &&
                     positionDB.getStatus() != 2) {
                 position.setDeviceId(positionDB.getDeviceId());
+
                 commandService.autoSyncDeviceInfo(position);
+
             }else if(positionDB.getStatus() ==8 || positionDB.getStatus() ==2){
-                commandService.autoRegDevice(position);
+                if(properties.isNbiot()){
+                    nbiotCommandService.createDevice(positionDB);
+                }else {
+                    commandService.autoRegDevice(position);
+                }
             }
         }catch (Exception e){
             logger.error("出错了:{}",e);

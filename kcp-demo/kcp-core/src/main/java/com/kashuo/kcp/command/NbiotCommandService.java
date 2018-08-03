@@ -27,10 +27,12 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Created by dell-pc on 2018/8/1.
  */
+@Service
 public class NbiotCommandService {
     private Logger logger = LoggerFactory.getLogger(NbiotCommandService.class);
     @Autowired
@@ -67,7 +69,10 @@ public class NbiotCommandService {
 
             if(NbiotConstant.NBIOT_ERROR_CODE_00.equals(result.getErrno())){
                 position.setStatus(1);
-                position.setDeviceId(result.getData());
+                com.alibaba.fastjson.JSONObject jsStr = com.alibaba.fastjson.JSONObject.parseObject(result.getData());
+                position.setDeviceId(jsStr.getString("device_id"));
+            }else{
+                position.setStatus(4);
             }
             positionService.updateByPrimaryKeySelective(position);
         }catch (Exception e){
