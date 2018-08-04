@@ -40,6 +40,7 @@ public class NbiotUtils {
      */
     public static boolean checkToken(String msg,String nonce,String signature, String token) throws UnsupportedEncodingException {
 
+        System.out.println("msg:"+msg+" nonce:"+nonce+" signature:"+signature+" token:"+token);
         byte[] paramB = new byte[token.length() + 8 + msg.length()];
         System.arraycopy(token.getBytes(), 0, paramB, 0, token.length());
         System.arraycopy(nonce.getBytes(), 0, paramB, token.length(), 8);

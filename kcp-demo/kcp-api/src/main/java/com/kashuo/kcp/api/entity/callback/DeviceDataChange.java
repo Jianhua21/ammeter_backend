@@ -1,10 +1,12 @@
 package com.kashuo.kcp.api.entity.callback;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by dell-pc on 2018/4/23.
  */
 public class DeviceDataChange {
-
+    @JsonProperty
     private String notifyType;
 
     private String requestId;

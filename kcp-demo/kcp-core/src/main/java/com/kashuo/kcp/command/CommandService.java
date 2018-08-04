@@ -1,5 +1,8 @@
 package com.kashuo.kcp.command;
 
+import cmcciot.onenet.nbapi.sdk.api.command.NbiotDeviceManagement;
+import cmcciot.onenet.nbapi.sdk.entity.Device;
+import cmcciot.onenet.nbapi.sdk.entity.NbiotResult;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.huawei.iotplatform.client.NorthApiException;
@@ -19,9 +22,11 @@ import com.kashuo.kcp.constant.IoTConstant;
 import com.kashuo.kcp.core.AmmeterPositionService;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.AmmeterCommandHistoryMapper;
+import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.result.AmmeterDeviceResult;
 import com.kashuo.kcp.domain.AmmeterAuth;
 import com.kashuo.kcp.domain.AmmeterCommandHistory;
+import com.kashuo.kcp.domain.AmmeterNbiot;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.manage.DeviceManageService;
 import com.kashuo.kcp.utils.AmmeterUtils;
@@ -31,6 +36,7 @@ import com.kashuo.kcp.utils.Results;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -52,6 +58,12 @@ public class CommandService {
 
     @Autowired
     private AuthExceptionService exceptionService;
+
+    @Autowired
+    private AmmeterPositionMapper positionMapper;
+
+    @Value("${app.constant.nbiot}")
+    private boolean nbiot;
 
     public PostDeviceCommandOutDTO postDeviceCommand(PostDeviceCommandInDTO deviceCommandInDTO) throws NorthApiException {
         SignalDelivery signalDelivery = new SignalDelivery();
@@ -76,6 +88,7 @@ public class CommandService {
             if(params.isDltFlag()){
                 command = AmmeterUtils.getPackageCommand(params.getAddress(),command);
             }
+            logger.info("================"+command);
         }
         commandDTO.setServiceId(AppConstant.COMMAND_SERVICEID_PARAM_NAME);
         commandDTO.setMethod(AppConstant.COMMAND_METHOD_PARAM_NAME);
@@ -85,7 +98,7 @@ public class CommandService {
         ObjectNode paras = JsonUtil.convertObject2ObjectNode(ammeterCommand);
         commandDTO.setParas(paras);
         deviceCommandInDTO.setCommand(commandDTO);
-        logger.info("命令{}下发 参数:{}",params.getCommandKey(), JsonUtil.jsonObj2Sting(deviceCommandInDTO));
+        logger.info("Nbiot:{},命令{}下发 参数:{}",nbiot,params.getCommandKey(), JsonUtil.jsonObj2Sting(deviceCommandInDTO));
         return deviceCommandInDTO;
     }
 
@@ -114,6 +127,7 @@ public class CommandService {
             }
         }
         String crc = CRC16x25Utils.CRC16_Check(sb.toString().getBytes(),sb.length());
+        params.setCommand(sb.toString()+crc.toUpperCase());
         return sb.toString()+crc.toUpperCase();
     }
 
@@ -290,7 +304,13 @@ public class CommandService {
         //下发00数据
         params.setIsChanged("1");
         deviceCommandInDTO = prepareCommand(params, deviceCommandInDTO);
-        PostDeviceCommandOutDTO deviceCommandOutDTO = postDeviceCommand(deviceCommandInDTO);
+        PostDeviceCommandOutDTO deviceCommandOutDTO ;
+        if (nbiot) {
+            AmmeterPosition position = positionMapper.selectByDeviceId(result.getDeviceId());
+            deviceCommandOutDTO = postNbiotDeviceCommand(position,params.getCommand());
+        } else{
+            deviceCommandOutDTO = postDeviceCommand(deviceCommandInDTO);
+        }
         if (deviceCommandOutDTO != null) {
             //插入命令历史记录
             insertCommandHistory(deviceCommandOutDTO,
@@ -315,7 +335,13 @@ public class CommandService {
         params.setIsChanged("1");
 
         deviceCommandInDTO = prepareCommand(params, deviceCommandInDTO);
-        PostDeviceCommandOutDTO deviceCommandOutDTO = postDeviceCommand(deviceCommandInDTO);
+        PostDeviceCommandOutDTO deviceCommandOutDTO;
+        if (nbiot) {
+            AmmeterPosition position = positionMapper.selectByDeviceId(deviceId);
+            deviceCommandOutDTO = postNbiotDeviceCommand(position,params.getCommand());
+        } else{
+            deviceCommandOutDTO = postDeviceCommand(deviceCommandInDTO);
+        }
         if (deviceCommandOutDTO != null) {
             //插入命令历史记录
             insertCommandHistory(deviceCommandOutDTO,
@@ -334,17 +360,40 @@ public class CommandService {
 //        }else {
 //            params.setData(sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID));
 //        }
-        if(params.getCommandType() == null) {
+        if (params.getCommandType() == null) {
             params.setCommandType(1);
         }
-        deviceCommandInDTO = prepareCommand(params,deviceCommandInDTO);
-        PostDeviceCommandOutDTO deviceCommandOutDTO = postDeviceCommand(deviceCommandInDTO);
+        deviceCommandInDTO = prepareCommand(params, deviceCommandInDTO);
+
+        PostDeviceCommandOutDTO deviceCommandOutDTO;
+        if (nbiot) {
+            deviceCommandOutDTO = postNbiotDeviceCommand(position,params.getCommand());
+        } else{
+            deviceCommandOutDTO = postDeviceCommand(deviceCommandInDTO);
+        }
         if(deviceCommandOutDTO != null){
             //插入命令历史记录
             insertCommandHistory(deviceCommandOutDTO,
                     sysDictionaryService.getDynamicSystemValue(params.getCommandKey(),
                             sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID)));
         }
+    }
+
+    public PostDeviceCommandOutDTO postNbiotDeviceCommand(AmmeterPosition position,String command){
+        AmmeterNbiot nbiot = authService.getNbiotInformation(position.getProductId());
+        Device device = new Device("",position.getImei(),position.getNumber());
+        device.setCommand(command);
+        device.setWriteResId(nbiot.getResourceId());
+        device.setObjId(nbiot.getObjId());
+        device.setObjInstId(nbiot.getObjInstanceId());
+        NbiotDeviceManagement deviceManagement = new NbiotDeviceManagement(nbiot.getApiKey());
+        NbiotResult result = deviceManagement.sendWriteCommand(device);
+        PostDeviceCommandOutDTO commandOutDTO = new PostDeviceCommandOutDTO();
+        commandOutDTO.setDeviceId(position.getDeviceId());
+        commandOutDTO.setAppId("Nb_Iot");
+        commandOutDTO.setStatus(result.getErrno());
+        commandOutDTO.setCommandId(command);
+        return commandOutDTO;
     }
 
     /***

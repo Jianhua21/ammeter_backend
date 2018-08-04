@@ -98,8 +98,12 @@ public class NetWorkService {
         }else{
             insertNetWork(params,ammeterDevice);
         }
+        updateDeviceStatusByNb(deviceId,ammeterDevice,true);
+    }
+
+    public void updateDeviceStatusByNb(String deviceId,AmmeterDevice ammeterDevice,boolean flag){
         AmmeterPosition positionDB = ammeterPositionMapper.selectByDeviceId(deviceId);
-        if(positionDB != null && positionDB.getStatus() != 6) {
+        if(flag && positionDB != null && positionDB.getStatus() != 6) {
             //更新在线状态
             AmmeterPosition position = new AmmeterPosition();
             position.setDeviceId(deviceId);
@@ -109,8 +113,14 @@ public class NetWorkService {
             AmmeterWarning warning = new AmmeterWarning();
             warning.setWarningType(1);
             warning.setWarningStatus("1");
+            if(ammeterDevice != null) {
+
+            }else{
+                ammeterDevice = ammeterDeviceMapper.selectByDeviceId(deviceId);
+            }
             warning.setAmmeterId(ammeterDevice.getId());
             ammeterWarningMapper.updateStatusByType(warning);
+
             //下发电表地址
             try {
                 commandService.getAmmeterAddress(position.getDeviceId());
@@ -120,6 +130,20 @@ public class NetWorkService {
                 logger.error("下发电表地址出错,deviceId: {}",position.getDeviceId());
             }
         }
+        if(!flag){
+            //更新在线状态
+            AmmeterPosition position = new AmmeterPosition();
+            position.setDeviceId(deviceId);
+            position.setStatus(7);
+            ammeterPositionMapper.updateStatusByDeviceId(position);
+            //设备不在线警告 消除
+            AmmeterWarning warning = new AmmeterWarning();
+            warning.setWarningType(1);
+            warning.setWarningStatus("0");
+            warning.setAmmeterId(ammeterDevice.getId());
+            ammeterWarningMapper.updateStatusByType(warning);
+        }
+
 
     }
 

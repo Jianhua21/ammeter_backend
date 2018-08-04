@@ -18,6 +18,17 @@ public class CommandParams {
     private boolean dltFlag = false;
     //电表地址
     private String address;
+    //命令
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
+    }
+
+    private String command;
 
     public String getAddress() {
         return address;
