@@ -39,6 +39,7 @@ public class CallNbiotController {
     private Logger logger = LoggerFactory.getLogger(CallNbiotController.class);
     private static String token = "abcdefghijkmlnopqrstuvwxyzlegend";//用户自定义token和OneNet第三方平台配置里的token一致
     private static String aeskey = "whBx2ZwAU5LOHVimPj1MPx56QRe3OsGGWRe4dr17crV";//aeskey和OneNet第三方平台配置里的token一致
+//    private static String token = "1234567890";
 
     @Autowired
     private CommandService commandService;
@@ -84,7 +85,7 @@ public class CallNbiotController {
                 String deviceId = String.valueOf(response.getDevId());
                 dataChange.setDeviceId(deviceId);
                 dataChange.setNotifyType("Nb_Iot");
-                if(response.getType() ==1) {
+                if(response.getType() ==2) {
                     //设备上下线
                     if(response.getStatus() == 0){
                         netWorkService.updateDeviceStatusByNb(deviceId,null,true);

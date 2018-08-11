@@ -4,6 +4,7 @@ import cmcciot.onenet.nbapi.sdk.api.command.NbiotDeviceManagement;
 import cmcciot.onenet.nbapi.sdk.entity.Device;
 import cmcciot.onenet.nbapi.sdk.entity.NbiotResult;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.huawei.iotplatform.client.NorthApiException;
 import com.huawei.iotplatform.client.dto.*;
@@ -39,6 +40,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Created by dell-pc on 2018/4/21.
  */
@@ -64,6 +68,8 @@ public class CommandService {
 
     @Value("${app.constant.nbiot}")
     private boolean nbiot;
+
+    ExecutorService pool = Executors.newFixedThreadPool(10);
 
     public PostDeviceCommandOutDTO postDeviceCommand(PostDeviceCommandInDTO deviceCommandInDTO) throws NorthApiException {
         SignalDelivery signalDelivery = new SignalDelivery();
@@ -387,7 +393,21 @@ public class CommandService {
         device.setObjId(nbiot.getObjId());
         device.setObjInstId(nbiot.getObjInstanceId());
         NbiotDeviceManagement deviceManagement = new NbiotDeviceManagement(nbiot.getApiKey());
+        Integer times =1;
         NbiotResult result = deviceManagement.sendWriteCommand(device);
+        logger.info("nbiot 返回数据:"+ JSONObject.toJSONString(result));
+        boolean code = "5106".equals(result.getErrno());
+        while (times <=3 && code){
+            logger.info("nbiot 尝试第:"+times+1+"次重新发送");
+            result = deviceManagement.sendWriteCommand(device);
+            logger.info("nbiot 返回数据:"+ JSONObject.toJSONString(result));
+            if("5106".equals(result.getErrno())){
+                times++;
+            }else{
+                break;
+            }
+        }
+
         PostDeviceCommandOutDTO commandOutDTO = new PostDeviceCommandOutDTO();
         commandOutDTO.setDeviceId(position.getDeviceId());
         commandOutDTO.setAppId("Nb_Iot");

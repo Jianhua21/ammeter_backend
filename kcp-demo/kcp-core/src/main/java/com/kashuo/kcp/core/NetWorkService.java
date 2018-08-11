@@ -102,6 +102,11 @@ public class NetWorkService {
     }
 
     public void updateDeviceStatusByNb(String deviceId,AmmeterDevice ammeterDevice,boolean flag){
+        if(ammeterDevice != null) {
+
+        }else{
+            ammeterDevice = ammeterDeviceMapper.selectByDeviceId(deviceId);
+        }
         AmmeterPosition positionDB = ammeterPositionMapper.selectByDeviceId(deviceId);
         if(flag && positionDB != null && positionDB.getStatus() != 6) {
             //更新在线状态
@@ -113,11 +118,6 @@ public class NetWorkService {
             AmmeterWarning warning = new AmmeterWarning();
             warning.setWarningType(1);
             warning.setWarningStatus("1");
-            if(ammeterDevice != null) {
-
-            }else{
-                ammeterDevice = ammeterDeviceMapper.selectByDeviceId(deviceId);
-            }
             warning.setAmmeterId(ammeterDevice.getId());
             ammeterWarningMapper.updateStatusByType(warning);
 
