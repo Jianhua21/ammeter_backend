@@ -398,7 +398,7 @@ public class CommandService {
         logger.info("nbiot 返回数据:"+ JSONObject.toJSONString(result));
         boolean code = "5106".equals(result.getErrno());
         while (times <=3 && code){
-            logger.info("nbiot 尝试第:"+times+1+"次重新发送");
+            logger.info("nbiot 尝试第:"+(times+1)+"次重新发送");
             result = deviceManagement.sendWriteCommand(device);
             logger.info("nbiot 返回数据:"+ JSONObject.toJSONString(result));
             if("5106".equals(result.getErrno())){

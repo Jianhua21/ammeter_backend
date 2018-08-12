@@ -53,7 +53,7 @@ public class IoTConstant {
         //设置APN地址
         public static final String DEVICE_COMMAND_NBM003 ="NBM003";
 
-        public static final String DEVICE_COMMAND_IEM001 ="IEM001";
+        public static final String DEVICE_COMMAND_IEM001 ="00000000785634121a00123017010519";
 
         public static final String DEVICE_COMMAND_IEM002 ="IEM002";
 
