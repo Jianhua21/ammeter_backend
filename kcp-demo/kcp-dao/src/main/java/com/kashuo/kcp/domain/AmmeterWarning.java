@@ -19,6 +19,16 @@ public class AmmeterWarning {
 
     private Integer warningType;
 
+    private String reason;
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
     public Integer getWarningType() {
         return warningType;
     }

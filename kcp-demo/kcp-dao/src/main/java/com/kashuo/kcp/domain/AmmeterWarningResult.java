@@ -28,6 +28,16 @@ public class AmmeterWarningResult {
     private Integer warningType;
 
     private Integer warningStatus;
+    //告警消除原因
+    private String reason;
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 
     public Integer getWarningStatus() {
         return warningStatus;

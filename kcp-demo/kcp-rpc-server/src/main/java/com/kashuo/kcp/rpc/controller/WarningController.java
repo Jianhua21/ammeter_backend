@@ -70,7 +70,7 @@ public class WarningController extends BaseController{
      * @return
      */
     @GetMapping("/avoid/{warningId}/{sn}")
-    public Results avoidWarning(@PathVariable("warningId") Integer warningId,@PathVariable("sn") String sn){
+    public Results avoidWarning(@PathVariable("warningId") Integer warningId,@PathVariable("sn") String sn,@RequestParam String reason){
         AmmeterWarning  warningDB = warningService.selectWarningByKey(warningId);
         if(warningDB == null){
             return Results.error("该警告不存在,请确认!",sn);
@@ -78,6 +78,7 @@ public class WarningController extends BaseController{
         AmmeterWarning warning = new AmmeterWarning();
         warning.setId(warningId);
         warning.setWarningStatus("1");
+        warning.setReason(reason);
         Integer result = warningService.updateWarning(warning);
         if(warningDB.getWarningType() == 0) {
             AmmeterDevice device = ammeterService.selectByPrimaryKey(warningDB.getId());
