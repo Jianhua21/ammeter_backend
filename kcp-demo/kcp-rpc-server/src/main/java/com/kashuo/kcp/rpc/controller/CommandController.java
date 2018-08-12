@@ -12,8 +12,10 @@ import com.kashuo.kcp.api.entity.CommandParams;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.AmmeterPositionService;
+import com.kashuo.kcp.core.AmmeterService;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.condition.CommandCondition;
+import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.utils.Results;
 import io.swagger.annotations.Api;
@@ -39,6 +41,8 @@ public class CommandController {
     private SysDictionaryService sysDictionaryService;
     @Autowired
     private AmmeterPositionService positionService;
+    @Autowired
+    private AmmeterService ammeterService;
 
     @PostMapping("/reset")
     @ApiOperation("设备软重启")
@@ -115,6 +119,7 @@ public class CommandController {
             return Results.error("设备不存在!");
         }
         AmmeterPosition position = positionService.selectByPrimaryKey(commandCondition.getPositionId());
+        AmmeterDevice device = ammeterService.selectDeviceByImsi(position.getImei());
         if(position == null ||position.getDeviceId() == null){
             return Results.error("设备不存在!");
         }else if(position.getStatus() == 8){
@@ -123,6 +128,14 @@ public class CommandController {
         CommandParams params = new CommandParams();
         //没有数据发送
         params.setIsChanged("2");
+        params.setCommandKey(AppConstant.COMMAND_SWTICH_ON_KEY);
+        //没有数据发送
+        params.setDataFlag(true);
+        params.setCommandType(3);
+        params.setDltFlag(true);
+        params.setAddress(device.getMeterNo());
+        //下发00数据
+        params.setIsChanged("1");
         commandService.commonCommandSend(position,AppConstant.COMMAND_SWTICH_ON_KEY,params);
         return Results.success("开闸命令发送成功!",commandCondition.getSn());
     }
