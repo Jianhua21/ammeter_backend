@@ -1,11 +1,34 @@
 package com.kashuo.kcp.domain;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 public class AmmeterImei extends AmmeterImeiKey {
     private Date createTime;
 
     private String createBy;
+    @ApiModelProperty(value = "当前页")
+    private Integer pageIndex =1;
+    @ApiModelProperty(value = "当前显示数")
+    private Integer pageSize =10;
+
+
+    public Integer getPageIndex() {
+        return pageIndex;
+    }
+
+    public void setPageIndex(Integer pageIndex) {
+        this.pageIndex = pageIndex;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
 
     public Date getCreateTime() {
         return createTime;
