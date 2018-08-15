@@ -16,7 +16,8 @@ public class dlt645_pack {
 	
 	//�ѵ��������Լ����
 	byte DataLen;
-	
+	byte[] Data;
+
 	//������ʵ����������4�ֽڵĹ�ԼID,������Ϊ0�ֽ�
 	byte RealLen;
 	
@@ -34,6 +35,9 @@ public class dlt645_pack {
 		//System.out.println("rule ID[3]:" + Integer.parseInt(strRule.substring(6, 8)));
 	}
 
+	public void GetContrlCodeOrigin(byte ctrlCode){
+		this.CtrlCode = ctrlCode;
+	}
 	public  void GetContrlCode(byte ctrlCode) {
 		byte bD7, bD6, bD5, bD40;
 		
@@ -53,7 +57,10 @@ public class dlt645_pack {
 		
 		
 	}
-	
+	public  void GetData(byte[] data){
+		this.Data = data;
+	}
+
 	public void GetDataLen(byte dataLen) {
 		DataLen = dataLen;
 	}
@@ -139,16 +146,23 @@ public class dlt645_pack {
 	    bFrame[len++] = inPut.CtrlCode;
 	    
 	    //5. data filed bytes
-	    bFrame[len++] = inPut.DataLen;
+	    bFrame[len++] = (byte)(inPut.DataLen + inPut.RealLen);
 	    
 	    //6. rule id  plus 0x33
-	    bFrame[len++] = (byte)(bDi0 + 0x33);
-	    bFrame[len++] = (byte)(bDi1 + 0x33);
-	    bFrame[len++] = (byte)(bDi2 + 0x33);
-	    bFrame[len++] = (byte)(bDi3 + 0x33);
+		if (0x1C != inPut.CtrlCode) {
+			bFrame[len++] = (byte) (bDi0 + 0x33);
+			bFrame[len++] = (byte) (bDi1 + 0x33);
+			bFrame[len++] = (byte) (bDi2 + 0x33);
+			bFrame[len++] = (byte) (bDi3 + 0x33);
+		}
 	    
 	    //7. other data
-	    //have handled .
+		if (0x1C == inPut.CtrlCode) {
+			for (i = 0; i < inPut.DataLen; i++) {
+				bFrame[len++] = (byte) (inPut.Data[i] + 0x33);
+				//debug(LOG_NOTICE,"inPara->data[i] = %0x", inPara->data[i]);
+			}
+		}
 	    
 	    //8. cal checksum 
 	    for(i = 0; i < len; i++) {

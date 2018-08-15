@@ -48,12 +48,12 @@ public class AuthService {
     public void initPlatIomAuth(){
         redisService.set(AppConstant.REDIS_KEY_AUTH_IOM, JSON.toJSONString(authMapper.selectAuthDetail()));
         //移动平台
-//        List<AmmeterNbiot> nbiots = nbiotMapper.queryAllNbiot();
-//        if(nbiots != null){
-//            nbiots.forEach(nb->
-//                redisService.set(AppConstant.REDIS_KEY_AUTH_IOT+"_"+nb.getProductName(), JSON.toJSONString(nb))
-//            );
-//        }
+        List<AmmeterNbiot> nbiots = nbiotMapper.queryAllNbiot();
+        if(nbiots != null){
+            nbiots.forEach(nb->
+                redisService.set(AppConstant.REDIS_KEY_AUTH_IOT+"_"+nb.getProductName(), JSON.toJSONString(nb))
+            );
+        }
 
     }
 

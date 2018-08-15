@@ -195,6 +195,15 @@ public class NetWorkService {
     public List<AmmeterNetwork>  queryNetWorkParams(AmmeterNetwork network){
         return networkMapper.queryNetWorkParams(network);
     }
+    public Integer getMaxHourByReportDate(List<AmmeterNetwork> netWorkReport){
+        Integer maxvalue = 0;
+        for (AmmeterNetwork report:netWorkReport) {
+            if(maxvalue < report.getRecordHour()){
+                maxvalue = report.getRecordHour();
+            }
+        }
+        return maxvalue;
+    }
 
     public Page<AmmeterNetWorkResult> networkList(AmmeterNetWorkCondition condition){
         PageHelper.startPage(condition.getPageIndex(),condition.getPageSize());

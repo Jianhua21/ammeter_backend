@@ -20,10 +20,10 @@ public class MessageUtils {
         //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
         headers.put("Authorization", "APPCODE " + appcode);
         Map<String, String> querys = new HashMap<String, String>();
-        querys.put("param", "建华|12|5000");
-        querys.put("phone", "13773075845");
-        querys.put("sign", "1");
-        querys.put("skin", "1002");
+        querys.put("param", "{ 123456789012345 }|{ 未上电 }");
+        querys.put("phone", "13917605273");
+        querys.put("sign", "46613");
+        querys.put("skin", "35058");
         //JDK 1.8示例代码请在这里下载：  http://code.fegine.com/Tools.zip
 
         try {
