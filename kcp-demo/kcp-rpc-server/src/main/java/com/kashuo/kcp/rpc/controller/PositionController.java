@@ -7,12 +7,14 @@ import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.command.NbiotCommandService;
 import com.kashuo.kcp.constant.AppConstant;
+import com.kashuo.kcp.core.AmmeterIMEIService;
 import com.kashuo.kcp.core.AmmeterPositionService;
 import com.kashuo.kcp.core.AmmeterService;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.condition.AmmeterPositionCondition;
 import com.kashuo.kcp.dao.condition.AmmeterUpdateCondition;
 import com.kashuo.kcp.dao.condition.IMEICondition;
+import com.kashuo.kcp.dao.result.AmmeterIMEIResult;
 import com.kashuo.kcp.dao.result.PosotionHome;
 import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.manage.DeviceConfigService;
@@ -53,6 +55,9 @@ public class PositionController extends BaseController{
 
     @Autowired
     private NbiotCommandService nbiotCommandService;
+
+    @Autowired
+    private AmmeterIMEIService ammeterIMEIService;
 
 
     @PostMapping(value = "/create")
@@ -265,6 +270,31 @@ public class PositionController extends BaseController{
         }
         return Results.success("IMEI正常",condition.getSn());
     }
+
+    @PostMapping("/saveIMEI")
+    @ApiOperation("IMEI录入")
+    public Results saveIMEI(@RequestBody AmmeterImei imei){
+
+        if(StringUtil.isEmpty(imei.getImei())){
+            return Results.error("IMEI 不能为空!");
+        }
+        imei.setCreateTime(new Date());
+        imei.setCreateBy(getCuruser().getRealname());
+        return  ammeterIMEIService.saveImei(imei);
+    }
+
+    @PostMapping("/queryImeiList")
+    @ApiOperation("IMEI列表")
+    public Results queryImeiList(@RequestBody AmmeterImei imei){
+        List<AmmeterIMEIResult>  results = ammeterIMEIService.listPages(imei);
+        return Results.success(results);
+    }
+    @GetMapping("/deleteImei/{imei}")
+    @ApiOperation("删除IMEI")
+    public Results deleteImei(@PathVariable String imei){
+        return ammeterIMEIService.deleteImei(imei);
+    }
+
 
 
     @GetMapping("/config/{positionId}")

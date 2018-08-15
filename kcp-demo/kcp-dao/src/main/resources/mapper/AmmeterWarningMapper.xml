@@ -24,9 +24,10 @@
         <result column="warning_type" property="warningType" jdbcType="INTEGER" />
       <result column="warning_status" property="warningStatus" jdbcType="INTEGER" />
       <result column="status_name" property="statusName" jdbcType="VARCHAR" />
+      <result column="reason" property="reason" jdbcType="VARCHAR" />
     </resultMap>
   <sql id="Base_Column_List" >
-    id, ammeter_id, warning_status, warning_date, create_date, create_by, warning_desc,warning_type
+    id, ammeter_id, warning_status, warning_date, create_date, create_by, warning_desc,warning_type,reason
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -37,7 +38,7 @@
     
     <select id="queryWarningList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
       select p.id,w.id as warning_id,p.device_id,d.imsi ,p.name as ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type,
-      w.warning_status,
+      w.warning_status,w.reason,
       case when w.warning_status = 0 then '待处理'
       else '已消除' end as status_name
       from ammeter_warning w,ammeter_device d,ammeter_position p
@@ -79,10 +80,10 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into ammeter_warning (ammeter_id, warning_status, warning_date, 
-      create_date, create_by, warning_desc,warning_type
+      create_date, create_by, warning_desc,warning_type,reason
       )
     values (#{ammeterId,jdbcType=INTEGER}, #{warningStatus,jdbcType=CHAR}, #{warningDate,jdbcType=TIMESTAMP}, 
-      #{createDate,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{warningDesc,jdbcType=VARCHAR},#{warningType,jdbcType=INTEGER}
+      #{createDate,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{warningDesc,jdbcType=VARCHAR},#{warningType,jdbcType=INTEGER}, #{reason,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterWarning" >
@@ -151,6 +152,9 @@
       </if>
       <if test="warningDesc != null" >
         warning_desc = #{warningDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}

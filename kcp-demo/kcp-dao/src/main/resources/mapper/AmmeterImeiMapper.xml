@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.kashuo.kcp.dao.AmmeterImeiMapper" >
+
   <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterImei" >
     <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="imei" property="imei" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_by" property="createBy" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="QueryBaseResultMap" type="com.kashuo.kcp.dao.result.AmmeterIMEIResult" >
+    <id column="name" property="deviceName" jdbcType="VARCHAR" />
     <id column="imei" property="imei" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="create_by" property="createBy" jdbcType="VARCHAR" />
@@ -10,16 +18,23 @@
   <sql id="Base_Column_List" >
     id, imei, create_time, create_by
   </sql>
+  <select id="queryImeiByCondition" resultMap="QueryBaseResultMap" parameterType="com.kashuo.kcp.domain.AmmeterImei">
+    select i.imei,i.create_time,i.create_by,p.name  from ammeter_imei i
+    left join ammeter_position p on i.imei =p.imei
+    where 1=1
+    <if test="imei != null and imei !=''" >
+      and i.imei  like CONCAT('%',#{imei,jdbcType=VARCHAR},'%')
+    </if>
+  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
     <include refid="Base_Column_List" />
     from ammeter_imei
     where imei = #{imei,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterImeiKey" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from ammeter_imei
-    where id = #{id,jdbcType=INTEGER}
-      and imei = #{imei,jdbcType=VARCHAR}
+    where imei = #{imei,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterImei" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >

@@ -1,8 +1,10 @@
 package com.kashuo.kcp.domain;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class AmmeterImeiKey {
     private Integer id;
-
+    @ApiModelProperty(value = "IMEI")
     private String imei;
 
     public Integer getId() {
