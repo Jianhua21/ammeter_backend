@@ -399,25 +399,29 @@ public class CommandService {
         device.setObjInstId(nbiot.getObjInstanceId());
         NbiotDeviceManagement deviceManagement = new NbiotDeviceManagement(nbiot.getApiKey());
         Integer times =1;
-        NbiotResult result = deviceManagement.sendWriteCommand(device);
-        logger.info("nbiot 返回数据:"+ JSONObject.toJSONString(result));
-        boolean code = "5106".equals(result.getErrno());
-        while (times <=3 && code){
-            logger.info("nbiot 尝试第:"+(times+1)+"次重新发送");
-            result = deviceManagement.sendWriteCommand(device);
-            logger.info("nbiot 返回数据:"+ JSONObject.toJSONString(result));
-            if("5106".equals(result.getErrno())){
-                times++;
-            }else{
-                break;
+        PostDeviceCommandOutDTO commandOutDTO = new PostDeviceCommandOutDTO();
+        try {
+            NbiotResult result = deviceManagement.sendWriteCommand(device);
+            logger.info("nbiot 返回数据:" + JSONObject.toJSONString(result));
+            boolean code = "5106".equals(result.getErrno());
+            while (times <= 3 && code) {
+                logger.info("nbiot 尝试第:" + (times + 1) + "次重新发送");
+                result = deviceManagement.sendWriteCommand(device);
+                logger.info("nbiot 返回数据:" + JSONObject.toJSONString(result));
+                if ("5106".equals(result.getErrno())) {
+                    times++;
+                } else {
+                    break;
+                }
             }
+            commandOutDTO.setDeviceId(position.getDeviceId());
+            commandOutDTO.setAppId("Nb_Iot");
+            commandOutDTO.setStatus(result.getErrno());
+            commandOutDTO.setCommandId(command);
+        }catch(Exception e){
+            logger.error("发送失败!");
         }
 
-        PostDeviceCommandOutDTO commandOutDTO = new PostDeviceCommandOutDTO();
-        commandOutDTO.setDeviceId(position.getDeviceId());
-        commandOutDTO.setAppId("Nb_Iot");
-        commandOutDTO.setStatus(result.getErrno());
-        commandOutDTO.setCommandId(command);
         return commandOutDTO;
     }
 
