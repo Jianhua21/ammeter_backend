@@ -46,7 +46,7 @@ public class AuthService {
 
     @Autowired
     public void initPlatIomAuth(){
-        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM, JSON.toJSONString(authMapper.selectAuthDetail()));
+        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER, JSON.toJSONString(authMapper.selectAuthDetail()));
         //移动平台
 //        List<AmmeterNbiot> nbiots = nbiotMapper.queryAllNbiot();
 //        if(nbiots != null){
@@ -75,7 +75,7 @@ public class AuthService {
         ammeterAuth.setScope(authOutDTO.getScope());
         ammeterAuth.setTokenType(authOutDTO.getTokenType());
         ammeterAuth.setStatus("0");
-        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER);
         if(authCache == null){
             authMapper.insert(ammeterAuth);
         }else{
@@ -83,14 +83,14 @@ public class AuthService {
             authMapper.updateByPrimaryKeySelective(ammeterAuth);
         }
 //        auth_init = authMapper.selectAuthDetail();
-        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM,JSON.toJSONString(authMapper.selectAuthDetail()));
+        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER,JSON.toJSONString(authMapper.selectAuthDetail()));
     }
 
     public void refreshAuthInfo() throws NorthApiException {
         //初始化鉴权对象
         Authentication auth = initAuth();
         AuthRefreshInDTO arid = new AuthRefreshInDTO();
-        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER);
         AmmeterAuth ammeterAuthCache =JSONObject.parseObject(authCache,AmmeterAuth.class);
         arid.setRefreshToken(ammeterAuthCache.getRefreshToken());
         arid.setAppId(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_APPID,AppConstant.SYSTEM_PARAMS_TYPE_ID));
@@ -108,7 +108,7 @@ public class AuthService {
         ammeterAuth.setStatus("1");
         ammeterAuth.setId(ammeterAuthCache.getId());
         authMapper.updateByPrimaryKeySelective(ammeterAuth);
-        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM,JSON.toJSONString(authMapper.selectAuthDetail()));
+        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER,JSON.toJSONString(authMapper.selectAuthDetail()));
 //        auth_init = authMapper.selectAuthDetail();
     }
 
@@ -118,7 +118,7 @@ public class AuthService {
      */
     public void logoutAuth() throws NorthApiException{
         //初始化鉴权对象
-        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER);
         AmmeterAuth ammeterAuthCache =JSONObject.parseObject(authCache,AmmeterAuth.class);
         Authentication auth = initAuth();
         auth.logoutAuthToken(ammeterAuthCache.getAccessToken());
@@ -152,7 +152,7 @@ public class AuthService {
     }
 
     public AmmeterAuth getPlatIomAuth() throws NorthApiException {
-        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER);
         AmmeterAuth ammeterAuthCache = new AmmeterAuth();
         if(authCache == null){
             getAuthInfo();
@@ -168,7 +168,7 @@ public class AuthService {
     public AmmeterAuth checkPlatAccessToken(AmmeterAuth auth) throws NorthApiException {
           if((new Date().getTime() - auth.getCreateTime().getTime())/1000 >= auth.getExpiresIn()){
               getAuthInfo();
-              String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+              String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER);
               auth = JSONObject.parseObject(authCache,AmmeterAuth.class);
           }
           return auth;

@@ -207,7 +207,7 @@ public class PositionController extends BaseController{
     }
 
     @PostMapping("/list")
-    @ApiOperation("电表位置信息列表")
+    @ApiOperation("智能设备位置信息列表")
     public Results list(@RequestBody AmmeterPositionCondition condition){
         AmmeterUser user = getCuruser();
         if(!isAdmin(user.getChannelId())){

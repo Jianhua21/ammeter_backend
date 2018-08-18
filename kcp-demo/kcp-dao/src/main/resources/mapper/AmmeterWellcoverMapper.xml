@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterWellcoverMapper" >
+  <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterWellcover" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="position_id" property="positionId" jdbcType="INTEGER" />
+    <result column="device_type" property="deviceType" jdbcType="VARCHAR" />
+    <result column="battery_status" property="batteryStatus" jdbcType="VARCHAR" />
+    <result column="sensor" property="sensor" jdbcType="VARCHAR" />
+    <result column="surface_distance" property="surfaceDistance" jdbcType="VARCHAR" />
+    <result column="tilt_sensor" property="tiltSensor" jdbcType="VARCHAR" />
+    <result column="water_level_sensor" property="waterLevelSensor" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, position_id, device_type, battery_status, sensor, surface_distance, tilt_sensor, 
+    water_level_sensor
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ammeter_wellcover
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ammeter_wellcover
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterWellcover" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_wellcover (position_id, device_type, battery_status, 
+      sensor, surface_distance, tilt_sensor, 
+      water_level_sensor)
+    values (#{positionId,jdbcType=INTEGER}, #{deviceType,jdbcType=VARCHAR}, #{batteryStatus,jdbcType=VARCHAR}, 
+      #{sensor,jdbcType=VARCHAR}, #{surfaceDistance,jdbcType=VARCHAR}, #{tiltSensor,jdbcType=VARCHAR}, 
+      #{waterLevelSensor,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterWellcover" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_wellcover
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="positionId != null" >
+        position_id,
+      </if>
+      <if test="deviceType != null" >
+        device_type,
+      </if>
+      <if test="batteryStatus != null" >
+        battery_status,
+      </if>
+      <if test="sensor != null" >
+        sensor,
+      </if>
+      <if test="surfaceDistance != null" >
+        surface_distance,
+      </if>
+      <if test="tiltSensor != null" >
+        tilt_sensor,
+      </if>
+      <if test="waterLevelSensor != null" >
+        water_level_sensor,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="positionId != null" >
+        #{positionId,jdbcType=INTEGER},
+      </if>
+      <if test="deviceType != null" >
+        #{deviceType,jdbcType=VARCHAR},
+      </if>
+      <if test="batteryStatus != null" >
+        #{batteryStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="sensor != null" >
+        #{sensor,jdbcType=VARCHAR},
+      </if>
+      <if test="surfaceDistance != null" >
+        #{surfaceDistance,jdbcType=VARCHAR},
+      </if>
+      <if test="tiltSensor != null" >
+        #{tiltSensor,jdbcType=VARCHAR},
+      </if>
+      <if test="waterLevelSensor != null" >
+        #{waterLevelSensor,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterWellcover" >
+    update ammeter_wellcover
+    <set >
+      <if test="positionId != null" >
+        position_id = #{positionId,jdbcType=INTEGER},
+      </if>
+      <if test="deviceType != null" >
+        device_type = #{deviceType,jdbcType=VARCHAR},
+      </if>
+      <if test="batteryStatus != null" >
+        battery_status = #{batteryStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="sensor != null" >
+        sensor = #{sensor,jdbcType=VARCHAR},
+      </if>
+      <if test="surfaceDistance != null" >
+        surface_distance = #{surfaceDistance,jdbcType=VARCHAR},
+      </if>
+      <if test="tiltSensor != null" >
+        tilt_sensor = #{tiltSensor,jdbcType=VARCHAR},
+      </if>
+      <if test="waterLevelSensor != null" >
+        water_level_sensor = #{waterLevelSensor,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterWellcover" >
+    update ammeter_wellcover
+    set position_id = #{positionId,jdbcType=INTEGER},
+      device_type = #{deviceType,jdbcType=VARCHAR},
+      battery_status = #{batteryStatus,jdbcType=VARCHAR},
+      sensor = #{sensor,jdbcType=VARCHAR},
+      surface_distance = #{surfaceDistance,jdbcType=VARCHAR},
+      tilt_sensor = #{tiltSensor,jdbcType=VARCHAR},
+      water_level_sensor = #{waterLevelSensor,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

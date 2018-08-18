@@ -7,6 +7,8 @@ public class AppConstant {
 
 
     public static final String REDIS_KEY_AUTH_IOM ="auth_IoM_token_key";
+
+    public static final String REDIS_KEY_AUTH_IOM_WELLCOVER ="auth_IoM_token_key_well_cover";
     //移动平台
     public static final String REDIS_KEY_AUTH_IOT ="auth_IoT_token_key";
 

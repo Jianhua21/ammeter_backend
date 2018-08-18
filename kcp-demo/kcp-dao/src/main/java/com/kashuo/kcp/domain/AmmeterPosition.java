@@ -39,6 +39,56 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     private String contactInfo;
     @ApiModelProperty("产品id")
     private String productId;
+    @ApiModelProperty("电池状态")
+    private String batteryStatus;
+    @ApiModelProperty("亮度传感器信息")
+    private String sensor;
+    @ApiModelProperty("水面距离")
+    private String surfaceDistance;
+    @ApiModelProperty("倾斜传感器信息")
+    private String tiltSensor;
+    @ApiModelProperty("水位满溢传感器信息")
+    private String waterLevelSensor;
+
+    public String getBatteryStatus() {
+        return batteryStatus;
+    }
+
+    public void setBatteryStatus(String batteryStatus) {
+        this.batteryStatus = batteryStatus;
+    }
+
+    public String getSensor() {
+        return sensor;
+    }
+
+    public void setSensor(String sensor) {
+        this.sensor = sensor;
+    }
+
+    public String getSurfaceDistance() {
+        return surfaceDistance;
+    }
+
+    public void setSurfaceDistance(String surfaceDistance) {
+        this.surfaceDistance = surfaceDistance;
+    }
+
+    public String getTiltSensor() {
+        return tiltSensor;
+    }
+
+    public void setTiltSensor(String tiltSensor) {
+        this.tiltSensor = tiltSensor;
+    }
+
+    public String getWaterLevelSensor() {
+        return waterLevelSensor;
+    }
+
+    public void setWaterLevelSensor(String waterLevelSensor) {
+        this.waterLevelSensor = waterLevelSensor;
+    }
 
     public String getProductId() {
         return productId;

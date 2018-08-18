@@ -48,6 +48,11 @@
     <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
     <result column="Activated" property="Activated" jdbcType="CHAR" />
     <result column="work_status" property="workStatus" jdbcType="INTEGER" />
+    <result column="battery_status" property="batteryStatus" jdbcType="VARCHAR" />
+    <result column="sensor" property="sensor" jdbcType="VARCHAR" />
+    <result column="surface_distance" property="surfaceDistance" jdbcType="VARCHAR" />
+    <result column="tilt_sensor" property="tiltSensor" jdbcType="VARCHAR" />
+    <result column="water_level_sensor" property="waterLevelSensor" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, number, address, amap_longitude, amap_latitude, gps_longitude, gps_latitude, 
@@ -91,11 +96,13 @@
       p.gps_longitude, p.gps_latitude, p.remark,p.status,
       s.desc as status_name,IFNULL(info.`status`,2) as work_status,
       p.create_by,p.create_time,d.type,p.imei,p.installer,
+      wc.battery_status,wc.sensor,wc.surface_distance,wc.tilt_sensor,wc.water_level_sensor,
       case when f.id is null then '0' else '1' end as warning_status,
       case when f.id is null then '' else f.warning_desc end as warning_desc
       from ammeter_position p INNER JOIN ammeter_user u on p.create_by = u.id
       INNER JOIN ammeter_status s on p.status = s.code
       INNER JOIN ammeter_device d on p.imei= d.imsi
+      LEFT JOIN ammeter_wellcover wc on p.id = wc.position_id
       left JOIN
       ammeter_working_info info on d.id = info.ammeter_id
       LEFT join (select w.* from ammeter_warning w,
