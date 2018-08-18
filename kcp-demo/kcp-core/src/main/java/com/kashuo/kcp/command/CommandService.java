@@ -91,7 +91,8 @@ public class CommandService {
         }else {
             command = sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID);
             //判断是否需要处理645 命令
-            if(params.getCommandKey().equals(AppConstant.COMMAND_SWTICH_ON_KEY)){
+            if(params.getCommandKey().equals(AppConstant.COMMAND_SWTICH_ON_KEY)||
+                    params.getCommandKey().equals(AppConstant.COMMAND_SWTICH_OFF_KEY)){
                 command = AmmeterUtils.getSwitchPackageCommand(params.getAddress(),command);
             }else {
                 if (params.isDltFlag()) {

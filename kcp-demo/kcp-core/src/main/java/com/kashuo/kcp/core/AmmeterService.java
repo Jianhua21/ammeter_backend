@@ -78,9 +78,20 @@ public class AmmeterService {
         //---------开始想IoM平台发送开关闸命令
         CommandParams params = new CommandParams();
         //没有数据发送
-        params.setIsChanged("2");
-        params.setCommandType(3);
+//        params.setIsChanged("2");
+//        params.setCommandType(3);
         AmmeterPosition position = positionMapper.selectByPrimaryKey(id);
+
+
+//        params.setCommandKey(AppConstant.COMMAND_SWTICH_ON_KEY);
+        //没有数据发送
+        params.setDataFlag(true);
+        params.setCommandType(3);
+        params.setDltFlag(true);
+        params.setAddress(device.getMeterNo());
+        //下发00数据
+        params.setIsChanged("1");
+
         String command = status == 1 ? AppConstant.COMMAND_SWTICH_OFF_KEY:AppConstant.COMMAND_SWTICH_ON_KEY;
         commandService.commonCommandSend(position, command, params);
         return Results.success(status == 1 ? "正在拉闸" :"正在合闸");

@@ -91,6 +91,7 @@ public class AmmeterCallBackService {
                     AppConstant.CALLBACK_URLS_TYPE_ID));
             String current = AmmeterUtils.getPackageCommand(device.getMeterNo(),sysDictionaryService.getDynamicSystemValue(AppConstant.COMMAND_AMMETER_CURRENT_KEY,
                     AppConstant.CALLBACK_URLS_TYPE_ID));
+
             if(detail.getCommand().equals(power)){
                 //记录电量值
                 if(!detail.getData().contains("ERR")) {
@@ -106,6 +107,17 @@ public class AmmeterCallBackService {
                 //记录电流值
                 if(!detail.getData().contains("ERR")) {
                     ammeterReportServer.processDailyReportServer(device, detail.getData(), 3);
+                }
+            }else{
+                String onPower = AmmeterUtils.getSwitchPackageCommand(device.getMeterNo(),sysDictionaryService.getDynamicSystemValue(AppConstant.COMMAND_SWTICH_ON_KEY,
+                        AppConstant.CALLBACK_URLS_TYPE_ID));
+                String offPower = AmmeterUtils.getSwitchPackageCommand(device.getMeterNo(),sysDictionaryService.getDynamicSystemValue(AppConstant.COMMAND_SWTICH_OFF_KEY,
+                        AppConstant.CALLBACK_URLS_TYPE_ID));
+                if(detail.getCommand().equals(onPower)){
+                    processSwitchPower(detail,deviceId,true);
+
+                }else if(detail.getCommand().equals(offPower)){
+                    processSwitchPower(detail,deviceId,false);
                 }
             }
 

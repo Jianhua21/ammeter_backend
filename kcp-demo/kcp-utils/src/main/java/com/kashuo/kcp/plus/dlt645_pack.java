@@ -146,7 +146,11 @@ public class dlt645_pack {
 	    bFrame[len++] = inPut.CtrlCode;
 	    
 	    //5. data filed bytes
-	    bFrame[len++] = (byte)(inPut.DataLen + inPut.RealLen);
+		if (0x1C == inPut.CtrlCode) {
+			bFrame[len++] = (byte) (inPut.DataLen + inPut.RealLen);
+		}else{
+			bFrame[len++] = inPut.DataLen;
+		}
 	    
 	    //6. rule id  plus 0x33
 		if (0x1C != inPut.CtrlCode) {
