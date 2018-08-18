@@ -363,7 +363,7 @@ public class PositionController extends BaseController{
     @PostMapping(value = "/updateStatus")
     @ApiOperation(value="电表开闸合闸操作")
     public Results updateAmmeterStatus(@RequestBody AmmeterUpdateCondition condition) throws Exception {
-        return ammeterService.updateAmmeterStatus(condition.getStatus(),condition.getPositionId());
+        return ammeterService.updateAmmeterStatus(condition.getStatus(),condition.getPositionId(),properties.isNbiot());
     }
 
 }
