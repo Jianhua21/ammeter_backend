@@ -126,8 +126,6 @@ public class CommandController {
             return Results.error("异常设备,不可操作!");
         }
         CommandParams params = new CommandParams();
-        //没有数据发送
-        params.setIsChanged("2");
         params.setCommandKey(AppConstant.COMMAND_SWTICH_ON_KEY);
         //没有数据发送
         params.setDataFlag(true);
@@ -154,9 +152,16 @@ public class CommandController {
         }else if(position.getStatus() == 8){
             return Results.error("异常设备,不可操作!");
         }
+        AmmeterDevice device = ammeterService.selectDeviceByImsi(position.getImei());
         CommandParams params = new CommandParams();
+        params.setCommandKey(AppConstant.COMMAND_SWTICH_ON_KEY);
         //没有数据发送
-        params.setIsChanged("2");
+        params.setDataFlag(true);
+        params.setCommandType(3);
+        params.setDltFlag(true);
+        params.setAddress(device.getMeterNo());
+        //下发00数据
+        params.setIsChanged("1");
         commandService.commonCommandSend(position,AppConstant.COMMAND_SWTICH_OFF_KEY,params);
         return Results.success("关闸命令发送成功!",commandCondition.getSn());
     }

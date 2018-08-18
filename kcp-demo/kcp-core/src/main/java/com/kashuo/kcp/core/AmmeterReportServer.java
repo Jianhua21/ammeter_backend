@@ -155,10 +155,43 @@ public class AmmeterReportServer {
         return  reportMapper.dailyReportByParams(report);
     }
 
+    public Integer getMaxHourByReportDate(List<AmmeterReport> dailyReport){
+        Integer maxvalue = 0;
+        for (AmmeterReport report:dailyReport) {
+            if(maxvalue < report.getHour()){
+                maxvalue = report.getHour();
+            }
+        }
+        return maxvalue;
+    }
+
+
+    public Float getRightValue(Map<String, Object> dailyMap,Integer startFlag){
+        Float result =0f;
+        boolean selected = false;
+        if(dailyMap != null && dailyMap.size() >0) {
+            for (int i = startFlag; i <= dailyMap.size(); i++) {
+                if(dailyMap.get(String.valueOf(i)) != null){
+                    result = Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(i))));
+                    selected =true;
+                    break;
+                }
+            }
+            if(!selected){
+                for (int i = dailyMap.size(); i >0; i--) {
+                    if(dailyMap.get(String.valueOf(i)) != null){
+                        result = Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(i))));
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
     public List<Float> list645DailyReport(String reportDate,Integer ammeterId,Integer reportType){
         List<Float> data = new ArrayList<>();
         List<AmmeterReport> dailyReport = listDailyReport(reportDate, ammeterId);
-        Map<String, Object> dailyMap = StringUtils.initDailyReportMap();
+        Map<String, Object> dailyMap = StringUtils.initDailyReportMap(getMaxHourByReportDate(dailyReport));
         if (dailyReport != null) {
             for (AmmeterReport report : dailyReport) {
                 if(reportType == 1) {
@@ -177,16 +210,17 @@ public class AmmeterReportServer {
         for (int i =1;i<=dailyMap.size();i++){
             Float result = 0f;
             try {
-                if(i>1 && dailyMap.get(String.valueOf(i)) == null){
-                    if(DateUtils.dateToString(new Date()).equals(reportDate) ) {
-                        if(i < DateUtils.getHour()) {
-                            dailyMap.put(String.valueOf(i), dailyMap.get(String.valueOf(i - 1)));
-                            result = Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(1))));
-                        }
-                    }else {
-                        dailyMap.put(String.valueOf(i), dailyMap.get(String.valueOf(i - 1)));
-                        result =  Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(1))));
-                    }
+                if(dailyMap.get(String.valueOf(i)) == null){
+                    result =  getRightValue(dailyMap,i);
+//                    if(DateUtils.dateToString(new Date()).equals(reportDate) ) {
+//                        if(i < DateUtils.getHour()) {
+//                            dailyMap.put(String.valueOf(i), dailyMap.get(String.valueOf(i - 1)));
+//                            result = Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(i))));
+//                        }
+//                    }else {
+//                        dailyMap.put(String.valueOf(i), dailyMap.get(String.valueOf(i - 1)));
+//                        result =  Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(i))));
+//                    }
 
                 }else {
                     result = Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(i))));

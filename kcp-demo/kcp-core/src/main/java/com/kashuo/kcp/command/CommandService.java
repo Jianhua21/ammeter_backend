@@ -91,7 +91,8 @@ public class CommandService {
         }else {
             command = sysDictionaryService.getDynamicSystemValue(params.getCommandKey(), AppConstant.CALLBACK_URLS_TYPE_ID);
             //判断是否需要处理645 命令
-            if(params.getCommandKey().equals(AppConstant.COMMAND_SWTICH_ON_KEY)){
+            if(params.getCommandKey().equals(AppConstant.COMMAND_SWTICH_ON_KEY)||
+                    params.getCommandKey().equals(AppConstant.COMMAND_SWTICH_OFF_KEY)){
                 command = AmmeterUtils.getSwitchPackageCommand(params.getAddress(),command);
             }else {
                 if (params.isDltFlag()) {
@@ -402,7 +403,7 @@ public class CommandService {
         logger.info("nbiot 返回数据:"+ JSONObject.toJSONString(result));
         boolean code = "5106".equals(result.getErrno());
         while (times <=3 && code){
-            logger.info("nbiot 尝试第:"+times+1+"次重新发送");
+            logger.info("nbiot 尝试第:"+(times+1)+"次重新发送");
             result = deviceManagement.sendWriteCommand(device);
             logger.info("nbiot 返回数据:"+ JSONObject.toJSONString(result));
             if("5106".equals(result.getErrno())){

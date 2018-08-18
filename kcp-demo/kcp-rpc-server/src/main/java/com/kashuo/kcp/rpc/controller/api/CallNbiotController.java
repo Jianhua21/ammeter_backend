@@ -95,6 +95,9 @@ public class CallNbiotController {
                 }else{
                     //设备数据处理
                     String command = response.getValue();
+                    if(command == ""){
+                        return "ok";
+                    }
                     //处理CallBack 命令参数
                     CommandDetail detail = commandService.processDeviceCallBackResponse(command);
                     String crc_new = CRC16x25Utils.CRC16_Check(detail.getContext().getBytes(),detail.getContext().length());

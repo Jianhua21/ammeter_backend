@@ -80,10 +80,11 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into ammeter_warning (ammeter_id, warning_status, warning_date, 
-      create_date, create_by, warning_desc,warning_type,reason
+      create_date, create_by, warning_desc,warning_type,reason,messageFlag
       )
     values (#{ammeterId,jdbcType=INTEGER}, #{warningStatus,jdbcType=CHAR}, #{warningDate,jdbcType=TIMESTAMP}, 
       #{createDate,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{warningDesc,jdbcType=VARCHAR},#{warningType,jdbcType=INTEGER}, #{reason,jdbcType=VARCHAR}
+    ,#{messageFlag,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterWarning" >

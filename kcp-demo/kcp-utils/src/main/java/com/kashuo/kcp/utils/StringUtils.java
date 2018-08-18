@@ -26,9 +26,9 @@ public class StringUtils {
         return hexString.toString();
     }
 
-    public static Map<String,Object> initDailyReportMap(){
+    public static Map<String,Object> initDailyReportMap(Integer initValue){
         Map<String,Object> dailyReportMap = new HashMap<>();
-        for (int i = 1;i<=24;i++){
+        for (int i = 1;i<=initValue;i++){
             dailyReportMap.put(String.valueOf(i),null);
         }
         return dailyReportMap;

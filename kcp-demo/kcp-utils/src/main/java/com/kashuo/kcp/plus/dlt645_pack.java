@@ -17,7 +17,7 @@ public class dlt645_pack {
 	//�ѵ��������Լ����
 	byte DataLen;
 	byte[] Data;
-	
+
 	//������ʵ����������4�ֽڵĹ�ԼID,������Ϊ0�ֽ�
 	byte RealLen;
 	
@@ -146,10 +146,14 @@ public class dlt645_pack {
 	    bFrame[len++] = inPut.CtrlCode;
 	    
 	    //5. data filed bytes
-	    bFrame[len++] = (byte)(inPut.DataLen + inPut.RealLen);
+		if (0x1C == inPut.CtrlCode) {
+			bFrame[len++] = (byte) (inPut.DataLen + inPut.RealLen);
+		}else{
+			bFrame[len++] = inPut.DataLen;
+		}
 	    
 	    //6. rule id  plus 0x33
-		if (0x11 == inPut.CtrlCode) {
+		if (0x1C != inPut.CtrlCode) {
 			bFrame[len++] = (byte) (bDi0 + 0x33);
 			bFrame[len++] = (byte) (bDi1 + 0x33);
 			bFrame[len++] = (byte) (bDi2 + 0x33);
@@ -157,10 +161,11 @@ public class dlt645_pack {
 		}
 	    
 	    //7. other data
-		for(i = 0; i < inPut.DataLen; i++)
-		{
-			bFrame[len++] = (byte)(inPut.Data[i] + 0x33);
-			//debug(LOG_NOTICE,"inPara->data[i] = %0x", inPara->data[i]);
+		if (0x1C == inPut.CtrlCode) {
+			for (i = 0; i < inPut.DataLen; i++) {
+				bFrame[len++] = (byte) (inPut.Data[i] + 0x33);
+				//debug(LOG_NOTICE,"inPara->data[i] = %0x", inPara->data[i]);
+			}
 		}
 	    
 	    //8. cal checksum 
