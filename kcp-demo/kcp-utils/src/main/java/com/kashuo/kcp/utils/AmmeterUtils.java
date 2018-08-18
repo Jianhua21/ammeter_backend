@@ -405,41 +405,41 @@ public class AmmeterUtils {
         return address;
     }
 
-    public static void main(String[] args){
-        try {
-            String on="00000000785634121a00123017010519";
-            String off="00000000785634121b00123017010519";
-            String cmd = getSwitchPackageCommand("111111111111", on);
-            System.out.println(cmd);
-        }catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("解析出错！");
-        }
-    }
-//    public static void main(String[] args) {
+//    public static void main(String[] args){
 //        try {
-//            char buf[] = new char[64];
-////            new AmmeterUtils().analysis("FE FE FE FE 68 11 11 11 11 11 11 68 91 0A 37 37 33 37 33 33 89 63 65 65 C5 16",buf);
-////
-////              new AmmeterUtils().analysis("FE FE FE FE 68 11 11 11 11 11 11 68 91 06 33 34 34 35 85 56 78 16",buf);
-////              String s ="FEFEFEFE680801000000006891063334343575550A16";//A箱电压
-//            String s ="FEFEFEFE68AAAAAAAAAAAA68D30143E316";//电表地址
-////            String s ="FEFEFEFE6811111111111168D101353D16";
-////              String s="FEFEFEFE68111111111111681104333334331816";
-////            String s ="FEFEFEFE6806010000000068110433333433ffffffb916";
-//////            new AmmeterUtils().analysis(unpackDeviceData(s),buf);
-//            String address =String.valueOf(AmmeterUtils.unPackageAnalysisForAddress(s));
-//            System.out.println("返回结果++"+address);
-////            System.out.println("返回结果++"+AmmeterUtils.unPackageAnalysis(s));
-//        } catch (Exception e) {
+//            String on="00000000785634121a00123017010519";
+//            String off="00000000785634121b00123017010519";
+//            String cmd = getSwitchPackageCommand("111111111111", on);
+//            System.out.println(cmd);
+//        }catch (Exception e) {
 //            e.printStackTrace();
 //            System.out.println("解析出错！");
 //        }
-//
-////        System.out.println(getPackageCommand("000000000106","00010000")+"==================");
-////        System.out.println(getPackageCommand("111111111111","00010000")+"==================");
-////        System.out.println(Integer.toHexString(-10));
-////        System.out.println(Integer.toHexString(16));
 //    }
+    public static void main(String[] args) {
+        try {
+            char buf[] = new char[64];
+//            new AmmeterUtils().analysis("FE FE FE FE 68 11 11 11 11 11 11 68 91 0A 37 37 33 37 33 33 89 63 65 65 C5 16",buf);
+//
+//              new AmmeterUtils().analysis("FE FE FE FE 68 11 11 11 11 11 11 68 91 06 33 34 34 35 85 56 78 16",buf);
+//              String s ="FEFEFEFE680801000000006891063334343575550A16";//A箱电压
+//            String s ="FEFEFEFE6811111111111168910733343535B77533FE16";//电表地址
+              String s ="FEFEFEFE6811111111111168910733343535CA3333CF16";
+//              String s="FEFEFEFE68111111111111681104333334331816";
+//            String s ="FEFEFEFE6806010000000068110433333433ffffffb916";
+////            new AmmeterUtils().analysis(unpackDeviceData(s),buf);
+//            String address =String.valueOf(AmmeterUtils.unPackageAnalysisForAddress(s));
+//            System.out.println("返回结果++"+address);
+            System.out.println("返回结果++"+AmmeterUtils.unPackageAnalysis(s));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("解析出错！");
+        }
+
+//        System.out.println(getPackageCommand("000000000106","00010000")+"==================");
+//        System.out.println(getPackageCommand("111111111111","00010000")+"==================");
+//        System.out.println(Integer.toHexString(-10));
+//        System.out.println(Integer.toHexString(16));
+    }
 
 }

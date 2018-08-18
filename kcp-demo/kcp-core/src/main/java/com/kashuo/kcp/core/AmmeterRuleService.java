@@ -51,16 +51,16 @@ public class AmmeterRuleService {
     public void  generateNetWorkWarningInfo(AmmeterNetwork network){
         for (AmmeterRule rule:netWorkRuleList) {
             if (AppConstant.METER_RSRQ_KEY.equals(rule.getRuleParams().toUpperCase())) {
-                insertWarningInfo(network, rule.getRuleDesc(),0);
+                insertWarningInfo(network, rule.getRuleDesc(),0,false);
             }
         }
     }
 
-    public void offLineDeviceWarning(AmmeterNetwork network){
-        insertWarningInfo(network,"当前设备不在线",1);
+    public void offLineDeviceWarning(AmmeterNetwork network,boolean messageFlag){
+        insertWarningInfo(network,"当前设备不在线",1,messageFlag);
     }
 
-    public void insertWarningInfo(AmmeterNetwork network,String desc,Integer type) {
+    public void insertWarningInfo(AmmeterNetwork network,String desc,Integer type,boolean messageFlag) {
         AmmeterWarning warning = new AmmeterWarning();
         warning.setCreateBy("system");
         warning.setAmmeterId(network.getAmmeterId());
@@ -69,6 +69,9 @@ public class AmmeterRuleService {
         warning.setWarningDesc(desc);
         warning.setWarningStatus("0");
         warning.setWarningType(type);
+        if(messageFlag) {
+            warning.setMessageFlag(1);
+        }
         try {
             warningMapper.insert(warning);
         }catch (Exception e){

@@ -21,6 +21,16 @@ public class AmmeterWarning {
 
     private String reason;
 
+    private Integer messageFlag;
+
+    public Integer getMessageFlag() {
+        return messageFlag;
+    }
+
+    public void setMessageFlag(Integer messageFlag) {
+        this.messageFlag = messageFlag;
+    }
+
     public String getReason() {
         return reason;
     }
