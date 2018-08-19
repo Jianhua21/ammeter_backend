@@ -30,15 +30,15 @@ public class QuartzConfiguration {
     @Autowired
     private IoMRegSync regSync;
 
-//    /**
-//     * 定时更新订购方案状态，每天凌晨一点执行
-//     */
-//    @Scheduled(cron = "${app.constant.quartz}")
-//    public void reportCurrentByCron() throws Exception {
-//        if (offSet) {
-//            warningInfoSync.updateWarningInfoByCron();
-//        }
-//    }
+    /**
+     * 定时更新订购方案状态，每天凌晨一点执行
+     */
+    @Scheduled(cron = "${app.constant.quartz}")
+    public void reportCurrentByCron() throws Exception {
+        if (offSet) {
+            warningInfoSync.updateWarningInfoByCron();
+        }
+    }
 
     @Scheduled(cron = "${app.constant.quartz}")
     public void registerSync() throws Exception {
@@ -74,11 +74,11 @@ public class QuartzConfiguration {
 //        }
 //    }
 
-    @Scheduled(cron = "${app.constant.quartz.report}")
-    public void generateMonthlyReport() throws Exception {
-        if (offSet) {
-            regSync.updateMonthPowerReport();
-        }
-    }
+//    @Scheduled(cron = "${app.constant.quartz.report}")
+//    public void generateMonthlyReport() throws Exception {
+//        if (offSet) {
+//            regSync.updateMonthPowerReport();
+//        }
+//    }
 
 }

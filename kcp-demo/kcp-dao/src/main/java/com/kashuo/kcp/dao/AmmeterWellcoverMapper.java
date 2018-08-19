@@ -7,9 +7,13 @@ public interface AmmeterWellcoverMapper {
 
     int insert(AmmeterWellcover record);
 
+    int insertHistory(AmmeterWellcover record);
+
     int insertSelective(AmmeterWellcover record);
 
     AmmeterWellcover selectByPrimaryKey(Integer id);
+
+    AmmeterWellcover selectByPositionId(Integer id);
 
     int updateByPrimaryKeySelective(AmmeterWellcover record);
 

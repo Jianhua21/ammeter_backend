@@ -6,6 +6,7 @@ import com.kashuo.kcp.api.entity.CommandDetail;
 import com.kashuo.kcp.api.entity.callback.DeviceCommandCallBack;
 import com.kashuo.kcp.api.entity.callback.DeviceDataChange;
 import com.kashuo.kcp.command.CommandService;
+import com.kashuo.kcp.command.WellCoverService;
 import com.kashuo.kcp.constant.IoTConstant;
 import com.kashuo.kcp.core.AmmeterCallBackService;
 import com.kashuo.kcp.core.NetWorkService;
@@ -44,6 +45,9 @@ public class CallBackController {
     @Autowired
     private CommandService commandService;
 
+    @Autowired
+    private WellCoverService wellCoverService;
+
     @PostMapping("/command")
     @ApiOperation("命令下发回调")
     public void CommandCallBack(HttpServletRequest request) throws IOException {
@@ -55,6 +59,36 @@ public class CallBackController {
         DeviceCommandCallBack params =JSONObject.parseObject(result,DeviceCommandCallBack.class);
         commandService.updateCommandHistory(params);
     }
+
+    @PostMapping("/manholeSubscribe")
+    @ApiOperation("订阅回调")
+    public void manholeSubscribleCallBack(HttpServletRequest request) throws Exception {
+        InputStream inputStream = request.getInputStream();
+        String result = org.apache.commons.io.IOUtils.toString(inputStream);
+        logger.info("--------IoM manhole cover subscribe request data Start----------------------");
+        logger.info(result);
+        JSONObject params =JSONObject.parseObject(result);
+        if(params == null){
+            return;
+        }
+        String notifyType = String.valueOf(params.get(IoTConstant.IOT_NOTIFY_TYPE));
+        String deviceId = String.valueOf(params.get(IoTConstant.IOT_DEVICE_ID));
+        logger.info("正在处理通知类型为:{} 的数据",notifyType);
+        if(IoTConstant.IOT_NOTIFY_TYPE_DEVICE_DATA_CHANGED.equals(notifyType)){
+            DeviceDataChange dataChange = JSON.parseObject(result,DeviceDataChange.class);
+            String response = dataChange.getService().getData().getRawdata();
+            logger.info("======实际数据============"+JSONObject.toJSONString(response));
+            wellCoverService.processData(response,deviceId);
+        }
+        AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
+        callbackHistory.setDeviceId(deviceId);
+        callbackHistory.setNotifyType(notifyType);
+        callbackHistory.setCreateTime(new Date());
+        callbackHistory.setParams(result);
+        callBackService.insertCallBackHistory(callbackHistory);
+        logger.info("--------IoM  manhole cover subscribe request data End----------------------");
+    }
+
     @PostMapping("/subscribe")
     @ApiOperation("订阅回调")
     public void SubscribeCallBack(HttpServletRequest request) throws Exception {

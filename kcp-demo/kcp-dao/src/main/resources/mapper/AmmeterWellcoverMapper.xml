@@ -21,6 +21,12 @@
     from ammeter_wellcover
     where id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="selectByPositionId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_wellcover
+    where position_id = #{id,jdbcType=INTEGER}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from ammeter_wellcover
     where id = #{id,jdbcType=INTEGER}
@@ -35,6 +41,17 @@
     values (#{positionId,jdbcType=INTEGER}, #{deviceType,jdbcType=VARCHAR}, #{batteryStatus,jdbcType=VARCHAR}, 
       #{sensor,jdbcType=VARCHAR}, #{surfaceDistance,jdbcType=VARCHAR}, #{tiltSensor,jdbcType=VARCHAR}, 
       #{waterLevelSensor,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertHistory" parameterType="com.kashuo.kcp.domain.AmmeterWellcover" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_wellcover_history (position_id, device_type, battery_status,
+    sensor, surface_distance, tilt_sensor,
+    water_level_sensor)
+    values (#{positionId,jdbcType=INTEGER}, #{deviceType,jdbcType=VARCHAR}, #{batteryStatus,jdbcType=VARCHAR},
+    #{sensor,jdbcType=VARCHAR}, #{surfaceDistance,jdbcType=VARCHAR}, #{tiltSensor,jdbcType=VARCHAR},
+    #{waterLevelSensor,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterWellcover" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >

@@ -2,12 +2,12 @@ package com.kashuo.kcp.core;
 
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.dao.AmmeterNetworkMapper;
+import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterRuleMapper;
 import com.kashuo.kcp.dao.AmmeterWarningMapper;
-import com.kashuo.kcp.domain.AmmeterNetwork;
-import com.kashuo.kcp.domain.AmmeterRule;
-import com.kashuo.kcp.domain.AmmeterWarning;
+import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.utils.CompareUtils;
+import com.kashuo.kcp.utils.MessageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,8 @@ public class AmmeterRuleService {
     private AmmeterRuleMapper ammeterRuleMapper;
     @Autowired
     private AmmeterNetworkMapper networkMapper;
-
+    @Autowired
+    private AmmeterPositionMapper positionMapper;
     @Autowired
     private AmmeterWarningMapper warningMapper;
     private Logger logger = LoggerFactory.getLogger(AmmeterRuleService.class);
@@ -96,10 +97,49 @@ public class AmmeterRuleService {
         return flag;
     }
 
+    public boolean checkWellCoverWarning(AmmeterWellcover wellcover,String name,Integer ammeterId){
+        boolean flag =false;
+        for (AmmeterRule rule:netWorkRuleList){
+            Field[] fields = wellcover.getClass().getDeclaredFields();
+            for (Field f:fields){
+                if(f.getName().equals(rule.getRuleParams()) && f.getName().equals(name)){
+                    flag = CompareUtils.compareParams(
+                            String.valueOf(getFieldValueByName(f.getName(),wellcover)),
+                            rule.getRuleValue(),
+                            rule.getRuleKey());
+                    if(flag){
+
+                        AmmeterPosition position = positionMapper.selectByPrimaryKey(wellcover.getPositionId());
+                        boolean messageFlag = MessageUtils.sendMessage(position.getImei(),"参数不正常",position.getContactInfo());
+
+                        AmmeterWarning warning = new AmmeterWarning();
+                        warning.setCreateBy("system");
+                        warning.setAmmeterId(ammeterId);
+                        warning.setWarningDate(new Date());
+                        warning.setCreateDate(new Date());
+                        warning.setWarningDesc(rule.getRuleDesc());
+                        warning.setWarningStatus("0");
+                        warning.setWarningType(0);
+                        warning.setMessageFlag(messageFlag? 1:0);
+                        warning.setRuleId(rule.getId());
+                        try {
+                            warningMapper.insert(warning);
+                        }catch (Exception e){
+                            logger.error("batch insert warning info failure...network.id={}",wellcover.getId());
+                        }
+                    }
+                    return flag;
+                }
+            }
+        }
+        return flag;
+    }
+
     public static void main(String[] args) {
-        AmmeterNetwork network = new AmmeterNetwork();
-        network.setCelli("123");
-        Field[] fields = network.getClass().getDeclaredFields();
+//        AmmeterNetwork network = new AmmeterNetwork();
+//        network.setCelli("123");
+        AmmeterWellcover wellcover = new AmmeterWellcover();
+        Field[] fields = wellcover.getClass().getDeclaredFields();
         for (Field f:fields){
             System.out.println(f.getName());
         }

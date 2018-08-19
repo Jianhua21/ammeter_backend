@@ -51,7 +51,12 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     private String waterLevelSensor;
 
     public String getBatteryStatus() {
-        return batteryStatus;
+        try {
+            batteryStatus = String.valueOf(Integer.parseInt(batteryStatus) * 1d / 100) + "V";
+        }catch (Exception e){
+            batteryStatus ="0 V";
+        }
+        return batteryStatus ;
     }
 
     public void setBatteryStatus(String batteryStatus) {
@@ -67,6 +72,11 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     }
 
     public String getSurfaceDistance() {
+        try {
+            surfaceDistance = String.valueOf(Integer.parseInt(surfaceDistance) * 1d / 100) + "M";
+        }catch (Exception e){
+            surfaceDistance = "0 M";
+        }
         return surfaceDistance;
     }
 
@@ -75,7 +85,14 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     }
 
     public String getTiltSensor() {
-        return tiltSensor;
+        if(tiltSensor == null){
+            return "-";
+        }else if("A0".equals(tiltSensor)){
+            return "正常";
+        }else{
+            return "倾斜";
+        }
+
     }
 
     public void setTiltSensor(String tiltSensor) {
@@ -83,7 +100,14 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     }
 
     public String getWaterLevelSensor() {
-        return waterLevelSensor;
+        if(waterLevelSensor == null){
+            return "-";
+        }
+        else if("W0".equals(waterLevelSensor)){
+            return "正常水位";
+        }else{
+            return  "水位已漫出";
+        }
     }
 
     public void setWaterLevelSensor(String waterLevelSensor) {

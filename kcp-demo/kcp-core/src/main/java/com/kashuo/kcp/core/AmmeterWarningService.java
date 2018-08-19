@@ -6,13 +6,12 @@ import com.kashuo.common.mybatis.helper.PageHelper;
 import com.kashuo.kcp.dao.AmmeterNetworkMapper;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterWarningMapper;
+import com.kashuo.kcp.dao.AmmeterWellcoverMapper;
 import com.kashuo.kcp.dao.condition.WarningCondition;
 import com.kashuo.kcp.dao.result.WarningCategory;
 import com.kashuo.kcp.dao.result.WarningHome;
-import com.kashuo.kcp.domain.AmmeterNetwork;
-import com.kashuo.kcp.domain.AmmeterPosition;
-import com.kashuo.kcp.domain.AmmeterWarning;
-import com.kashuo.kcp.domain.AmmeterWarningResult;
+import com.kashuo.kcp.dao.result.WarningWellCover;
+import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.utils.BeanUtils;
 import com.kashuo.kcp.utils.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,8 @@ public class AmmeterWarningService {
 
     @Autowired
     private AmmeterPositionMapper ammeterPositionMapper;
+    @Autowired
+    private AmmeterWellcoverMapper wellcoverMapper;
 
     public void updateWarningInfo(){
         List<AmmeterNetwork> networks = networkMapper.selectForWarningReport();
@@ -73,6 +74,34 @@ public class AmmeterWarningService {
                 position.setDeviceId(o.getDeviceId());
                 ammeterPositionMapper.updateStatusByDeviceId(position);
         });
+    }
+
+    public void genereateWellCoverWarning(){
+        List<WarningWellCover> list = warningMapper.wellCoverWarningList();
+        if(list != null){
+            for (WarningWellCover warningWellCover :list){
+                AmmeterWellcover wellcover = wellcoverMapper.selectByPositionId(warningWellCover.getId());
+
+
+                if(warningWellCover.getBatteryWarning() == null){
+                    ruleService.checkWellCoverWarning(wellcover,"batteryStatus",warningWellCover.getAmmeterId());
+                }
+                if(warningWellCover.getSensorWarning() == null){
+                    ruleService.checkWellCoverWarning(wellcover,"sensor",warningWellCover.getAmmeterId());
+                }
+                if(warningWellCover.getSurfaceDistanceWarning() == null){
+                    ruleService.checkWellCoverWarning(wellcover,"surfaceDistance",warningWellCover.getAmmeterId());
+                }
+                if(warningWellCover.getTiltSensorWarning() == null){
+                    wellcover.setTiltSensor(wellcover.getTiltSensor().substring(1,2));
+                    ruleService.checkWellCoverWarning(wellcover,"tiltSensor",warningWellCover.getAmmeterId());
+                }
+                if(warningWellCover.getWaterLevelSensorWarning() == null){
+                    wellcover.setWaterLevelSensor(wellcover.getWaterLevelSensor().substring(1,2));
+                    ruleService.checkWellCoverWarning(wellcover,"waterLevelSensor",warningWellCover.getAmmeterId());
+                }
+            }
+        }
     }
 
     public Page<AmmeterWarningResult> queryWarningList(WarningCondition condition){

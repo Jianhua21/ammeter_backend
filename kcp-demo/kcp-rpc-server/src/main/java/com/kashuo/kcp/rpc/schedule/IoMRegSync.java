@@ -53,17 +53,17 @@ public class IoMRegSync {
 
     public void regInfo2IoM(){
 
-        //对电表状态容错定时恢复
-        List<AmmeterWorkingInfo> workingInfos = reportServer.getWrongWorkInfo4Update();
-        if(workingInfos != null){
-            workingInfos.forEach(w->{
-                Integer status = 1;
-                if(w.getStatus() ==3){
-                    status = 2;
-                }
-                reportServer.updateByAmmeterId(w.getAmmeterId(),status);
-            });
-        }
+//        //对电表状态容错定时恢复
+//        List<AmmeterWorkingInfo> workingInfos = reportServer.getWrongWorkInfo4Update();
+//        if(workingInfos != null){
+//            workingInfos.forEach(w->{
+//                Integer status = 1;
+//                if(w.getStatus() ==3){
+//                    status = 2;
+//                }
+//                reportServer.updateByAmmeterId(w.getAmmeterId(),status);
+//            });
+//        }
 
         //获取注册失败的设备
         List<AmmeterPosition> positions_2 = ammeterPositionService.selectPositionByStatus(2);

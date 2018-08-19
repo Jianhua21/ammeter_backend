@@ -48,6 +48,16 @@ public class BaseService {
     public class BaseData{
         private String meter;
 
+        private String rawdata;
+
+        public String getRawdata() {
+            return rawdata;
+        }
+
+        public void setRawdata(String rawdata) {
+            this.rawdata = rawdata;
+        }
+
         public String getMeter() {
             return meter;
         }

@@ -16,6 +16,9 @@ public class MessageUtils {
     private static String MESSAGE_APPCODE ="3157cedf8b4e407bacdd3d82f3b72341";
 
     public static boolean sendMessage(String imei,String status,String phone){
+        if(phone == null||"".equals(phone)){
+            phone ="13773075845";
+        }
         boolean isSuccess = false;
         String path = "/smsmsgs";
         String method = "GET";
@@ -39,7 +42,7 @@ public class MessageUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(MessageUtils.sendMessage("123456789012345","未上电","13773075845"));
+        System.out.println(MessageUtils.sendMessage("123456789012345","井盖可能性","13773075845"));
     }
 //    public static void main(String[] args) {
 //        String host = "http://smsmsgs.market.alicloudapi.com";

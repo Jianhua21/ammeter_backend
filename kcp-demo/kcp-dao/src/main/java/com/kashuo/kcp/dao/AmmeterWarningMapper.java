@@ -3,9 +3,11 @@ package com.kashuo.kcp.dao;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.dao.condition.WarningCondition;
 import com.kashuo.kcp.dao.result.WarningHome;
+import com.kashuo.kcp.dao.result.WarningWellCover;
 import com.kashuo.kcp.domain.AmmeterWarning;
 import com.kashuo.kcp.domain.AmmeterWarningResult;
 
+import java.util.List;
 import java.util.Map;
 
 public interface AmmeterWarningMapper {
@@ -30,4 +32,6 @@ public interface AmmeterWarningMapper {
     Map<String,Object> reportWarningCount();
 
     Page<AmmeterWarningResult> queryWarningList(WarningCondition condition);
+
+    List<WarningWellCover> wellCoverWarningList();
 }

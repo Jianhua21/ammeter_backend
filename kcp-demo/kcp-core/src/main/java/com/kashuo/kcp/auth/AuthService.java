@@ -16,6 +16,8 @@ import com.kashuo.kcp.dao.AmmeterNbiotMapper;
 import com.kashuo.kcp.domain.AmmeterAuth;
 import com.kashuo.kcp.domain.AmmeterNbiot;
 import com.kashuo.kcp.redis.RedisServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,7 @@ import java.util.List;
 @Service
 public class AuthService {
 
+    private static Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     @Autowired
     private SysDictionaryService sysDictionaryService;
@@ -46,7 +49,8 @@ public class AuthService {
 
     @Autowired
     public void initPlatIomAuth(){
-        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM, JSON.toJSONString(authMapper.selectAuthDetail()));
+        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER, JSON.toJSONString(authMapper.selectAuthDetail()));
+        logger.info("IoM平台Auth 信息:",JSON.toJSONString(redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER)));
         //移动平台
 //        List<AmmeterNbiot> nbiots = nbiotMapper.queryAllNbiot();
 //        if(nbiots != null){
@@ -75,7 +79,7 @@ public class AuthService {
         ammeterAuth.setScope(authOutDTO.getScope());
         ammeterAuth.setTokenType(authOutDTO.getTokenType());
         ammeterAuth.setStatus("0");
-        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER);
         if(authCache == null ||"null".equals(authCache) ){
             authMapper.insert(ammeterAuth);
         }else{
@@ -83,14 +87,14 @@ public class AuthService {
             authMapper.updateByPrimaryKeySelective(ammeterAuth);
         }
 //        auth_init = authMapper.selectAuthDetail();
-        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM,JSON.toJSONString(authMapper.selectAuthDetail()));
+        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER,JSON.toJSONString(authMapper.selectAuthDetail()));
     }
 
     public void refreshAuthInfo() throws NorthApiException {
         //初始化鉴权对象
         Authentication auth = initAuth();
         AuthRefreshInDTO arid = new AuthRefreshInDTO();
-        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER);
         AmmeterAuth ammeterAuthCache =JSONObject.parseObject(authCache,AmmeterAuth.class);
         arid.setRefreshToken(ammeterAuthCache.getRefreshToken());
         arid.setAppId(sysDictionaryService.getDynamicSystemValue(AppConstant.IOM_APPID,AppConstant.SYSTEM_PARAMS_TYPE_ID));
@@ -108,7 +112,7 @@ public class AuthService {
         ammeterAuth.setStatus("1");
         ammeterAuth.setId(ammeterAuthCache.getId());
         authMapper.updateByPrimaryKeySelective(ammeterAuth);
-        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM,JSON.toJSONString(authMapper.selectAuthDetail()));
+        redisService.set(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER,JSON.toJSONString(authMapper.selectAuthDetail()));
 //        auth_init = authMapper.selectAuthDetail();
     }
 
@@ -118,7 +122,7 @@ public class AuthService {
      */
     public void logoutAuth() throws NorthApiException{
         //初始化鉴权对象
-        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER);
         AmmeterAuth ammeterAuthCache =JSONObject.parseObject(authCache,AmmeterAuth.class);
         Authentication auth = initAuth();
         auth.logoutAuthToken(ammeterAuthCache.getAccessToken());
@@ -152,7 +156,7 @@ public class AuthService {
     }
 
     public AmmeterAuth getPlatIomAuth() throws NorthApiException {
-        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+        String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER);
         AmmeterAuth ammeterAuthCache = new AmmeterAuth();
         if(authCache == null || "null".equals(authCache)){
             getAuthInfo();
@@ -168,7 +172,7 @@ public class AuthService {
     public AmmeterAuth checkPlatAccessToken(AmmeterAuth auth) throws NorthApiException {
           if((new Date().getTime() - auth.getCreateTime().getTime())/1000 >= auth.getExpiresIn()){
               getAuthInfo();
-              String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM);
+              String authCache = redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER);
               auth = JSONObject.parseObject(authCache,AmmeterAuth.class);
           }
           return auth;
@@ -201,29 +205,32 @@ public class AuthService {
     }
 
     public static void main(String[] args) throws NorthApiException {
-//        NorthApiClient nac = new NorthApiClient();
-//
-//        ClientInfo ci = new ClientInfo();
-//
+        NorthApiClient nac = new NorthApiClient();
+
+        ClientInfo ci = new ClientInfo();
+
 //        String appId = "bpfcOrUv5lUvxiSOLeVtUMfxBhMa";
 //        String secret = "p6m9oSn9FlXZc0nTCIeXPHpm3sYa";
-//
-//        ci.setAppId(appId);
-//        ci.setPlatformIp("180.101.147.89");
-//        ci.setPlatformPort("8743");
-//        ci.setSecret(secret);
-//
-//        nac.setClientInfo(ci);
-//        nac.initSSLConfig();
-//
-//        // auth
-//        Authentication aaa = new Authentication(nac);
-//
-//        // 4.1.1 鑾峰彇閴存潈Token
-//        AuthOutDTO aod = null;
-//
-//        aod = aaa.getAuthToken();
-//
-//        System.out.println(aod.toString());
+
+        String appId = "BneCA9AjQg4_uHbA_6anCHfvpbMa";
+        String secret = "gc4SrNGIa__eHA5jdQYMPLJ1UwYa";
+
+        ci.setAppId(appId);
+        ci.setPlatformIp("180.101.147.89");
+        ci.setPlatformPort("8743");
+        ci.setSecret(secret);
+
+        nac.setClientInfo(ci);
+        nac.initSSLConfig();
+
+        // auth
+        Authentication aaa = new Authentication(nac);
+
+        // 4.1.1 鑾峰彇閴存潈Token
+        AuthOutDTO aod = null;
+
+        aod = aaa.getAuthToken();
+
+        System.out.println(aod.toString());
     }
 }

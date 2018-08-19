@@ -13,20 +13,20 @@ public class CompareUtils {
             return false;
         }
         try{
-            Integer.parseInt(param1);
+            Double.parseDouble(param1);
         }catch (NumberFormatException e){
             param1 ="0";
         }
         if(">".equals(operator)){
-             return Integer.parseInt(param1)>Integer.parseInt(param2) ;
+             return Double.parseDouble(param1)>Double.parseDouble(param2) ;
         }else if(">=".equals(operator)){
-            return Integer.parseInt(param1)>=Integer.parseInt(param2) ;
+            return Double.parseDouble(param1)>=Double.parseDouble(param2) ;
         }else if("<".equals(operator)){
-            return Integer.parseInt(param1)<Integer.parseInt(param2) ;
+            return Double.parseDouble(param1)<Double.parseDouble(param2) ;
         }else if("<=".equals(operator)){
-            return Integer.parseInt(param1)<=Integer.parseInt(param2) ;
+            return Double.parseDouble(param1)<=Double.parseDouble(param2) ;
         }else if("=".equals(operator)){
-            return Integer.parseInt(param1)==Integer.parseInt(param2) ;
+            return Double.parseDouble(param1)==Double.parseDouble(param2) ;
         }
         return false;
     }

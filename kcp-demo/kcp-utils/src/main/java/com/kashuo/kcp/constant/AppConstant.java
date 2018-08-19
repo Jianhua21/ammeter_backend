@@ -73,9 +73,9 @@ public class AppConstant {
 
     public class AmmeterBaseInformation {
 
-        public static final String AMMETER_DEVICE_TYPE = "nb_elect_meter";
+        public static final String AMMETER_DEVICE_TYPE = "nb_manhole_meter";
 
-        public static final String AMMETER_DEVICE_MODEL = "NBIoTDevice";
+        public static final String AMMETER_DEVICE_MODEL = "NBIoTDeviceManhole";
 
         public static final String AMMETER_DEVICE_MANUFACTURER_ID ="001020";
 

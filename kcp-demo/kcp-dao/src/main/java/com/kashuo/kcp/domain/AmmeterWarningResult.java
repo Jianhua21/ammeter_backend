@@ -31,6 +31,16 @@ public class AmmeterWarningResult {
     //告警消除原因
     private String reason;
 
+    private Integer ruleId;
+
+    public Integer getRuleId() {
+        return ruleId;
+    }
+
+    public void setRuleId(Integer ruleId) {
+        this.ruleId = ruleId;
+    }
+
     public String getReason() {
         return reason;
     }
