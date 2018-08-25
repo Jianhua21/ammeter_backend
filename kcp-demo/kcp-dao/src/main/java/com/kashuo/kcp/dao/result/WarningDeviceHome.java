@@ -11,6 +11,26 @@ public class WarningDeviceHome {
 
     private Integer historyWarnings=0;
 
+    private Integer onlineDevices =0;
+
+    private Integer totalDevices = 0;
+
+    public Integer getOnlineDevices() {
+        return onlineDevices;
+    }
+
+    public void setOnlineDevices(Integer onlineDevices) {
+        this.onlineDevices = onlineDevices;
+    }
+
+    public Integer getTotalDevices() {
+        return totalDevices;
+    }
+
+    public void setTotalDevices(Integer totalDevices) {
+        this.totalDevices = totalDevices;
+    }
+
     private WarningDeviceCategory  warningCategories;
 
     public WarningDeviceCategory getWarningCategories() {

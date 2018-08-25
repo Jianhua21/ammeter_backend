@@ -17,6 +17,7 @@ import com.kashuo.kcp.dao.condition.IMEICondition;
 import com.kashuo.kcp.dao.result.AmmeterIMEIResult;
 import com.kashuo.kcp.dao.result.PosotionHome;
 import com.kashuo.kcp.domain.*;
+import com.kashuo.kcp.eums.DeviceTypes;
 import com.kashuo.kcp.manage.DeviceConfigService;
 import com.kashuo.kcp.utils.Results;
 import com.kashuo.kcp.utils.StringUtil;
@@ -65,6 +66,12 @@ public class PositionController extends BaseController{
     public Results CreateAmmeterPosition(@RequestBody AmmeterPosition ammeterPosition) throws NorthApiException {
 
         logger.info("录入设备信息参数：{}", JSON.toJSONString(ammeterPosition));
+        if(StringUtil.isEmpty(ammeterPosition.getImei())){
+            return Results.error("IMEI不能为空!");
+        }
+        if(ammeterPosition.getImei().length() != 15){
+            return Results.error("IMEI格式不对,请检查下!");
+        }
         if(StringUtil.isEmpty(ammeterPosition.getAmapLatitude())){
             return Results.error("高德经度信息不能为空!");
         }
@@ -98,12 +105,13 @@ public class PositionController extends BaseController{
             updateFlag = true;
             ammeterPosition.setId(position.getId());
         }
+        ammeterPosition.setProductId(DeviceTypes.parseName(String.valueOf(ammeterPosition.getDeviceType())));
         ammeterPosition.setStatus(0);
         ammeterPosition.setCreateTime(new Date());
         ammeterPosition.setCreateBy(getCuruserId());
         try {
             if(updateFlag){
-                ammeterPositionService.updateByPrimaryKeySelective(ammeterPosition);
+                ammeterPositionService.updateAllByPrimaryKeySelective(ammeterPosition);
             }else {
                 ammeterPositionService.insert(ammeterPosition);
             }
@@ -142,7 +150,7 @@ public class PositionController extends BaseController{
 
         AmmeterPosition positionDB = ammeterPositionService.selectByImei(ammeterPosition.getImei());
         //向IoT平台注册和设备信息同步
-        if(ammeterPosition.getPlatform() == 1){
+        if("1".equals(ammeterPosition.getPlatform())){
              nbiotCommandService.createDevice(positionDB);
         }else {
             Integer result = commandService.autoRegDevice(positionDB);

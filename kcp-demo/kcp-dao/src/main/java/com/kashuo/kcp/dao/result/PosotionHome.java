@@ -1,5 +1,7 @@
 package com.kashuo.kcp.dao.result;
 
+import com.kashuo.kcp.utils.StringUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,16 @@ public class PosotionHome {
 
     private String remark;
 
+    private String companyName;
+
+    public String getCompanyName() {
+        return StringUtil.pageViewToEmpty(companyName);
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
     public String getWarningStatus() {
         return warningStatus;
     }
@@ -40,7 +52,7 @@ public class PosotionHome {
     private String warningStatus;
 
     public String getWarningDesc() {
-        return warningDesc;
+        return StringUtil.pageViewToEmpty(warningDesc);
     }
 
     public void setWarningDesc(String warningDesc) {

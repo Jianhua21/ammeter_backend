@@ -68,23 +68,27 @@ public class IoMRegSync {
         //获取注册失败的设备
         List<AmmeterPosition> positions_2 = ammeterPositionService.selectPositionByStatus(2);
         positions_2.forEach(p->{
-            try {
-                Integer result = commandService.autoRegDevice(p);
-                AmmeterPosition position = new AmmeterPosition();
-                position.setStatus(result);
-                position.setId(p.getId());
-                ammeterPositionService.updateByPrimaryKeySelective(position);
-            } catch (NorthApiException e) {
-                authExceptionService.handleException(e,null);
+            if(p.getImei().length() ==15) {
+                try {
+                    Integer result = commandService.autoRegDevice(p);
+                    AmmeterPosition position = new AmmeterPosition();
+                    position.setStatus(result);
+                    position.setId(p.getId());
+                    ammeterPositionService.updateByPrimaryKeySelective(position);
+                } catch (NorthApiException e) {
+                    authExceptionService.handleException(e, null);
+                }
             }
         });
         //获取信息同步失败的设备
         List<AmmeterPosition> positions_4 = ammeterPositionService.selectPositionByStatus(4);
         positions_4.forEach(p->{
-            try {
-                commandService.autoSyncDeviceInfo(p);
-            } catch (NorthApiException e) {
-                authExceptionService.handleException(e,p.getDeviceId());
+            if(p.getImei().length() ==15) {
+                try {
+                    commandService.autoSyncDeviceInfo(p);
+                } catch (NorthApiException e) {
+                    authExceptionService.handleException(e, p.getDeviceId());
+                }
             }
         });
 

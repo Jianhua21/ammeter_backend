@@ -39,8 +39,8 @@ public class AmmeterPositionBaseInfo {
     @ApiModelProperty("设备所属平台")
     private Integer platform =0;
 
-    public Integer getPlatform() {
-        return platform;
+    public String getPlatform() {
+        return String.valueOf(platform);
     }
 
     public void setPlatform(Integer platform) {

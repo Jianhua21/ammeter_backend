@@ -140,6 +140,8 @@ public class AmmeterWarningService {
         home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
         Map<String,Object> warningDevices = warningMapper.reportWarningSmartDevices();
         WarningDeviceCategory category = new WarningDeviceCategory();
+        home.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
+        home.setOnlineDevices(Integer.parseInt(warningDevices.get("onlineDevices").toString()));
         category.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
         category.setNormalDevices(Integer.parseInt(warningDevices.get("normalDevices").toString()));
         category.setBatteryWarningDevices(Integer.parseInt(warningDevices.get("batteryWarningDevices").toString()));

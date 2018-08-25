@@ -27,6 +27,8 @@ public interface AmmeterPositionMapper {
 
     int updateByPrimaryKeySelective(AmmeterPosition record);
 
+    int updateAllByPrimaryKeySelective(AmmeterPosition record);
+
     int updateByPrimaryKey(AmmeterPosition record);
 
     int updateStatusByDeviceId(AmmeterPosition record);

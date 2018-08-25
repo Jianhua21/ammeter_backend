@@ -36,6 +36,10 @@ public class AmmeterPositionService {
     public void updateByPrimaryKeySelective(AmmeterPosition ammeterPosition){
         ammeterPositionMapper.updateByPrimaryKeySelective(ammeterPosition);
     }
+    public void updateAllByPrimaryKeySelective(AmmeterPosition ammeterPosition){
+        ammeterPositionMapper.updateAllByPrimaryKeySelective(ammeterPosition);
+    }
+
     public void deleteAmmeterPosition(Integer id){
         ammeterPositionMapper.deleteByPrimaryKey(id);
     }

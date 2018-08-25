@@ -52,12 +52,14 @@ public class AuthService {
         redisService.set(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER, JSON.toJSONString(authMapper.selectAuthDetail()));
         logger.info("IoM平台Auth 信息:",JSON.toJSONString(redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER)));
         //移动平台
-//        List<AmmeterNbiot> nbiots = nbiotMapper.queryAllNbiot();
-//        if(nbiots != null){
-//            nbiots.forEach(nb->
-//                redisService.set(AppConstant.REDIS_KEY_AUTH_IOT+"_"+nb.getProductName(), JSON.toJSONString(nb))
-//            );
-//        }
+        List<AmmeterNbiot> nbiots = nbiotMapper.queryAllNbiot();
+        if(nbiots != null){
+            nbiots.forEach(nb-> {
+                redisService.set(AppConstant.REDIS_KEY_AUTH_IOT + "_" + nb.getProductName(), JSON.toJSONString(nb));
+                logger.info("IoT 移动平台Auth 信息:", JSON.toJSONString(redisService.get(AppConstant.REDIS_KEY_AUTH_IOT + "_" + nb.getProductName())));
+                 }
+            );
+        }
 
     }
 

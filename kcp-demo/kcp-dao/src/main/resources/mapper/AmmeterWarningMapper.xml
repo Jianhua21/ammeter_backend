@@ -238,7 +238,8 @@ sum(case when w11.warning_type = 0 and r.rule_params ='tiltSensor' then 1 else 0
 sum(case when w11.warning_type = 0 and r.rule_params ='waterLevelSensor' then 1 else 0 end)
  as waterLevelSensorWarningDevices,
  sum(case when w11.ammeter_id is null then 1 else 0 end) as normalDevices
- ,count(p.id) as totalDevices
+ ,count(p.id) as totalDevices,
+ sum(case when p.`status` = 6 then 1 else 0 end) as onlineDevices
 from ammeter_position p INNER JOIN ammeter_device d on d.imsi =p.imei
 LEFT JOIN
 (select w1.* from ammeter_warning w1,(select max(id) id from ammeter_warning w GROUP BY ammeter_id) w2

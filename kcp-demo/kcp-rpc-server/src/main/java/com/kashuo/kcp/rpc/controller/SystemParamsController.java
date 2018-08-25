@@ -63,11 +63,7 @@ public class SystemParamsController {
         List<AmmeterRule> rules = ruleService.getDictionartLists();
         for (AmmeterRule rule:rules
              ) {
-            if("tiltSensor".equals(rule.getRuleParams()) || "waterLevelSensor".equals(rule.getRuleParams())){
-
-            }else{
-                params.put(rule.getRuleParams(),rule);
-            }
+            params.put(rule.getRuleParams(),rule);
         }
         return Results.success(params);
     }

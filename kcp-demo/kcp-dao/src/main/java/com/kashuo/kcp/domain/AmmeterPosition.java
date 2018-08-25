@@ -49,6 +49,16 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     private String tiltSensor;
     @ApiModelProperty("水位满溢传感器信息")
     private String waterLevelSensor;
+    @ApiModelProperty("设备类型")
+    private Integer deviceType =1;
+
+    public Integer getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(Integer deviceType) {
+        this.deviceType = deviceType;
+    }
 
     public String getBatteryStatus() {
         try {
