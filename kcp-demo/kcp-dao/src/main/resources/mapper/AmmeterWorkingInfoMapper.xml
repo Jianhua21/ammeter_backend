@@ -224,13 +224,13 @@
     w.reactive_demand, w.apparent_demand, w.temperature, w.clock_cell_voltage, w.no_power_cell_voltage,
     w.battery_working_time, w.active_power, w.reverse_active_power, w.status from ammeter_command_history c,
 ammeter_position p,ammeter_device e,ammeter_working_info w,
-(select max(id) id from ammeter_command_history where command_name ='IEM001'
-or command_name='IEM002' group by device_id) d
+(select max(id) id from ammeter_command_history where command_name ='00000000785634121b00123017010519'
+or command_name='00000000785634121a00123017010519' group by device_id) d
 where
 c.device_id = p.device_id and p.imei =e.imsi
 and e.id = w.ammeter_id and
 (w.`status`= 3 or w.`status` =4) and
-c.id = d.id and c.`status` != 'SUCCESS'
+c.id = d.id
 and round((UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(c.create_time))/60)>15
   </select>
 </mapper>
