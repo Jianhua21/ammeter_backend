@@ -85,6 +85,9 @@ public class PositionController extends BaseController{
         if(StringUtil.isEmpty(ammeterPosition.getInstaller())){
             ammeterPosition.setInstaller("-");
         }
+        if(StringUtil.isEmpty(String.valueOf(ammeterPosition.getPlatform()))){
+            return Results.error("请选择设备注册平台!");
+        }
         AmmeterPosition position = ammeterPositionService.selectByImei(ammeterPosition.getImei());
         boolean updateFlag = false;
         if(position != null && position.getStatus() != 3 &&
@@ -139,7 +142,7 @@ public class PositionController extends BaseController{
 
         AmmeterPosition positionDB = ammeterPositionService.selectByImei(ammeterPosition.getImei());
         //向IoT平台注册和设备信息同步
-        if(properties.isNbiot()){
+        if(ammeterPosition.getPlatform() == 1){
              nbiotCommandService.createDevice(positionDB);
         }else {
             Integer result = commandService.autoRegDevice(positionDB);

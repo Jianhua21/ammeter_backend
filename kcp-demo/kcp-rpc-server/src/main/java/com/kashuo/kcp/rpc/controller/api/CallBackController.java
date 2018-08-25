@@ -80,6 +80,8 @@ public class CallBackController {
             logger.info("======实际数据============"+JSONObject.toJSONString(response));
             wellCoverService.processData(response,deviceId);
         }
+        netWorkService.updateDeviceStatusByNb(deviceId,null,true);
+
         AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
         callbackHistory.setDeviceId(deviceId);
         callbackHistory.setNotifyType(notifyType);

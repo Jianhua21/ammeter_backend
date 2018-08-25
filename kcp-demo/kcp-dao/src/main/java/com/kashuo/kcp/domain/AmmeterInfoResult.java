@@ -3,6 +3,7 @@ package com.kashuo.kcp.domain;
 import com.kashuo.kcp.utils.DateUtils;
 import com.kashuo.kcp.utils.StringUtil;
 import com.kashuo.kcp.utils.StringUtils;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -70,6 +71,92 @@ public class AmmeterInfoResult implements Serializable{
     private String agreementStatus;
     //联系人信息
     private String contactInfo;
+
+    @ApiModelProperty("电池状态")
+    private String batteryStatus;
+    @ApiModelProperty("亮度传感器信息")
+    private String sensor;
+    @ApiModelProperty("水面距离")
+    private String surfaceDistance;
+    @ApiModelProperty("倾斜传感器信息")
+    private String tiltSensor;
+    @ApiModelProperty("水位满溢传感器信息")
+    private String waterLevelSensor;
+
+    private Integer platform;
+
+    public Integer getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(Integer platform) {
+        this.platform = platform;
+    }
+
+    public String getBatteryStatus() {
+        try {
+            batteryStatus = String.valueOf(Integer.parseInt(batteryStatus) * 1d / 100) + "V";
+        }catch (Exception e){
+            batteryStatus ="0 V";
+        }
+        return batteryStatus ;
+    }
+
+    public void setBatteryStatus(String batteryStatus) {
+        this.batteryStatus = batteryStatus;
+    }
+
+    public String getSensor() {
+        return sensor;
+    }
+
+    public void setSensor(String sensor) {
+        this.sensor = sensor;
+    }
+
+    public String getSurfaceDistance() {
+        try {
+            surfaceDistance = String.valueOf(Integer.parseInt(surfaceDistance) * 1d / 100) + "M";
+        }catch (Exception e){
+            surfaceDistance = "0 M";
+        }
+        return surfaceDistance;
+    }
+
+    public void setSurfaceDistance(String surfaceDistance) {
+        this.surfaceDistance = surfaceDistance;
+    }
+
+    public String getTiltSensor() {
+        if(tiltSensor == null){
+            return "-";
+        }else if("A0".equals(tiltSensor)){
+            return "正常";
+        }else{
+            return "倾斜";
+        }
+
+    }
+
+    public void setTiltSensor(String tiltSensor) {
+        this.tiltSensor = tiltSensor;
+    }
+
+    public String getWaterLevelSensor() {
+        if(waterLevelSensor == null){
+            return "-";
+        }
+        else if("W0".equals(waterLevelSensor)){
+            return "正常水位";
+        }else{
+            return  "水位已漫出";
+        }
+    }
+
+    public void setWaterLevelSensor(String waterLevelSensor) {
+        this.waterLevelSensor = waterLevelSensor;
+    }
+
 
     public String getDeviceModel() {
         return StringUtil.pageViewToEmpty(deviceModel);
@@ -212,8 +299,8 @@ public class AmmeterInfoResult implements Serializable{
         this.type = type;
     }
 
-    public Date getProductDate() {
-        return productDate;
+    public String getProductDate() {
+        return DateUtils.dateDetailToString(productDate);
     }
 
     public void setProductDate(Date productDate) {

@@ -77,6 +77,11 @@ public class DateUtils {
         return format.format(date);
     }
 
+    public static String dateDetailToString(Date date) {
+        SimpleDateFormat format = new SimpleDateFormat(formatPatternDateTime);
+        return format.format(date);
+    }
+
     /**
      * 日期转换成字符串
      */

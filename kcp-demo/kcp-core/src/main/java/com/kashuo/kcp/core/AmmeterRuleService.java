@@ -5,9 +5,12 @@ import com.kashuo.kcp.dao.AmmeterNetworkMapper;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterRuleMapper;
 import com.kashuo.kcp.dao.AmmeterWarningMapper;
+import com.kashuo.kcp.dao.condition.AmmeterWellCoverSystemParams;
 import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.utils.CompareUtils;
 import com.kashuo.kcp.utils.MessageUtils;
+import com.kashuo.kcp.utils.StringUtil;
+import com.kashuo.kcp.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,29 @@ public class AmmeterRuleService {
         } catch (Exception e) {
         }
         return netWorkRuleList;
+    }
+
+    public void saveWellCoverRule(AmmeterWellCoverSystemParams wellCoverSystemParams){
+
+            AmmeterRule rule1 = new AmmeterRule();
+            rule1.setRuleParams("batteryStatus");
+            rule1.setRuleKey(wellCoverSystemParams.getBatteryStatusKey());
+            rule1.setRuleValue(wellCoverSystemParams.getBatteryStatusValue());
+            ammeterRuleMapper.updateByPrimaryName(rule1);
+
+            AmmeterRule rule2 = new AmmeterRule();
+            rule2.setRuleParams("sensor");
+            rule2.setRuleKey(wellCoverSystemParams.getSensorKey());
+            rule2.setRuleValue(wellCoverSystemParams.getSensorValue());
+            ammeterRuleMapper.updateByPrimaryName(rule2);
+
+            AmmeterRule rule3 = new AmmeterRule();
+            rule3.setRuleParams("surfaceDistance");
+            rule3.setRuleKey(wellCoverSystemParams.getSurfaceDistanceKey());
+            rule3.setRuleValue(wellCoverSystemParams.getSurfaceDistanceValue());
+            ammeterRuleMapper.updateByPrimaryName(rule3);
+
+           netWorkRuleList = ammeterRuleMapper.getNetWorkRules();
     }
 
 

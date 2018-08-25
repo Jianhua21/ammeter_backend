@@ -5,6 +5,7 @@ import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.core.AmmeterService;
 import com.kashuo.kcp.core.AmmeterWarningService;
 import com.kashuo.kcp.dao.condition.WarningCondition;
+import com.kashuo.kcp.dao.result.WarningDeviceHome;
 import com.kashuo.kcp.dao.result.WarningHome;
 import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterUser;
@@ -38,7 +39,7 @@ public class WarningController extends BaseController{
     @ApiOperation("告警总览")
     public Results getWarningHome() throws Exception {
         AmmeterUser user = getCuruser();
-        WarningHome warningHome = warningService.reportWarningInfo();
+        WarningDeviceHome warningHome = warningService.reportWarningDeviceInfo();
         logger.info("告警总览数据 :{}",JSON.toJSONString(warningHome));
         return  Results.success(warningHome);
     }

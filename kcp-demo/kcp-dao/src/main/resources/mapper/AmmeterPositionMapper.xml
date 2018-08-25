@@ -24,6 +24,7 @@
     <result column="agreement_status" property="agreementStatus" jdbcType="VARCHAR" />
     <result column="contact_info" property="contactInfo" jdbcType="VARCHAR" />
     <result column="product_id" property="productId" jdbcType="VARCHAR" />
+    <result column="platform" property="platform" jdbcType="INTEGER" />
   </resultMap>
 
   <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterPosition" >
@@ -48,22 +49,24 @@
     <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
     <result column="Activated" property="Activated" jdbcType="CHAR" />
     <result column="work_status" property="workStatus" jdbcType="INTEGER" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
     <result column="battery_status" property="batteryStatus" jdbcType="VARCHAR" />
     <result column="sensor" property="sensor" jdbcType="VARCHAR" />
     <result column="surface_distance" property="surfaceDistance" jdbcType="VARCHAR" />
     <result column="tilt_sensor" property="tiltSensor" jdbcType="VARCHAR" />
     <result column="water_level_sensor" property="waterLevelSensor" jdbcType="VARCHAR" />
+    <result column="platform" property="platform" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, number, address, amap_longitude, amap_latitude, gps_longitude, gps_latitude, 
     remark,status,create_by,create_time,imei,device_id,verify_code,psk,Activated,installer,'-' as status_name,
-    device_model,company_name,agreement_status,contact_info,product_id
+    device_model,company_name,agreement_status,contact_info,product_id,platform
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     p.id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude, p.gps_longitude, p.gps_latitude,
     p.remark,p.status,p.create_by,p.create_time,p.imei,p.device_id,p.verify_code,p.psk,p.Activated,p.installer,s.desc as status_name,
-    device_model,company_name,agreement_status,contact_info,product_id
+    p.device_model,p.company_name,p.agreement_status,p.contact_info,p.product_id,p.platform
     from ammeter_position p ,ammeter_status s
     where p.status = s.code and id = #{id,jdbcType=INTEGER}
   </select>
@@ -95,7 +98,7 @@
       select p.id,p.device_id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude,
       p.gps_longitude, p.gps_latitude, p.remark,p.status,
       s.desc as status_name,IFNULL(info.`status`,2) as work_status,
-      p.create_by,p.create_time,d.type,p.imei,p.installer,
+      p.create_by,p.create_time,d.type,p.imei,p.installer,p.platform,p.company_name,
       wc.battery_status,wc.sensor,wc.surface_distance,wc.tilt_sensor,wc.water_level_sensor,
       case when f.id is null then '0' else '1' end as warning_status,
       case when f.id is null then '' else f.warning_desc end as warning_desc
@@ -167,11 +170,11 @@
     </selectKey>
     insert into ammeter_position (name, number, address, 
       amap_longitude, amap_latitude, gps_longitude, 
-      gps_latitude, remark,create_by,create_time,imei,installer)
+      gps_latitude, remark,create_by,create_time,imei,installer,platform)
     values (#{name,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
       #{amapLongitude,jdbcType=VARCHAR}, #{amapLatitude,jdbcType=VARCHAR}, #{gpsLongitude,jdbcType=VARCHAR}, 
       #{gpsLatitude,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},#{createBy,jdbcType=INTEGER},
-    #{createTime,jdbcType=TIMESTAMP}, #{imei,jdbcType=VARCHAR}, #{installer,jdbcType=VARCHAR})
+    #{createTime,jdbcType=TIMESTAMP}, #{imei,jdbcType=VARCHAR}, #{installer,jdbcType=VARCHAR}, #{platform,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterPosition" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >

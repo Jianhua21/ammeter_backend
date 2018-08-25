@@ -25,7 +25,7 @@ public class StringUtil {
      * @return true 空 false 非空
      */
     public static boolean isNotEmpty(String str) {
-        return null != str && !"".equals(str);
+        return null != str && !"".equals(str.trim());
     }
 
     public static String nullToEmpty(String str) {

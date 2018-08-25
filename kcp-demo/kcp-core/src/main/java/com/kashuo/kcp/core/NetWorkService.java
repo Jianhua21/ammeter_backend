@@ -120,15 +120,6 @@ public class NetWorkService {
             warning.setWarningStatus("1");
             warning.setAmmeterId(ammeterDevice.getId());
             ammeterWarningMapper.updateStatusByType(warning);
-
-            //下发电表地址
-            try {
-                commandService.getAmmeterAddress(position.getDeviceId());
-            } catch (NorthApiException e) {
-                logger.error("下发电表地址出错,deviceId: {}",position.getDeviceId());
-            }catch (Exception e) {
-                logger.error("下发电表地址出错,deviceId: {}",position.getDeviceId());
-            }
         }
         if(!flag){
             //更新在线状态

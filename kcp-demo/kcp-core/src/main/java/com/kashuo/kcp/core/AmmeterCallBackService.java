@@ -132,7 +132,7 @@ public class AmmeterCallBackService {
         AmmeterDevice device = ammeterDeviceMapper.selectByDeviceId(deviceId);
         if(device != null){
             if(powerFlag){
-                //合闸成功
+                //合闸成功9C00
                 if(!detail.getData().contains("ERR")) {
                     workingInfoMapper.updateByAmmeterId(device.getId(), 2);
                 }else{

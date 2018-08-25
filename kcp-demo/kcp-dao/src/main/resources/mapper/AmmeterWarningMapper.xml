@@ -225,6 +225,29 @@ count(w.id) as warningNumbers
 INNER JOIN ammeter_position p on d.imsi =p.imei
 where p.status !=3
     </select>
+    <select id="reportWarningSmartDevices" resultType="map">
+ select sum(case when w11.warning_type = 1 then 1 else 0 end) warningOfflineDevices
+ , sum(case when w11.warning_type = 0 and r.rule_params ='batteryStatus' then 1 else 0 end)
+ as batteryWarningDevices
+ ,sum(case when w11.warning_type = 0 and r.rule_params ='sensor' then 1 else 0 end)
+ as sensorWarningDevices,
+sum(case when w11.warning_type = 0 and r.rule_params ='surfaceDistance' then 1 else 0 end)
+ as surfaceDistanceWarningDevices,
+sum(case when w11.warning_type = 0 and r.rule_params ='tiltSensor' then 1 else 0 end)
+ as tiltSensorWarningDevices,
+sum(case when w11.warning_type = 0 and r.rule_params ='waterLevelSensor' then 1 else 0 end)
+ as waterLevelSensorWarningDevices,
+ sum(case when w11.ammeter_id is null then 1 else 0 end) as normalDevices
+ ,count(p.id) as totalDevices
+from ammeter_position p INNER JOIN ammeter_device d on d.imsi =p.imei
+LEFT JOIN
+(select w1.* from ammeter_warning w1,(select max(id) id from ammeter_warning w GROUP BY ammeter_id) w2
+where w1.id = w2.id and w1.warning_status =0
+) w11 on w11.ammeter_id = d.id
+LEFT JOIN ammeter_rule r on w11.rule_id = r.id
+where p.status != 3
+    </select>
+
 
   <select id="wellCoverWarningList" resultMap="BaseWellCoverWaringResultMap">
     select p.id,d.id as ammeter_id,a.warning_desc as battery_warning,

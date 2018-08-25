@@ -78,6 +78,12 @@
       <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
       <result column="agreement_status" property="agreementStatus" jdbcType="VARCHAR"/>
       <result column="contact_info" property="contactInfo" jdbcType="VARCHAR"/>
+      <result column="battery_status" property="batteryStatus" jdbcType="VARCHAR" />
+      <result column="sensor" property="sensor" jdbcType="VARCHAR" />
+      <result column="surface_distance" property="surfaceDistance" jdbcType="VARCHAR" />
+      <result column="tilt_sensor" property="tiltSensor" jdbcType="VARCHAR" />
+      <result column="water_level_sensor" property="waterLevelSensor" jdbcType="VARCHAR" />
+      <result column="platform" property="platform" jdbcType="INTEGER" />
   </resultMap>
 
   <select id="selectAmmeterInfo" resultMap="AmmeterInfoMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterCondition">
@@ -86,12 +92,15 @@
       r.active_energy,CONCAT(p.amap_longitude,' , ',p.amap_latitude) as gis_amap,p.installer,p.create_time,p.remark,
       s.desc as online_status,
       info.reverse_active_power,IFNULL(info.`status`,1) as status,
-      p.agreement_status,p.company_name,p.contact_info,p.device_model
+      p.agreement_status,p.company_name,p.contact_info,p.device_model,
+      p.platform,
+      wc.battery_status,wc.sensor,wc.surface_distance,wc.tilt_sensor,wc.water_level_sensor
       from ammeter_device device
       INNER JOIN ammeter_position p on device.imsi = p.imei
       INNER  JOIN ammeter_status s on p.status= s.code
       left JOIN
       ammeter_working_info info on device.id = info.ammeter_id
+      LEFT JOIN ammeter_wellcover wc on wc.position_id = p.id
       LEFT JOIN
       (select r11.* from ammeter_report r11,
       (select max(id) id from ammeter_report r12 where active_energy is not null group by ammeter_id) r13

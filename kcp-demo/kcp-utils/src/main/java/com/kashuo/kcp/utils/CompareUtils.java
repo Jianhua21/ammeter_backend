@@ -9,7 +9,8 @@ public class CompareUtils {
 
 
     public static boolean compareParams(String param1,String param2,String operator){
-        if(param1 == null||param2 ==null){
+        if(param1 == null||param2 ==null ||operator == null
+                || "".equals(param1.trim())|| "".equals(param2.trim()) || "".equals(operator.trim())){
             return false;
         }
         try{

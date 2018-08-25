@@ -2,6 +2,7 @@ package com.kashuo.kcp.dao;
 
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.dao.condition.WarningCondition;
+import com.kashuo.kcp.dao.result.WarningDeviceHome;
 import com.kashuo.kcp.dao.result.WarningHome;
 import com.kashuo.kcp.dao.result.WarningWellCover;
 import com.kashuo.kcp.domain.AmmeterWarning;
@@ -27,7 +28,10 @@ public interface AmmeterWarningMapper {
 
     WarningHome getStatisticsDevices();
 
+
     Map<String,Object> reportWarningDevices();
+
+    Map<String,Object> reportWarningSmartDevices();
 
     Map<String,Object> reportWarningCount();
 

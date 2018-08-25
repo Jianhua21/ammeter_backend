@@ -8,9 +8,7 @@ import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterWarningMapper;
 import com.kashuo.kcp.dao.AmmeterWellcoverMapper;
 import com.kashuo.kcp.dao.condition.WarningCondition;
-import com.kashuo.kcp.dao.result.WarningCategory;
-import com.kashuo.kcp.dao.result.WarningHome;
-import com.kashuo.kcp.dao.result.WarningWellCover;
+import com.kashuo.kcp.dao.result.*;
 import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.utils.BeanUtils;
 import com.kashuo.kcp.utils.MessageUtils;
@@ -132,6 +130,25 @@ public class AmmeterWarningService {
         home.setWarningCategories(warningCategories);
         return home;
 
+    }
+
+    public WarningDeviceHome reportWarningDeviceInfo() throws Exception{
+        WarningDeviceHome  home = new WarningDeviceHome();
+        Map<String,Object> warningInfo = warningMapper.reportWarningCount();
+        home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()) );
+        home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
+        home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
+        Map<String,Object> warningDevices = warningMapper.reportWarningSmartDevices();
+        WarningDeviceCategory category = new WarningDeviceCategory();
+        category.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
+        category.setNormalDevices(Integer.parseInt(warningDevices.get("normalDevices").toString()));
+        category.setBatteryWarningDevices(Integer.parseInt(warningDevices.get("batteryWarningDevices").toString()));
+        category.setSensorWarningDevices(Integer.parseInt(warningDevices.get("sensorWarningDevices").toString()));
+        category.setSurfaceDistanceWarningDevices(Integer.parseInt(warningDevices.get("surfaceDistanceWarningDevices").toString()));
+        category.setTiltSensorWarningDevices(Integer.parseInt(warningDevices.get("tiltSensorWarningDevices").toString()));
+        category.setWaterLevelSensorWarningDevices(Integer.parseInt(warningDevices.get("waterLevelSensorWarningDevices").toString()));
+        home.setWarningCategories(category);
+        return home;
     }
 
 }

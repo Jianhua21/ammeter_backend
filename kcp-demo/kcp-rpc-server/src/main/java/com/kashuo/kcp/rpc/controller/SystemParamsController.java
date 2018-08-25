@@ -1,18 +1,25 @@
 package com.kashuo.kcp.rpc.controller;
 
+import com.kashuo.kcp.core.AmmeterRuleService;
 import com.kashuo.kcp.core.SysDictionaryService;
+import com.kashuo.kcp.dao.AmmeterRuleMapper;
+import com.kashuo.kcp.dao.AmmeterWellcoverMapper;
 import com.kashuo.kcp.dao.condition.AmmeterSystemParams;
+import com.kashuo.kcp.dao.condition.AmmeterWellCoverSystemParams;
+import com.kashuo.kcp.domain.AmmeterRule;
+import com.kashuo.kcp.domain.AmmeterWellcover;
 import com.kashuo.kcp.domain.SysDictionary;
 import com.kashuo.kcp.utils.Results;
+import com.kashuo.kcp.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dell-pc on 2018/4/15.
@@ -24,6 +31,9 @@ public class SystemParamsController {
 
     @Autowired
     private SysDictionaryService sysDictionaryService;
+
+    @Autowired
+    private AmmeterRuleService ruleService;
 
     @PostMapping("/list")
     @ApiOperation(value = "系统参数列表")
@@ -39,5 +49,28 @@ public class SystemParamsController {
 
         return  Results.success("更新成功!",params.getSn());
     }
+    @ApiOperation("更新井盖参数阀值")
+    @PostMapping("/updateWellCover")
+    public Results updateWellCover(@RequestBody AmmeterWellCoverSystemParams wellCoverSystemParams){
+       ruleService.saveWellCoverRule(wellCoverSystemParams);
+       return Results.success("更新成功!");
+    }
+
+    @ApiOperation("获取井盖参数阀值列表")
+    @GetMapping("/getWellCoverList")
+    public Results WellCoverParamsList(){
+        Map<String,Object> params = new HashedMap();
+        List<AmmeterRule> rules = ruleService.getDictionartLists();
+        for (AmmeterRule rule:rules
+             ) {
+            if("tiltSensor".equals(rule.getRuleParams()) || "waterLevelSensor".equals(rule.getRuleParams())){
+
+            }else{
+                params.put(rule.getRuleParams(),rule);
+            }
+        }
+        return Results.success(params);
+    }
+
 
 }

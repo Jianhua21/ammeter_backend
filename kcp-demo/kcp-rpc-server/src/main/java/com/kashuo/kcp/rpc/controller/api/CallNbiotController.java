@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.kashuo.kcp.api.entity.CommandDetail;
 import com.kashuo.kcp.api.entity.callback.DeviceDataChange;
 import com.kashuo.kcp.command.CommandService;
+import com.kashuo.kcp.command.WellCoverService;
 import com.kashuo.kcp.constant.IoTConstant;
 import com.kashuo.kcp.core.AmmeterCallBackService;
 import com.kashuo.kcp.core.NetWorkService;
@@ -49,6 +50,8 @@ public class CallNbiotController {
 
     @Autowired
     private NetWorkService netWorkService;
+    @Autowired
+    private WellCoverService wellCoverService;
 
     @RequestMapping(value = "/receive", method = RequestMethod.GET)
     @ApiOperation("回调token验证")
@@ -99,44 +102,8 @@ public class CallNbiotController {
                         return "ok";
                     }
                     //处理CallBack 命令参数
-                    CommandDetail detail = commandService.processDeviceCallBackResponse(command);
-                    String crc_new = CRC16x25Utils.CRC16_Check(detail.getContext().getBytes(),detail.getContext().length());
-                    if(!crc_new.toUpperCase().equals(detail.getCrcValue())){
-                        logger.info("CRC值 不正确:{}", JSON.toJSONString(detail));
-                        return "";
-                    }
-                    if(IoTConstant.Command.DEVICE_COMMAND_NBM001.equals(detail.getCommand())){
-                        //处理保活数据
-                        netWorkService.insertNetWorkInfo(detail.getData(),deviceId);
-                        //
-
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_NBM002.equals(detail.getCommand())){
-                        //设置CDP服务器IP
-                        callBackService.processRunningConfig(detail,deviceId);
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_NBM003.equals(detail.getCommand())){
-                        //设置APN地址
-                        callBackService.processRunningConfig(detail,deviceId);
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_STM001.equals(detail.getCommand())){
-                        //处理设备软重启CallBack
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_STM002.equals(detail.getCommand())){
-                        //恢复出厂设置
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_STM003.equals(detail.getCommand())){
-                        //保存系统配置
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_STM004.equals(detail.getCommand())){
-                        //配置NB处理流程时间
-                        callBackService.processRunningConfig(detail,deviceId);
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_IEM001.equals(detail.getCommand())){
-                        //拉闸处理
-                        callBackService.processSwitchPower(detail,deviceId,false);
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_IEM002.equals(detail.getCommand())){
-                        //合闸处理
-                        callBackService.processSwitchPower(detail,deviceId,true);
-                    }else if(detail.getCommand().startsWith(IoTConstant.Command.DEVICE_COMMAND_FEFEFEFE)){
-                        //电表645命令
-                        callBackService.process645dltData(detail,deviceId);
-                        logger.info("--------------------------------------------");
-                    }
-                    commandService.updateCommandHistoryBySubscrible(dataChange,detail);
+                    logger.info("======实际数据============"+JSONObject.toJSONString(response));
+                    wellCoverService.processData(command,deviceId);
                 }
                 AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
                 callbackHistory.setDeviceId(deviceId);
