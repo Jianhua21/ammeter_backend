@@ -24,6 +24,16 @@ public class AmmeterPositionCondition implements Serializable {
     private String sn;
     @ApiModelProperty("机构Id")
     private Integer channelId;
+    @ApiModelProperty("位置Id")
+    private Integer positionId;
+
+    public Integer getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(Integer positionId) {
+        this.positionId = positionId;
+    }
 
     public String getImei() {
         return imei != null ? imei.trim():"";

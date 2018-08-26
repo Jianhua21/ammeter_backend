@@ -114,6 +114,9 @@
       <if test="channelId != null and channelId != ''" >
         and  u.channel_id =#{channelId,jdbcType=INTEGER}
       </if>
+      <if test="positionId != null and positionId != ''" >
+        and  p.id =#{positionId,jdbcType=INTEGER}
+      </if>
         <if test="number != null and number !=''" >
            and  p.name like CONCAT('%',#{number,jdbcType=VARCHAR},'%')
         </if>
