@@ -122,7 +122,6 @@ public class AmmeterRuleService {
         }
         return flag;
     }
-
     public boolean checkWellCoverWarning(AmmeterWellcover wellcover,String name,Integer ammeterId){
         boolean flag =false;
         for (AmmeterRule rule:netWorkRuleList){
@@ -150,6 +149,36 @@ public class AmmeterRuleService {
                         warning.setRuleId(rule.getId());
                         try {
                             warningMapper.insert(warning);
+                        }catch (Exception e){
+                            logger.error("batch insert warning info failure...network.id={}",wellcover.getId());
+                        }
+                    }
+                    return flag;
+                }
+            }
+        }
+        return flag;
+    }
+
+    public boolean cancelWellCoverWarning(AmmeterWellcover wellcover,String name,Integer ammeterId){
+        boolean flag =false;
+        for (AmmeterRule rule:netWorkRuleList){
+            Field[] fields = wellcover.getClass().getDeclaredFields();
+            for (Field f:fields){
+                if(f.getName().equals(rule.getRuleParams()) && f.getName().equals(name)){
+                    flag = CompareUtils.compareParams(
+                            String.valueOf(getFieldValueByName(f.getName(),wellcover)),
+                            rule.getRuleValue(),
+                            rule.getRuleKey());
+                    if(!flag){
+                        AmmeterWarning warning = new AmmeterWarning();
+                        warning.setCreateBy("system");
+                        warning.setAmmeterId(ammeterId);
+                        warning.setWarningStatus("1");
+                        warning.setReason("系统取消告警");
+                        warning.setRuleId(rule.getId());
+                        try {
+                            warningMapper.updateByRuleKey(warning);
                         }catch (Exception e){
                             logger.error("batch insert warning info failure...network.id={}",wellcover.getId());
                         }

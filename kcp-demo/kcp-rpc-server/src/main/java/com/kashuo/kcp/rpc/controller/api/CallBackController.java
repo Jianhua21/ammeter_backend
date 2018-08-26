@@ -144,6 +144,8 @@ public class CallBackController {
                 callBackService.process645dltData(detail,deviceId);
             }
             commandService.updateCommandHistoryBySubscrible(dataChange,detail);
+        }else if(IoTConstant.IOT_NOTIFY_TYPE_DEVICE_INFO_CHANGED.equals(notifyType)){
+
         }
         AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
         callbackHistory.setDeviceId(deviceId);

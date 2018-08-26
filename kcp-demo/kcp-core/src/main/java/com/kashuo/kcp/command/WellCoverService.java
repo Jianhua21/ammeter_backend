@@ -1,5 +1,6 @@
 package com.kashuo.kcp.command;
 
+import com.kashuo.kcp.core.AmmeterWarningService;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterWellcoverMapper;
 import com.kashuo.kcp.domain.AmmeterPosition;
@@ -18,6 +19,8 @@ public class WellCoverService {
     @Autowired
     private AmmeterPositionMapper positionMapper;
 
+    @Autowired
+    private AmmeterWarningService warningService;
 
     public void processData(String response,String deviceId){
         AmmeterPosition position = positionMapper.selectByDeviceId(deviceId);
@@ -31,6 +34,8 @@ public class WellCoverService {
             }else{
                 wellcoverMapper.insert(wellcover);
             }
+            warningService.cancelWellCoverWarning(position.getId());
+
             wellcoverMapper.insertHistory(wellcover);
         }
 

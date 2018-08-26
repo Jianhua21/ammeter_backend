@@ -90,7 +90,7 @@ public class CallNbiotController {
                 dataChange.setNotifyType("Nb_Iot");
                 if(response.getType() ==2) {
                     //设备上下线
-                    if(response.getStatus() == 0){
+                    if(response.getStatus() == 1){
                         netWorkService.updateDeviceStatusByNb(deviceId,null,true);
                     }else{
                         netWorkService.updateDeviceStatusByNb(deviceId,null,false);

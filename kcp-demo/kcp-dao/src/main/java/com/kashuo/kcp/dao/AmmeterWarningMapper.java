@@ -22,6 +22,8 @@ public interface AmmeterWarningMapper {
 
     int updateByPrimaryKeySelective(AmmeterWarning record);
 
+    int updateByRuleKey(AmmeterWarning record);
+
     int updateByPrimaryKey(AmmeterWarning record);
 
     int updateStatusByType(AmmeterWarning record);
@@ -37,5 +39,5 @@ public interface AmmeterWarningMapper {
 
     Page<AmmeterWarningResult> queryWarningList(WarningCondition condition);
 
-    List<WarningWellCover> wellCoverWarningList();
+    List<WarningWellCover> wellCoverWarningList(WarningCondition condition);
 }

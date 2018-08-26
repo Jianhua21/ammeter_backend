@@ -68,7 +68,7 @@ public class IoMRegSync {
         //获取注册失败的设备
         List<AmmeterPosition> positions_2 = ammeterPositionService.selectPositionByStatus(2);
         positions_2.forEach(p->{
-            if(p.getImei().length() ==15) {
+            if(p.getImei().length() ==15 && "0".equals(p.getPlatform())) {
                 try {
                     Integer result = commandService.autoRegDevice(p);
                     AmmeterPosition position = new AmmeterPosition();
@@ -83,7 +83,7 @@ public class IoMRegSync {
         //获取信息同步失败的设备
         List<AmmeterPosition> positions_4 = ammeterPositionService.selectPositionByStatus(4);
         positions_4.forEach(p->{
-            if(p.getImei().length() ==15) {
+            if(p.getImei().length() ==15 && "0".equals(p.getPlatform())) {
                 try {
                     commandService.autoSyncDeviceInfo(p);
                 } catch (NorthApiException e) {

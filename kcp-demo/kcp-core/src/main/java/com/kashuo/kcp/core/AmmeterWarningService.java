@@ -75,11 +75,10 @@ public class AmmeterWarningService {
     }
 
     public void genereateWellCoverWarning(){
-        List<WarningWellCover> list = warningMapper.wellCoverWarningList();
+        List<WarningWellCover> list = warningMapper.wellCoverWarningList(null);
         if(list != null){
             for (WarningWellCover warningWellCover :list){
                 AmmeterWellcover wellcover = wellcoverMapper.selectByPositionId(warningWellCover.getId());
-
 
                 if(warningWellCover.getBatteryWarning() == null){
                     ruleService.checkWellCoverWarning(wellcover,"batteryStatus",warningWellCover.getAmmeterId());
@@ -97,6 +96,34 @@ public class AmmeterWarningService {
                 if(warningWellCover.getWaterLevelSensorWarning() == null){
                     wellcover.setWaterLevelSensor(wellcover.getWaterLevelSensor().substring(1,2));
                     ruleService.checkWellCoverWarning(wellcover,"waterLevelSensor",warningWellCover.getAmmeterId());
+                }
+            }
+        }
+    }
+
+    public void cancelWellCoverWarning(Integer positionId){
+        WarningCondition condition = new WarningCondition();
+        condition.setPositionId(positionId);
+        List<WarningWellCover> list = warningMapper.wellCoverWarningList(condition);
+        if(list != null){
+            for (WarningWellCover warningWellCover :list){
+                AmmeterWellcover wellcover = wellcoverMapper.selectByPositionId(warningWellCover.getId());
+                if(warningWellCover.getBatteryWarning() != null){
+                    ruleService.cancelWellCoverWarning(wellcover,"batteryStatus",warningWellCover.getAmmeterId());
+                }
+                if(warningWellCover.getSensorWarning() != null){
+                    ruleService.cancelWellCoverWarning(wellcover,"sensor",warningWellCover.getAmmeterId());
+                }
+                if(warningWellCover.getSurfaceDistanceWarning() != null){
+                    ruleService.cancelWellCoverWarning(wellcover,"surfaceDistance",warningWellCover.getAmmeterId());
+                }
+                if(warningWellCover.getTiltSensorWarning() != null){
+                    wellcover.setTiltSensor(wellcover.getTiltSensor().substring(1,2));
+                    ruleService.cancelWellCoverWarning(wellcover,"tiltSensor",warningWellCover.getAmmeterId());
+                }
+                if(warningWellCover.getWaterLevelSensorWarning() != null){
+                    wellcover.setWaterLevelSensor(wellcover.getWaterLevelSensor().substring(1,2));
+                    ruleService.cancelWellCoverWarning(wellcover,"waterLevelSensor",warningWellCover.getAmmeterId());
                 }
             }
         }

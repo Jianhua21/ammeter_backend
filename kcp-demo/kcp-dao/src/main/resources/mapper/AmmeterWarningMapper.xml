@@ -162,6 +162,32 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+    <update id="updateByRuleKey" parameterType="com.kashuo.kcp.domain.AmmeterWarning" >
+        update ammeter_warning
+        <set >
+            <if test="warningStatus != null" >
+                warning_status = #{warningStatus,jdbcType=CHAR},
+            </if>
+            <if test="warningDate != null" >
+                warning_date = #{warningDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createDate != null" >
+                create_date = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createBy != null" >
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="warningDesc != null" >
+                warning_desc = #{warningDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="reason != null" >
+                reason = #{reason,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ammeter_id = #{ammeterId,jdbcType=INTEGER} and rule_id =#{ruleId,jdbcType=INTEGER}
+        and warning_status = 0
+    </update>
   <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterWarning" >
     update ammeter_warning
     set ammeter_id = #{ammeterId,jdbcType=INTEGER},
@@ -218,8 +244,8 @@ where w1.id = w2.id and w1.warning_status =0
 where p.status != 3
     </select>
     <select id="reportWarningCount" resultType="map">
-        select sum(case when w.warning_status = 0 then 1 else 0 end ) currentWarnings,
-sum(case when w.warning_status = 1 then 1 else 0 end ) historyWarnings,
+        select IFNULL(sum(case when w.warning_status = 0 then 1 else 0 end ),0) currentWarnings,
+IFNULL(sum(case when w.warning_status = 1 then 1 else 0 end ),0) historyWarnings,
 count(w.id) as warningNumbers
  from ammeter_warning w INNER JOIN ammeter_device d on w.ammeter_id = d.id
 INNER JOIN ammeter_position p on d.imsi =p.imei
@@ -250,7 +276,7 @@ where p.status != 3
     </select>
 
 
-  <select id="wellCoverWarningList" resultMap="BaseWellCoverWaringResultMap">
+  <select id="wellCoverWarningList" resultMap="BaseWellCoverWaringResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
     select p.id,d.id as ammeter_id,a.warning_desc as battery_warning,
         b.warning_desc as sensor_warning,
         c.warning_desc as surfaceDistance_warning,
@@ -279,5 +305,9 @@ where p.status != 3
         (select w5.ammeter_id,w5.warning_desc from ammeter_warning w5
         INNER JOIN  ammeter_rule r5 on w5.rule_id = r5.id  and r5.rule_params='waterLevelSensor'  and w5.warning_status = 0
         ) e on e.ammeter_id = d.id
+        where 1=1
+        <if test="positionId != null">
+            and p.id =#{positionId,jdbcType=INTEGER}
+        </if>
   </select>
 </mapper>
