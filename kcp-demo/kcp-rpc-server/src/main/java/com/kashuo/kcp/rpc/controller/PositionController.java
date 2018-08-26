@@ -180,6 +180,7 @@ public class PositionController extends BaseController{
             position.setCompanyName(ammeterPosition.getCompanyName());
             position.setContactInfo(ammeterPosition.getContactInfo());
             position.setAgreementStatus(ammeterPosition.getAgreementStatus());
+            position.setDeviceProject(ammeterPosition.getDeviceProject());
             ammeterPositionService.updateByPrimaryKeySelective(position);
 
             /***

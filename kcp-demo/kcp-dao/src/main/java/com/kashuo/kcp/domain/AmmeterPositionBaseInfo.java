@@ -37,6 +37,16 @@ public class AmmeterPositionBaseInfo {
     @ApiModelProperty("联系人信息")
     private String contactInfo;
 
+    private String deviceProject;
+
+    public String getDeviceProject() {
+        return deviceProject;
+    }
+
+    public void setDeviceProject(String deviceProject) {
+        this.deviceProject = deviceProject;
+    }
+
     public String getDeviceModel() {
         return deviceModel;
     }
