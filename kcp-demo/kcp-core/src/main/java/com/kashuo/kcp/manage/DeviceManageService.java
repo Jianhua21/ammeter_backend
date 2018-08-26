@@ -38,6 +38,8 @@ public class DeviceManageService {
         RegDirectDeviceInDTO deviceInDTO = new RegDirectDeviceInDTO();
         deviceInDTO.setNodeId(ammeterPosition.getImei());
         deviceInDTO.setVerifyCode(ammeterPosition.getImei());
+        deviceInDTO.setTimeout(0);
+        deviceInDTO.setDeviceName(ammeterPosition.getName());
         try {
             RegDirectDeviceOutDTO response = deviceManagement.regDirectDevice(deviceInDTO, ammeterAuth.getAppId(), ammeterAuth.getAccessToken());
             logger.info("设备注册状态返回: {}", JSON.toJSONString(response));
