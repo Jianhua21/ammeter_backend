@@ -39,6 +39,16 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     private String contactInfo;
     @ApiModelProperty("产品id")
     private String productId;
+    @ApiModelProperty("设备项目")
+    private String deviceProject;
+
+    public String getDeviceProject() {
+        return deviceProject;
+    }
+
+    public void setDeviceProject(String deviceProject) {
+        this.deviceProject = deviceProject;
+    }
 
     public String getProductId() {
         return productId;
