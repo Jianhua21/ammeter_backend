@@ -135,7 +135,7 @@ public class AmmeterRuleService {
                     if(flag){
 
                         AmmeterPosition position = positionMapper.selectByPrimaryKey(wellcover.getPositionId());
-                        boolean messageFlag = MessageUtils.sendMessage(position.getImei(),"参数不正常",position.getContactInfo());
+                        boolean messageFlag = MessageUtils.sendMessage(position.getImei(),rule.getRuleDesc(),position.getContactInfo());
 
                         AmmeterWarning warning = new AmmeterWarning();
                         warning.setCreateBy("system");

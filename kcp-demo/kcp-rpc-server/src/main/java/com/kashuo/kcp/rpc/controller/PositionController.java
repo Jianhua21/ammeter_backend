@@ -63,7 +63,7 @@ public class PositionController extends BaseController{
 
     @PostMapping(value = "/create")
     @ApiOperation(value="电表位置信息录入")
-    public Results CreateAmmeterPosition(@RequestBody AmmeterPosition ammeterPosition) throws NorthApiException {
+    public Results createAmmeterPosition(@RequestBody AmmeterPosition ammeterPosition) throws NorthApiException {
 
         logger.info("录入设备信息参数：{}", JSON.toJSONString(ammeterPosition));
         if(StringUtil.isEmpty(ammeterPosition.getImei())){
@@ -193,6 +193,7 @@ public class PositionController extends BaseController{
             position.setCompanyName(ammeterPosition.getCompanyName());
             position.setContactInfo(ammeterPosition.getContactInfo());
             position.setAgreementStatus(ammeterPosition.getAgreementStatus());
+
             ammeterPositionService.updateByPrimaryKeySelective(position);
 
             /***
@@ -201,12 +202,23 @@ public class PositionController extends BaseController{
              */
             if(positionDB.getStatus() !=3 && positionDB.getStatus() !=8 &&
                     positionDB.getStatus() != 2) {
-                position.setDeviceId(positionDB.getDeviceId());
-
-                commandService.autoSyncDeviceInfo(position);
+                AmmeterPosition update = new AmmeterPosition();
+                update.setProductId(positionDB.getProductId());
+                update.setName(position.getName());
+                update.setDeviceId(positionDB.getDeviceId());
+                update.setImei(positionDB.getImei());
+                update.setNumber(positionDB.getNumber());
+                if("1".equals(ammeterPosition.getPlatform())) {
+                logger.info("移动物联网设备更新!");
+                commandService.autoSyncDeviceInfoByIot(update);
+                }else {
+                    position.setProductId(positionDB.getProductId());
+                    position.setDeviceId(positionDB.getDeviceId());
+                    commandService.autoSyncDeviceInfo(position);
+                }
 
             }else if(positionDB.getStatus() ==8 || positionDB.getStatus() ==2){
-                if(properties.isNbiot()){
+                if("1".equals(ammeterPosition.getPlatform())){
                     nbiotCommandService.createDevice(positionDB);
                 }else {
                     commandService.autoRegDevice(position);
@@ -260,8 +272,14 @@ public class PositionController extends BaseController{
             ammeterPositionService.updateByPrimaryKeySelective(position);
 
             try {
-                commandService.deleteDeviceFromIoM(ammeterPosition.getDeviceId());
+                if("1".equals(ammeterPosition.getPlatform())){
+                    commandService.deleteDeviceFromIot(ammeterPosition.getDeviceId(),ammeterPosition.getProductId());
+                }else {
+                    commandService.deleteDeviceFromIoM(ammeterPosition.getDeviceId());
+                }
             } catch (NorthApiException e) {
+                logger.error("删除失败!");
+            }catch (Exception e){
                 logger.error("删除失败!");
             }
 

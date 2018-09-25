@@ -83,35 +83,40 @@ public class CallNbiotController {
         if (obj != null){
             boolean dataRight = NbiotUtils.checkSignature(obj, token);
             if (dataRight){
-                NbiotCallResponse response = JSONObject.parseObject(obj.getMsg().toString(),NbiotCallResponse.class);
-                DeviceDataChange dataChange = new DeviceDataChange();
-                String deviceId = String.valueOf(response.getDevId());
-                dataChange.setDeviceId(deviceId);
-                dataChange.setNotifyType("Nb_Iot");
-                if(response.getType() ==2) {
-                    //设备上下线
-                    if(response.getStatus() == 1){
-                        netWorkService.updateDeviceStatusByNb(deviceId,null,true);
-                    }else{
-                        netWorkService.updateDeviceStatusByNb(deviceId,null,false);
+                try {
+                    NbiotCallResponse response = JSONObject.parseObject(obj.getMsg().toString(), NbiotCallResponse.class);
+                    DeviceDataChange dataChange = new DeviceDataChange();
+                    String deviceId = String.valueOf(response.getDevId());
+                    dataChange.setDeviceId(deviceId);
+                    dataChange.setNotifyType("Nb_Iot");
+                    if (response.getType() == 2) {
+                        //设备上下线
+                        if (response.getStatus() == 1) {
+                            netWorkService.updateDeviceStatusByNb(deviceId, null, true);
+                        } else {
+                            //设备下线处理
+                           // netWorkService.updateDeviceStatusByNb(deviceId, null, false);
+                        }
+                    } else {
+                        //设备数据处理
+                        String command = response.getValue();
+                        if (command == "") {
+                            return "ok";
+                        }
+                        //处理CallBack 命令参数
+                        logger.info("======实际数据============" + JSONObject.toJSONString(response));
+                        wellCoverService.processData(command, deviceId);
                     }
-                }else{
-                    //设备数据处理
-                    String command = response.getValue();
-                    if(command == ""){
-                        return "ok";
-                    }
-                    //处理CallBack 命令参数
-                    logger.info("======实际数据============"+JSONObject.toJSONString(response));
-                    wellCoverService.processData(command,deviceId);
+                    AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
+                    callbackHistory.setDeviceId(deviceId);
+                    callbackHistory.setNotifyType(dataChange.getNotifyType());
+                    callbackHistory.setCreateTime(new Date());
+                    callbackHistory.setParams(obj.toString());
+                    callBackService.insertCallBackHistory(callbackHistory);
+                    logger.info("--------Nbiot subscribe request data End------------------------");
+                }catch (Exception e){
+                    logger.error("数据格式有问题:{}",obj);
                 }
-                AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
-                callbackHistory.setDeviceId(deviceId);
-                callbackHistory.setNotifyType(dataChange.getNotifyType());
-                callbackHistory.setCreateTime(new Date());
-                callbackHistory.setParams(obj.toString());
-                callBackService.insertCallBackHistory(callbackHistory);
-                logger.info("--------Nbiot subscribe request data End------------------------");
             }else {
                 logger.info("data receive: signature error");
             }

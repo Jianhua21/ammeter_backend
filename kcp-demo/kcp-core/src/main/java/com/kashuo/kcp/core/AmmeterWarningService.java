@@ -3,10 +3,7 @@ package com.kashuo.kcp.core;
 import com.alibaba.fastjson.JSONObject;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
-import com.kashuo.kcp.dao.AmmeterNetworkMapper;
-import com.kashuo.kcp.dao.AmmeterPositionMapper;
-import com.kashuo.kcp.dao.AmmeterWarningMapper;
-import com.kashuo.kcp.dao.AmmeterWellcoverMapper;
+import com.kashuo.kcp.dao.*;
 import com.kashuo.kcp.dao.condition.WarningCondition;
 import com.kashuo.kcp.dao.result.*;
 import com.kashuo.kcp.domain.*;
@@ -35,6 +32,8 @@ public class AmmeterWarningService {
     private AmmeterPositionMapper ammeterPositionMapper;
     @Autowired
     private AmmeterWellcoverMapper wellcoverMapper;
+    @Autowired
+    private AmmeterDeviceMapper deviceMapper;
 
     public void updateWarningInfo(){
         List<AmmeterNetwork> networks = networkMapper.selectForWarningReport();
@@ -101,6 +100,7 @@ public class AmmeterWarningService {
         }
     }
 
+
     public void cancelWellCoverWarning(Integer positionId){
         WarningCondition condition = new WarningCondition();
         condition.setPositionId(positionId);
@@ -110,22 +110,46 @@ public class AmmeterWarningService {
                 AmmeterWellcover wellcover = wellcoverMapper.selectByPositionId(warningWellCover.getId());
                 if(warningWellCover.getBatteryWarning() != null){
                     ruleService.cancelWellCoverWarning(wellcover,"batteryStatus",warningWellCover.getAmmeterId());
+                }else{
+                    ruleService.checkWellCoverWarning(wellcover,"batteryStatus",warningWellCover.getAmmeterId());
                 }
                 if(warningWellCover.getSensorWarning() != null){
-                    ruleService.cancelWellCoverWarning(wellcover,"sensor",warningWellCover.getAmmeterId());
+//                    ruleService.cancelWellCoverWarning(wellcover,"sensor",warningWellCover.getAmmeterId());
+                }else{
+                    ruleService.checkWellCoverWarning(wellcover,"sensor",warningWellCover.getAmmeterId());
                 }
                 if(warningWellCover.getSurfaceDistanceWarning() != null){
-                    ruleService.cancelWellCoverWarning(wellcover,"surfaceDistance",warningWellCover.getAmmeterId());
+//                    ruleService.cancelWellCoverWarning(wellcover,"surfaceDistance",warningWellCover.getAmmeterId());
+                }else{
+                    ruleService.checkWellCoverWarning(wellcover,"surfaceDistance",warningWellCover.getAmmeterId());
                 }
                 if(warningWellCover.getTiltSensorWarning() != null){
+//                    wellcover.setTiltSensor(wellcover.getTiltSensor().substring(1,2));
+//                    ruleService.cancelWellCoverWarning(wellcover,"tiltSensor",warningWellCover.getAmmeterId());
+                }else{
                     wellcover.setTiltSensor(wellcover.getTiltSensor().substring(1,2));
-                    ruleService.cancelWellCoverWarning(wellcover,"tiltSensor",warningWellCover.getAmmeterId());
+                    ruleService.checkWellCoverWarning(wellcover,"tiltSensor",warningWellCover.getAmmeterId());
                 }
                 if(warningWellCover.getWaterLevelSensorWarning() != null){
+//                    wellcover.setWaterLevelSensor(wellcover.getWaterLevelSensor().substring(1,2));
+//                    ruleService.cancelWellCoverWarning(wellcover,"waterLevelSensor",warningWellCover.getAmmeterId());
+                }else{
                     wellcover.setWaterLevelSensor(wellcover.getWaterLevelSensor().substring(1,2));
-                    ruleService.cancelWellCoverWarning(wellcover,"waterLevelSensor",warningWellCover.getAmmeterId());
+                    ruleService.checkWellCoverWarning(wellcover,"waterLevelSensor",warningWellCover.getAmmeterId());
                 }
+
             }
+        }
+    }
+
+    public void updateOfflineDeviceStatus(){
+        List<AmmeterDeviceResult> results = deviceMapper.queryOfflineDevice();
+        if(results != null){
+            results.forEach(r->{
+                AmmeterPosition position = ammeterPositionMapper.selectByDeviceId(r.getDeviceId());
+                position.setStatus(7);
+                ammeterPositionMapper.updateByPrimaryKeySelective(position);
+            });
         }
     }
 

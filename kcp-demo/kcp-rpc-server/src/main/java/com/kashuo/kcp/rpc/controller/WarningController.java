@@ -2,11 +2,11 @@ package com.kashuo.kcp.rpc.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.kashuo.common.base.domain.Page;
+import com.kashuo.kcp.command.WellCoverService;
 import com.kashuo.kcp.core.AmmeterService;
 import com.kashuo.kcp.core.AmmeterWarningService;
 import com.kashuo.kcp.dao.condition.WarningCondition;
 import com.kashuo.kcp.dao.result.WarningDeviceHome;
-import com.kashuo.kcp.dao.result.WarningHome;
 import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterUser;
 import com.kashuo.kcp.domain.AmmeterWarning;
@@ -33,6 +33,9 @@ public class WarningController extends BaseController{
 
     @Autowired
     private AmmeterService ammeterService;
+
+    @Autowired
+    private WellCoverService wellCoverService;
 
 
     @PostMapping("/home")
@@ -82,12 +85,15 @@ public class WarningController extends BaseController{
         warning.setReason(reason);
         Integer result = warningService.updateWarning(warning);
         if(warningDB.getWarningType() == 0) {
-            AmmeterDevice device = ammeterService.selectByPrimaryKey(warningDB.getId());
+            AmmeterDevice device = ammeterService.selectByPrimaryKey(warningDB.getAmmeterId());
             if (device != null) {
                 AmmeterDevice device_2 = new AmmeterDevice();
                 device_2.setRsrqWarningFlag(0);
                 device_2.setId(device.getId());
                 ammeterService.updateWarningStatusByPrimaryKey(device_2);
+
+            //消除井盖告警--恢复正常
+            wellCoverService.avoidWellCoverStatus(device.getImsi(),warningDB.getRuleId());
             }
         }
         if(result >0){

@@ -1,12 +1,16 @@
 package com.kashuo.kcp.command;
 
 import com.kashuo.kcp.core.AmmeterWarningService;
+import com.kashuo.kcp.dao.AmmeterDeviceMapper;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterWellcoverMapper;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterWellcover;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * Created by dell-pc on 2018/8/19.
@@ -18,9 +22,28 @@ public class WellCoverService {
     private AmmeterWellcoverMapper wellcoverMapper;
     @Autowired
     private AmmeterPositionMapper positionMapper;
+    @Autowired
+    private AmmeterDeviceMapper deviceMapper;
 
     @Autowired
     private AmmeterWarningService warningService;
+
+    public boolean avoidWellCoverStatus(String imei,Integer ruleId){
+        AmmeterPosition position = positionMapper.selectByImei(imei);
+        if(position != null &&"wellcover".equals(position.getProductId())) {
+            AmmeterWellcover wellcover = wellcoverMapper.selectByPositionId(position.getId());
+            if (ruleId == 7) {
+                wellcover.setTiltSensor("A0");
+            } else if(ruleId ==8){
+                wellcover.setWaterLevelSensor("W0");
+            }
+            wellcover.setPositionId(position.getId());
+            wellcoverMapper.updateByPrimaryKeySelective(wellcover);
+        }
+        return true;
+
+    }
+
 
     public void processData(String response,String deviceId){
         AmmeterPosition position = positionMapper.selectByDeviceId(deviceId);
@@ -35,6 +58,9 @@ public class WellCoverService {
                 wellcoverMapper.insert(wellcover);
             }
             warningService.cancelWellCoverWarning(position.getId());
+
+            //更新上报时间
+            deviceMapper.updateProductDateByDeviceId(deviceId,new Date());
 
             wellcoverMapper.insertHistory(wellcover);
         }

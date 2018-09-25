@@ -299,7 +299,7 @@ where p.status != 3
         ) c on c.ammeter_id = d.id
         LEFT JOIN
         (select w4.ammeter_id,w4.warning_desc from ammeter_warning w4
-        INNER JOIN  ammeter_rule r4 on w4.rule_id = r4.id  and r4.rule_params='surfaceDistance'  and w4.warning_status = 0
+        INNER JOIN  ammeter_rule r4 on w4.rule_id = r4.id  and r4.rule_params='tiltSensor'  and w4.warning_status = 0
         ) d on d.ammeter_id = d.id
         LEFT JOIN
         (select w5.ammeter_id,w5.warning_desc from ammeter_warning w5

@@ -20,4 +20,9 @@ public class WarningInfoSync {
         logger.info("定时把已经长时间失去连接和信号量不正常的列出警告");
         warningService.genereateWellCoverWarning();
     }
+
+    public void updateOfflineDevice() throws Exception{
+        logger.info("更新3小时未收到数据设备未上电");
+        warningService.updateOfflineDeviceStatus();
+    }
 }

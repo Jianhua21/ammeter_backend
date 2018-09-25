@@ -219,10 +219,28 @@ public class CommandService {
         }
     }
 
+    public void autoSyncDeviceInfoByIot(AmmeterPosition ammeterPosition){
+        AmmeterNbiot nbiot = authService.getNbiotInformation(ammeterPosition.getProductId());
+        Device device = new Device(ammeterPosition.getName(),ammeterPosition.getImei(),ammeterPosition.getNumber());
+        NbiotDeviceManagement management = new NbiotDeviceManagement(nbiot.getApiKey());
+        NbiotResult result = management.updateDeviceInfo(device,ammeterPosition.getDeviceId());
+        if("succ".equals(result.getError())){
+            logger.info("IoT平台同步成功!  IMEI:{}",ammeterPosition.getImei());
+        }else{
+            logger.info("IoT平台同步失败!  IMEI:{}",ammeterPosition.getImei());
+        }
+    }
+
     public void deleteDeviceFromIoM(String deviceId) throws NorthApiException {
         AmmeterAuth ammeterAuth = authService.getPlatIomAuth();
         DeviceManagement deviceManagement = new DeviceManagement(authService.getNorthApiClient());
         deviceManagement.deleteDirectDevice(deviceId,ammeterAuth.getAppId(),ammeterAuth.getAccessToken());
+    }
+
+    public void deleteDeviceFromIot(String deviceId,String productName) throws Exception{
+        AmmeterNbiot nbiot = authService.getNbiotInformation(productName);
+        NbiotDeviceManagement management = new NbiotDeviceManagement(nbiot.getApiKey());
+        management.deleteDeviceById(deviceId);
     }
 
     public CommandDetail processDeviceCallBackResponse(String response){

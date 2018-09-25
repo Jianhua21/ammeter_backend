@@ -40,6 +40,10 @@ public class QuartzConfiguration {
         }
     }
 
+    @Scheduled(cron = "${app.constant.quartz.hour.one}")
+    public void updateCurrentByCron() throws Exception {
+            warningInfoSync.updateOfflineDevice();
+    }
     @Scheduled(cron = "${app.constant.quartz}")
     public void registerSync() throws Exception {
         if (offSet) {

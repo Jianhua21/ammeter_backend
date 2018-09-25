@@ -9,6 +9,7 @@ import com.huawei.iotplatform.client.dto.PostDeviceCommandInDTO;
 import com.huawei.iotplatform.client.dto.PostDeviceCommandOutDTO;
 import com.kashuo.kcp.api.entity.AmmeterCommand;
 import com.kashuo.kcp.api.entity.CommandParams;
+import com.kashuo.kcp.api.entity.DeviceCommand;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.AmmeterPositionService;
@@ -229,22 +230,26 @@ public class CommandController {
 
     @PostMapping("/test")
     @ApiOperation("测试命令")
-    public Results testIoTCommand(@RequestParam String command,@RequestParam String data,@RequestParam Integer electric) throws Exception {
+    public Results testIoTCommand(@RequestParam String command,@RequestParam String imei) throws Exception {
         logger.info(command+"------------------");
         PostDeviceCommandInDTO deviceCommandInDTO = new PostDeviceCommandInDTO();
-        AmmeterPosition position = positionService.selectByImei("863703033404885");
-        deviceCommandInDTO.setDeviceId(position.getDeviceId());
-        CommandParams params = new CommandParams();
-        params.setCommandKey(command);
-        params.setCallBackKey(AppConstant.COMMAND_COMMON_CALLBACK_URL);
-        if(data != null && !"1".equals(data.trim())) {
-            params.setData(data);
-        }else{
-            params.setIsChanged("1");
+        AmmeterPosition position = positionService.selectByImei(imei);
+        if(position == null||position.getStatus()==3){
+            return Results.error("IMEI不存在!或已被删除!");
         }
-        params.setDataFlag(true);
-        params.setCommandType(electric);
-        deviceCommandInDTO = commandService.prepareCommand(params,deviceCommandInDTO,true);
+        deviceCommandInDTO.setDeviceId(position.getDeviceId());
+        AsynCommandDTO commandDTO = new AsynCommandDTO();
+        deviceCommandInDTO.setCallbackUrl(sysDictionaryService.getDynamicSystemValue(AppConstant.COMMAND_COMMON_CALLBACK_URL,
+                AppConstant.CALLBACK_URLS_TYPE_ID));
+        commandDTO.setServiceId("NbiotCommonDevice");
+        commandDTO.setMethod("downcommand");
+        DeviceCommand ammeterCommand = new DeviceCommand();
+        //CRC封装数据
+        ammeterCommand.setDownmessage(command);
+        ObjectNode paras = JsonUtil.convertObject2ObjectNode(ammeterCommand);
+        commandDTO.setParas(paras);
+        deviceCommandInDTO.setCommand(commandDTO);
+        deviceCommandInDTO.setExpireTime(0);
         PostDeviceCommandOutDTO deviceCommandOutDTO = commandService.postDeviceCommand(deviceCommandInDTO);
         if(deviceCommandOutDTO != null){
             //插入命令历史记录
