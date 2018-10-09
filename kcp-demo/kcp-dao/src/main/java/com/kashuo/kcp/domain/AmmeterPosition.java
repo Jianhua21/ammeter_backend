@@ -50,7 +50,13 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     @ApiModelProperty("水位满溢传感器信息")
     private String waterLevelSensor;
     @ApiModelProperty("设备类型")
-    private Integer deviceType =1;
+    private Integer deviceType=0;
+    @ApiModelProperty("环境温度")
+    private String enTemperature;
+    @ApiModelProperty("环境湿度")
+    private String en_humidity;
+    @ApiModelProperty("烟雾告警信息")
+    private String smokeWarning;
 
     public Integer getDeviceType() {
         return deviceType;
@@ -58,6 +64,29 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
 
     public void setDeviceType(Integer deviceType) {
         this.deviceType = deviceType;
+    }
+    public String getEnTemperature() {
+        return enTemperature;
+    }
+
+    public void setEnTemperature(String enTemperature) {
+        this.enTemperature = enTemperature;
+    }
+
+    public String getEn_humidity() {
+        return en_humidity;
+    }
+
+    public void setEn_humidity(String en_humidity) {
+        this.en_humidity = en_humidity;
+    }
+
+    public String getSmokeWarning() {
+        return smokeWarning;
+    }
+
+    public void setSmokeWarning(String smokeWarning) {
+        this.smokeWarning = smokeWarning;
     }
 
     public String getBatteryStatus() {

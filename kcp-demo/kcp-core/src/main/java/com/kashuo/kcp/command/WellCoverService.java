@@ -57,7 +57,7 @@ public class WellCoverService {
             }else{
                 wellcoverMapper.insert(wellcover);
             }
-            warningService.cancelWellCoverWarning(position.getId());
+            warningService.cancelWellCoverWarning(position.getId(),position.getDeviceType());
 
             //更新上报时间
             deviceMapper.updateProductDateByDeviceId(deviceId,new Date());
@@ -78,6 +78,16 @@ public class WellCoverService {
             wellcover.setSurfaceDistance(data.substring(12,15));
             wellcover.setTiltSensor(data.substring(15,17));
             wellcover.setWaterLevelSensor(data.substring(17,19));
+        }else if(data.length() ==15 ){
+            //烟感设备
+            wellcover = new AmmeterWellcover();
+            wellcover.setDeviceType(data.substring(0,2));
+            wellcover.setBatteryStatus(data.substring(4,7));
+            wellcover.setEnTemperature(data.substring(8,10));
+            wellcover.setEnHumidity(data.substring(10,13));
+            wellcover.setSmokeWarning(data.substring(13,15));
+        }else{
+
         }
         return wellcover;
     }

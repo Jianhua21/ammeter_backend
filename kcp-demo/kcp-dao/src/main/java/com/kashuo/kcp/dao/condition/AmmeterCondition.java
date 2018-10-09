@@ -28,6 +28,16 @@ public class AmmeterCondition implements Serializable{
     private String sn;
     @ApiModelProperty("机构Id")
     private Integer channelId;
+    @ApiModelProperty("设备类型")
+    private Integer deviceType =0 ;
+
+    public Integer getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(Integer deviceType) {
+        this.deviceType = deviceType;
+    }
 
     public String getInstaller() {
         return installer != null? installer.trim() :"";

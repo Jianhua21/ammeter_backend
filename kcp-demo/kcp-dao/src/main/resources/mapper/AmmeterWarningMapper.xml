@@ -23,10 +23,11 @@
         <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
         <result column="ammeter_type" property="ammeterType" jdbcType="VARCHAR" />
         <result column="warning_type" property="warningType" jdbcType="INTEGER" />
-      <result column="warning_status" property="warningStatus" jdbcType="INTEGER" />
-      <result column="status_name" property="statusName" jdbcType="VARCHAR" />
-      <result column="reason" property="reason" jdbcType="VARCHAR" />
+        <result column="warning_status" property="warningStatus" jdbcType="INTEGER" />
+        <result column="status_name" property="statusName" jdbcType="VARCHAR" />
+        <result column="reason" property="reason" jdbcType="VARCHAR" />
         <result column="rule_id" property="ruleId" jdbcType="INTEGER" />
+        <result column="device_type" property="deviceType" jdbcType="INTEGER" />
     </resultMap>
   <sql id="Base_Column_List" >
     id, ammeter_id, warning_status, warning_date, create_date, create_by, warning_desc,warning_type,reason,rule_id
@@ -40,12 +41,15 @@
     
     <select id="queryWarningList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
       select p.id,w.id as warning_id,p.device_id,d.imsi ,p.name as ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type,
-      w.warning_status,w.reason,w.rule_id,
+      w.warning_status,w.reason,w.rule_id,p.device_type,
       case when w.warning_status = 0 then '待处理'
       else '已消除' end as status_name
       from ammeter_warning w,ammeter_device d,ammeter_position p
       where w.ammeter_id = d.id and d.imsi = p.imei
       and p.status !=3
+        <if test="deviceType != null">
+            and p.device_type = #{deviceType,jdbcType=INTEGER}
+        </if>
       <if test="status != null">
         and w.warning_status = #{status,jdbcType=INTEGER}
       </if>
@@ -215,11 +219,15 @@
     <resultMap id="BaseWellCoverWaringResultMap" type="com.kashuo.kcp.dao.result.WarningWellCover">
         <result column="id" property="id" jdbcType="INTEGER"/>
         <result column="ammeter_id" property="ammeterId" jdbcType="INTEGER"/>
+        <result column="device_type" property="deviceType" jdbcType="INTEGER"/>
         <result column="battery_warning" property="batteryWarning" jdbcType="VARCHAR" />
         <result column="sensor_warning" property="sensorWarning" jdbcType="VARCHAR" />
         <result column="surfaceDistance_warning" property="surfaceDistanceWarning" jdbcType="VARCHAR" />
         <result column="tiltSensor_warning" property="tiltSensorWarning" jdbcType="VARCHAR" />
         <result column="waterLevelSensor_warning" property="waterLevelSensorWarning" jdbcType="VARCHAR" />
+        <result column="temperature_warning" property="temperatureWarning" jdbcType="VARCHAR" />
+        <result column="humidity_warning" property="humidityWarning" jdbcType="VARCHAR" />
+        <result column="smoke_warning" property="smokeWarning" jdbcType="VARCHAR" />
     </resultMap>
 
   <select id="getStatisticsDevices"  resultMap="BaseWarningHomeResultMap">
@@ -243,13 +251,13 @@ where w1.id = w2.id and w1.warning_status =0
 ) w11 on w11.ammeter_id = d.id
 where p.status != 3
     </select>
-    <select id="reportWarningCount" resultType="map">
+    <select id="reportWarningCount" resultType="map" parameterType="java.lang.Integer">
         select IFNULL(sum(case when w.warning_status = 0 then 1 else 0 end ),0) currentWarnings,
 IFNULL(sum(case when w.warning_status = 1 then 1 else 0 end ),0) historyWarnings,
 count(w.id) as warningNumbers
  from ammeter_warning w INNER JOIN ammeter_device d on w.ammeter_id = d.id
 INNER JOIN ammeter_position p on d.imsi =p.imei
-where p.status !=3
+where p.status !=3 and p.device_type =#{deviceType,jdbcType=INTEGER}
     </select>
     <select id="reportWarningSmartDevices" resultType="map">
  select sum(case when w11.warning_type = 1 then 1 else 0 end) warningOfflineDevices
@@ -272,40 +280,82 @@ LEFT JOIN
 where w1.id = w2.id and w1.warning_status =0
 ) w11 on w11.ammeter_id = d.id
 LEFT JOIN ammeter_rule r on w11.rule_id = r.id
-where p.status != 3
+where p.status != 3 and p.device_type=0
+    </select>
+
+    <select id="reportWarningSmokeDevices" resultType="map">
+        select sum(case when w11.warning_type = 1 then 1 else 0 end) warningOfflineDevices
+ , sum(case when w11.warning_type = 0 and r.rule_params ='batteryStatus' then 1 else 0 end)
+ as batteryWarningDevices
+ ,sum(case when w11.warning_type = 0 and r.rule_params ='temperatureWarning' then 1 else 0 end)
+ as temperatureWarningDevices,
+sum(case when w11.warning_type = 0 and r.rule_params ='humidityWarning' then 1 else 0 end)
+ as humidityWarningDevices,
+sum(case when w11.warning_type = 0 and r.rule_params ='smokeWarning' then 1 else 0 end)
+ as smokeWarningDevices,
+ sum(case when w11.ammeter_id is null then 1 else 0 end) as normalDevices
+ ,count(p.id) as totalDevices,
+ sum(case when p.`status` = 6 then 1 else 0 end) as onlineDevices
+from ammeter_position p INNER JOIN ammeter_device d on d.imsi =p.imei
+LEFT JOIN
+(select w1.* from ammeter_warning w1,(select max(id) id from ammeter_warning w GROUP BY ammeter_id) w2
+where w1.id = w2.id and w1.warning_status =0
+) w11 on w11.ammeter_id = d.id
+LEFT JOIN ammeter_rule r on w11.rule_id = r.id
+where p.status != 3 and p.device_type=1;
     </select>
 
 
   <select id="wellCoverWarningList" resultMap="BaseWellCoverWaringResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
-    select p.id,d.id as ammeter_id,a.warning_desc as battery_warning,
-        b.warning_desc as sensor_warning,
-        c.warning_desc as surfaceDistance_warning,
-        d.warning_desc as tiltSensor_warning,
-        e.warning_desc as waterLevelSensor_warning
-        from ammeter_wellcover wc
-        INNER JOIN ammeter_position p on wc.position_id = p.id
-        INNER JOIN ammeter_device d on p.imei = d.imsi
-        LEFT JOIN
-        (select w1.ammeter_id,w1.warning_desc from ammeter_warning w1
-        INNER JOIN  ammeter_rule r1 on w1.rule_id = r1.id  and r1.rule_params='batteryStatus'  and w1.warning_status = 0
-        ) a on a.ammeter_id = d.id
-        LEFT JOIN
-        (select w2.ammeter_id,w2.warning_desc from ammeter_warning w2
-        INNER JOIN  ammeter_rule r2 on w2.rule_id = r2.id  and r2.rule_params='sensor'  and w2.warning_status = 0
-        ) b on b.ammeter_id = d.id
-        LEFT JOIN
-        (select w3.ammeter_id,w3.warning_desc from ammeter_warning w3
-        INNER JOIN  ammeter_rule r3 on w3.rule_id = r3.id  and r3.rule_params='surfaceDistance'  and w3.warning_status = 0
-        ) c on c.ammeter_id = d.id
-        LEFT JOIN
-        (select w4.ammeter_id,w4.warning_desc from ammeter_warning w4
-        INNER JOIN  ammeter_rule r4 on w4.rule_id = r4.id  and r4.rule_params='tiltSensor'  and w4.warning_status = 0
-        ) d on d.ammeter_id = d.id
-        LEFT JOIN
-        (select w5.ammeter_id,w5.warning_desc from ammeter_warning w5
-        INNER JOIN  ammeter_rule r5 on w5.rule_id = r5.id  and r5.rule_params='waterLevelSensor'  and w5.warning_status = 0
-        ) e on e.ammeter_id = d.id
-        where 1=1
+      select p.id,d.id as ammeter_id,
+      p.device_type,
+      a.warning_desc as battery_warning,
+      b.warning_desc as sensor_warning,
+      c.warning_desc as surfaceDistance_warning,
+      d.warning_desc as tiltSensor_warning,
+      e.warning_desc as waterLevelSensor_warning,
+      f.warning_desc as temperature_warning,
+      g.warning_desc as humidity_warning,
+      h.warning_desc as smoke_warning
+      from ammeter_wellcover wc
+      INNER JOIN ammeter_position p on wc.position_id = p.id
+      INNER JOIN ammeter_device d on p.imei = d.imsi
+      LEFT JOIN
+      (select w1.ammeter_id,w1.warning_desc from ammeter_warning w1
+      INNER JOIN  ammeter_rule r1 on w1.rule_id = r1.id  and r1.rule_params='batteryStatus'  and w1.warning_status = 0
+      ) a on a.ammeter_id = d.id
+      LEFT JOIN
+      (select w2.ammeter_id,w2.warning_desc from ammeter_warning w2
+      INNER JOIN  ammeter_rule r2 on w2.rule_id = r2.id  and r2.rule_params='sensor'  and w2.warning_status = 0
+      ) b on b.ammeter_id = d.id
+      LEFT JOIN
+      (select w3.ammeter_id,w3.warning_desc from ammeter_warning w3
+      INNER JOIN  ammeter_rule r3 on w3.rule_id = r3.id  and r3.rule_params='surfaceDistance'  and w3.warning_status = 0
+      ) c on c.ammeter_id = d.id
+      LEFT JOIN
+      (select w4.ammeter_id,w4.warning_desc from ammeter_warning w4
+      INNER JOIN  ammeter_rule r4 on w4.rule_id = r4.id  and r4.rule_params='tiltSensor'  and w4.warning_status = 0
+      ) d on d.ammeter_id = d.id
+      LEFT JOIN
+      (select w5.ammeter_id,w5.warning_desc from ammeter_warning w5
+      INNER JOIN  ammeter_rule r5 on w5.rule_id = r5.id  and r5.rule_params='waterLevelSensor'  and w5.warning_status = 0
+      ) e on e.ammeter_id = d.id
+      LEFT JOIN
+      (select w6.ammeter_id,w6.warning_desc from ammeter_warning w6
+      INNER JOIN  ammeter_rule r6 on w6.rule_id = r6.id  and r6.rule_params='enTemperature'  and w6.warning_status = 0
+      ) f on f.ammeter_id = d.id
+      LEFT JOIN
+      (select w7.ammeter_id,w7.warning_desc from ammeter_warning w7
+      INNER JOIN  ammeter_rule r7 on w7.rule_id = r7.id  and r7.rule_params='enHumidity'  and w7.warning_status = 0
+      ) g on g.ammeter_id = d.id
+      LEFT JOIN
+      (select w8.ammeter_id,w8.warning_desc from ammeter_warning w8
+      INNER JOIN  ammeter_rule r8 on w8.rule_id = r8.id  and r8.rule_params='smokeWarning'  and w8.warning_status = 0
+      ) h on h.ammeter_id = d.id
+      where 1=1
+      <if test="positionId == null">
+          and p.status !=3
+      </if>
         <if test="positionId != null">
             and p.id =#{positionId,jdbcType=INTEGER}
         </if>

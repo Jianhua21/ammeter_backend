@@ -9,6 +9,8 @@ public class WarningWellCover {
 
     private Integer ammeterId;
 
+    private Integer deviceType =0;
+
     private String batteryWarning;
 
     private String sensorWarning;
@@ -18,6 +20,44 @@ public class WarningWellCover {
     private String tiltSensorWarning;
 
     private String waterLevelSensorWarning;
+
+    private String temperatureWarning;
+
+    private String humidityWarning;
+
+    private String smokeWarning;
+
+    public Integer getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(Integer deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    public String getTemperatureWarning() {
+        return temperatureWarning;
+    }
+
+    public void setTemperatureWarning(String temperatureWarning) {
+        this.temperatureWarning = temperatureWarning;
+    }
+
+    public String getHumidityWarning() {
+        return humidityWarning;
+    }
+
+    public void setHumidityWarning(String humidityWarning) {
+        this.humidityWarning = humidityWarning;
+    }
+
+    public String getSmokeWarning() {
+        return smokeWarning;
+    }
+
+    public void setSmokeWarning(String smokeWarning) {
+        this.smokeWarning = smokeWarning;
+    }
 
     public Integer getAmmeterId() {
         return ammeterId;

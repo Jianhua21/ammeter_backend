@@ -15,6 +15,18 @@ public class WarningDeviceHome {
 
     private Integer totalDevices = 0;
 
+    private WarningDeviceCategory  warningCategories;
+
+    private WarningSmokeDetectorCategory smokeDetectorCategory;
+
+    public WarningSmokeDetectorCategory getSmokeDetectorCategory() {
+        return smokeDetectorCategory;
+    }
+
+    public void setSmokeDetectorCategory(WarningSmokeDetectorCategory smokeDetectorCategory) {
+        this.smokeDetectorCategory = smokeDetectorCategory;
+    }
+
     public Integer getOnlineDevices() {
         return onlineDevices;
     }
@@ -31,7 +43,7 @@ public class WarningDeviceHome {
         this.totalDevices = totalDevices;
     }
 
-    private WarningDeviceCategory  warningCategories;
+
 
     public WarningDeviceCategory getWarningCategories() {
         return warningCategories;

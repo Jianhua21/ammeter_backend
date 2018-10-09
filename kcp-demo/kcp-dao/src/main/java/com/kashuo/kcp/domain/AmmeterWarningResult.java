@@ -1,5 +1,6 @@
 package com.kashuo.kcp.domain;
 
+import com.kashuo.kcp.eums.DeviceTypes;
 import com.kashuo.kcp.utils.DateUtils;
 
 import java.util.Date;
@@ -32,6 +33,16 @@ public class AmmeterWarningResult {
     private String reason;
 
     private Integer ruleId;
+
+    private Integer deviceType;
+
+    public String getDeviceType() {
+        return DeviceTypes.parseDesc(String.valueOf(deviceType));
+    }
+
+    public void setDeviceType(Integer deviceType) {
+        this.deviceType = deviceType;
+    }
 
     public Integer getRuleId() {
         return ruleId;

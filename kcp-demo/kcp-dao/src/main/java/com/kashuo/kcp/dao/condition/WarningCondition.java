@@ -26,6 +26,16 @@ public class WarningCondition extends BaseCondition{
     private String imei;
     @ApiModelProperty("设备名称")
     private String name;
+    @ApiModelProperty("设备类型")
+    private Integer deviceType;
+
+    public Integer getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(Integer deviceType) {
+        this.deviceType = deviceType;
+    }
 
     public Integer getPositionId() {
         return positionId;

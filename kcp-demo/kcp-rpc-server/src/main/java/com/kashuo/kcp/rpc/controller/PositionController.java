@@ -81,6 +81,9 @@ public class PositionController extends BaseController{
         if(StringUtil.isEmpty(ammeterPosition.getName())){
             return Results.error("电表名称不能为空!");
         }
+        if(StringUtil.isEmpty(String.valueOf(ammeterPosition.getDeviceType()))){
+            return Results.error("请选择设备类型!");
+        }
         if(StringUtil.isEmpty(ammeterPosition.getNumber())){
             ammeterPosition.setNumber(ammeterPosition.getImei());
 //            return Results.error("电表编号不能为空!");
@@ -156,19 +159,24 @@ public class PositionController extends BaseController{
             Integer result = commandService.autoRegDevice(positionDB);
         }
         return Results.success("位置信息录入成功!");
-
     }
     @GetMapping("/ammeterPositionInfo/{positionId}/{sn}")
     @ApiOperation(value="单个电表位置信息获取")
     public Results getAmmeterPosition(@ApiParam("电表信息位置Id")@PathVariable("positionId") Integer positionId,@PathVariable("sn")String sn){
         AmmeterPositionCondition condition =new AmmeterPositionCondition();
         condition.setPositionId(positionId);
-        Page<AmmeterPosition> positionPage = ammeterPositionService.getPositionList(condition);
-         if(positionPage != null){
-             return Results.success(positionPage.get(0),sn);
-         }else{
-             return Results.error("未获取到电表位置信息!",sn);
-         }
+        AmmeterPosition position = ammeterPositionService.selectByPrimaryKey(positionId);
+        if(position != null){
+            condition.setDeviceType(position.getDeviceType());
+            Page<AmmeterPosition> positionPage = ammeterPositionService.getPositionList(condition);
+            if (positionPage != null && positionPage.size()>0) {
+                return Results.success(positionPage.get(0), sn);
+            } else {
+                return Results.error("未获取到电表位置信息!", sn);
+            }
+        }else {
+            return Results.error("未获取到电表位置信息!", sn);
+        }
     }
     @PostMapping("/update")
     @ApiOperation("电表位置信息更新")

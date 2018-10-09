@@ -17,6 +17,36 @@ public class AmmeterWellcover {
 
     private String waterLevelSensor;
 
+    private String enTemperature;
+
+    private String enHumidity;
+
+    private String smokeWarning;
+
+    public String getEnTemperature() {
+        return enTemperature;
+    }
+
+    public void setEnTemperature(String enTemperature) {
+        this.enTemperature = enTemperature;
+    }
+
+    public String getEnHumidity() {
+        return enHumidity;
+    }
+
+    public void setEnHumidity(String enHumidity) {
+        this.enHumidity = enHumidity;
+    }
+
+    public String getSmokeWarning() {
+        return smokeWarning;
+    }
+
+    public void setSmokeWarning(String smokeWarning) {
+        this.smokeWarning = smokeWarning;
+    }
+
     public Integer getId() {
         return id;
     }

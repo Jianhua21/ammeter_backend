@@ -5,15 +5,18 @@ package com.kashuo.kcp.eums;
  */
 public enum  DeviceTypes {
 
-    WELLCOVER("1","wellcover"),ELECTRICALARM("2","electric_alarm");
+    WELLCOVER("0","wellcover","智能井盖"),SMOKE_DETECTOR("1","smokeDetector","智能烟感"), ELECTRICALARM("2","electric_alarm","智慧电力");
 
     String code;
 
     String name;
 
-    DeviceTypes(String code,String name){
+    String desc;
+
+    DeviceTypes(String code,String name,String desc){
         this.code = code;
         this.name = name;
+        this.desc = desc;
     }
 
     public static String parseName(String code) {
@@ -23,6 +26,15 @@ public enum  DeviceTypes {
             }
         }
         return "";
+    }
+
+    public static String parseDesc(String code) {
+        for (DeviceTypes types : DeviceTypes.values()) {
+            if (types.code.equals(code)) {
+                return types.desc;
+            }
+        }
+        return "-";
     }
 
 }

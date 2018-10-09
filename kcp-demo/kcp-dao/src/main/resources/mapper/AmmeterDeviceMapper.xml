@@ -83,6 +83,9 @@
       <result column="surface_distance" property="surfaceDistance" jdbcType="VARCHAR" />
       <result column="tilt_sensor" property="tiltSensor" jdbcType="VARCHAR" />
       <result column="water_level_sensor" property="waterLevelSensor" jdbcType="VARCHAR" />
+      <result column="en_temperature" property="enTemperature" jdbcType="VARCHAR" />
+      <result column="en_humidity" property="enHumidity" jdbcType="VARCHAR" />
+      <result column="smoke_warning" property="smokeWarning" jdbcType="VARCHAR" />
       <result column="platform" property="platform" jdbcType="INTEGER" />
   </resultMap>
 
@@ -94,7 +97,7 @@
       info.reverse_active_power,IFNULL(info.`status`,1) as status,
       p.agreement_status,p.company_name,p.contact_info,p.device_model,
       p.platform,
-      wc.battery_status,wc.sensor,wc.surface_distance,wc.tilt_sensor,wc.water_level_sensor
+      wc.battery_status,wc.sensor,wc.surface_distance,wc.tilt_sensor,wc.water_level_sensor,wc.en_temperature,wc.en_humidity,wc.smoke_warning
       from ammeter_device device
       INNER JOIN ammeter_position p on device.imsi = p.imei
       INNER  JOIN ammeter_status s on p.status= s.code
@@ -106,7 +109,8 @@
       (select max(id) id from ammeter_report r12 where active_energy is not null group by ammeter_id) r13
       where r11.id = r13.id ) r on device.id = r.ammeter_id
       where device.channel_id =#{channelId,jdbcType=INTEGER} and p.status !=3
-    <if test="name != null and name != ''">
+      and p.device_type = #{deviceType,jdbcType=INTEGER}
+      <if test="name != null and name != ''">
       and p.name  like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
     </if>
     <if test="installer != null and installer != ''">

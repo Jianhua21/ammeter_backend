@@ -26,6 +26,16 @@ public class AmmeterPositionCondition implements Serializable {
     private Integer channelId;
     @ApiModelProperty("位置Id")
     private Integer positionId;
+    @ApiModelProperty("设备类型")
+    private Integer deviceType =0;
+
+    public Integer getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(Integer deviceType) {
+        this.deviceType = deviceType;
+    }
 
     public Integer getPositionId() {
         return positionId;

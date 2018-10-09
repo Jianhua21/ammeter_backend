@@ -35,7 +35,9 @@ public interface AmmeterWarningMapper {
 
     Map<String,Object> reportWarningSmartDevices();
 
-    Map<String,Object> reportWarningCount();
+    Map<String,Object> reportWarningSmokeDevices();
+
+    Map<String,Object> reportWarningCount(Integer deviceType);
 
     Page<AmmeterWarningResult> queryWarningList(WarningCondition condition);
 

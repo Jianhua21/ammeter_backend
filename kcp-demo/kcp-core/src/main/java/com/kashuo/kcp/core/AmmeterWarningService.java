@@ -82,26 +82,39 @@ public class AmmeterWarningService {
                 if(warningWellCover.getBatteryWarning() == null){
                     ruleService.checkWellCoverWarning(wellcover,"batteryStatus",warningWellCover.getAmmeterId());
                 }
-                if(warningWellCover.getSensorWarning() == null){
+                if(warningWellCover.getSensorWarning() == null && warningWellCover.getDeviceType() ==0){
                     ruleService.checkWellCoverWarning(wellcover,"sensor",warningWellCover.getAmmeterId());
                 }
-                if(warningWellCover.getSurfaceDistanceWarning() == null){
+                if(warningWellCover.getSurfaceDistanceWarning() == null&& warningWellCover.getDeviceType() ==0){
                     ruleService.checkWellCoverWarning(wellcover,"surfaceDistance",warningWellCover.getAmmeterId());
                 }
-                if(warningWellCover.getTiltSensorWarning() == null){
+                if(warningWellCover.getTiltSensorWarning() == null&& warningWellCover.getDeviceType() ==0){
                     wellcover.setTiltSensor(wellcover.getTiltSensor().substring(1,2));
                     ruleService.checkWellCoverWarning(wellcover,"tiltSensor",warningWellCover.getAmmeterId());
                 }
-                if(warningWellCover.getWaterLevelSensorWarning() == null){
+                if(warningWellCover.getWaterLevelSensorWarning() == null&& warningWellCover.getDeviceType() ==0){
                     wellcover.setWaterLevelSensor(wellcover.getWaterLevelSensor().substring(1,2));
                     ruleService.checkWellCoverWarning(wellcover,"waterLevelSensor",warningWellCover.getAmmeterId());
+                }
+                if(warningWellCover.getTemperatureWarning() == null && warningWellCover.getDeviceType() ==1){
+                    ruleService.checkWellCoverWarning(wellcover,"enTemperature",warningWellCover.getAmmeterId());
+                }
+                if(warningWellCover.getHumidityWarning() == null && warningWellCover.getDeviceType() ==1){
+                    wellcover.setEnHumidity(wellcover.getEnHumidity().substring(1,3));
+                    ruleService.checkWellCoverWarning(wellcover,"enHumidity",warningWellCover.getAmmeterId());
+                }
+                if(warningWellCover.getSmokeWarning() == null && warningWellCover.getDeviceType() ==1){
+                    wellcover.setSmokeWarning(wellcover.getSmokeWarning().substring(1,2));
+                    ruleService.checkWellCoverWarning(wellcover,"smokeWarning",warningWellCover.getAmmeterId());
                 }
             }
         }
     }
-
-
     public void cancelWellCoverWarning(Integer positionId){
+        cancelWellCoverWarning(positionId,0);
+    }
+
+    public void cancelWellCoverWarning(Integer positionId,Integer deviceType){
         WarningCondition condition = new WarningCondition();
         condition.setPositionId(positionId);
         List<WarningWellCover> list = warningMapper.wellCoverWarningList(condition);
@@ -116,26 +129,57 @@ public class AmmeterWarningService {
                 if(warningWellCover.getSensorWarning() != null){
 //                    ruleService.cancelWellCoverWarning(wellcover,"sensor",warningWellCover.getAmmeterId());
                 }else{
-                    ruleService.checkWellCoverWarning(wellcover,"sensor",warningWellCover.getAmmeterId());
+                    if(deviceType ==0 ){
+                        ruleService.checkWellCoverWarning(wellcover, "sensor", warningWellCover.getAmmeterId());
+                    }
                 }
                 if(warningWellCover.getSurfaceDistanceWarning() != null){
 //                    ruleService.cancelWellCoverWarning(wellcover,"surfaceDistance",warningWellCover.getAmmeterId());
                 }else{
-                    ruleService.checkWellCoverWarning(wellcover,"surfaceDistance",warningWellCover.getAmmeterId());
+                    if(deviceType ==0 ) {
+                        ruleService.checkWellCoverWarning(wellcover, "surfaceDistance", warningWellCover.getAmmeterId());
+                    }
                 }
                 if(warningWellCover.getTiltSensorWarning() != null){
 //                    wellcover.setTiltSensor(wellcover.getTiltSensor().substring(1,2));
 //                    ruleService.cancelWellCoverWarning(wellcover,"tiltSensor",warningWellCover.getAmmeterId());
                 }else{
-                    wellcover.setTiltSensor(wellcover.getTiltSensor().substring(1,2));
-                    ruleService.checkWellCoverWarning(wellcover,"tiltSensor",warningWellCover.getAmmeterId());
+                    if(deviceType ==0 ) {
+                        wellcover.setTiltSensor(wellcover.getTiltSensor().substring(1, 2));
+                        ruleService.checkWellCoverWarning(wellcover, "tiltSensor", warningWellCover.getAmmeterId());
+                    }
                 }
                 if(warningWellCover.getWaterLevelSensorWarning() != null){
 //                    wellcover.setWaterLevelSensor(wellcover.getWaterLevelSensor().substring(1,2));
 //                    ruleService.cancelWellCoverWarning(wellcover,"waterLevelSensor",warningWellCover.getAmmeterId());
                 }else{
-                    wellcover.setWaterLevelSensor(wellcover.getWaterLevelSensor().substring(1,2));
-                    ruleService.checkWellCoverWarning(wellcover,"waterLevelSensor",warningWellCover.getAmmeterId());
+                    if(deviceType ==0 ) {
+                        wellcover.setWaterLevelSensor(wellcover.getWaterLevelSensor().substring(1, 2));
+                        ruleService.checkWellCoverWarning(wellcover, "waterLevelSensor", warningWellCover.getAmmeterId());
+                    }
+                }
+                if(warningWellCover.getTemperatureWarning() != null){
+
+                }else{
+                    if(deviceType ==1 ) {
+                        ruleService.checkWellCoverWarning(wellcover, "enTemperature", warningWellCover.getAmmeterId());
+                    }
+                }
+                if(warningWellCover.getHumidityWarning() != null){
+
+                }else{
+                    if(deviceType ==1 ) {
+                        wellcover.setEnHumidity(wellcover.getEnHumidity().substring(1, 3));
+                        ruleService.checkWellCoverWarning(wellcover, "enHumidity", warningWellCover.getAmmeterId());
+                    }
+                }
+                if(warningWellCover.getSmokeWarning() != null){
+
+                }else{
+                    if(deviceType ==1 ) {
+                        wellcover.setSmokeWarning(wellcover.getSmokeWarning().substring(1, 2));
+                        ruleService.checkWellCoverWarning(wellcover, "enHumidity", warningWellCover.getAmmeterId());
+                    }
                 }
 
             }
@@ -168,7 +212,7 @@ public class AmmeterWarningService {
 
     public WarningHome reportWarningInfo() throws Exception {
         WarningHome home = warningMapper.getStatisticsDevices();
-        Map<String,Object> warningInfo = warningMapper.reportWarningCount();
+        Map<String,Object> warningInfo = warningMapper.reportWarningCount(0);
         home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()) );
         home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
         home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
@@ -185,7 +229,7 @@ public class AmmeterWarningService {
 
     public WarningDeviceHome reportWarningDeviceInfo() throws Exception{
         WarningDeviceHome  home = new WarningDeviceHome();
-        Map<String,Object> warningInfo = warningMapper.reportWarningCount();
+        Map<String,Object> warningInfo = warningMapper.reportWarningCount(0);
         home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()) );
         home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
         home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
@@ -201,6 +245,31 @@ public class AmmeterWarningService {
         category.setTiltSensorWarningDevices(Integer.parseInt(warningDevices.get("tiltSensorWarningDevices").toString()));
         category.setWaterLevelSensorWarningDevices(Integer.parseInt(warningDevices.get("waterLevelSensorWarningDevices").toString()));
         home.setWarningCategories(category);
+        return home;
+    }
+
+    public WarningDeviceHome reportWarningSmokeDeviceInfo() throws Exception{
+        WarningDeviceHome  home = new WarningDeviceHome();
+        Map<String,Object> warningInfo = warningMapper.reportWarningCount(1);
+        home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()) );
+        home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
+        home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
+
+        Map<String,Object> warningDevices = warningMapper.reportWarningSmokeDevices();
+        home.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
+        home.setOnlineDevices(Integer.parseInt(warningDevices.get("onlineDevices").toString()));
+
+        WarningSmokeDetectorCategory smokeDetectorCategory = new WarningSmokeDetectorCategory();
+
+        smokeDetectorCategory.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
+        smokeDetectorCategory.setNormalDevices(Integer.parseInt(warningDevices.get("onlineDevices").toString()));
+        smokeDetectorCategory.setOfflineDevices(Integer.parseInt(warningDevices.get("warningOfflineDevices").toString()));
+        smokeDetectorCategory.setBatteryWarningDevices(Integer.parseInt(warningDevices.get("batteryWarningDevices").toString()));
+        smokeDetectorCategory.setTemperatureWarningDevices(Integer.parseInt(warningDevices.get("temperatureWarningDevices").toString()));
+        smokeDetectorCategory.setHumidityWarningDevices(Integer.parseInt(warningDevices.get("humidityWarningDevices").toString()));
+        smokeDetectorCategory.setSmokeWarningDevices(Integer.parseInt(warningDevices.get("smokeWarningDevices").toString()));
+
+        home.setSmokeDetectorCategory(smokeDetectorCategory);
         return home;
     }
 

@@ -33,6 +33,16 @@ public class PosotionHome {
 
     private String companyName;
 
+    private Integer deviceType;
+
+    public Integer getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(Integer deviceType) {
+        this.deviceType = deviceType;
+    }
+
     public String getCompanyName() {
         return StringUtil.pageViewToEmpty(companyName);
     }

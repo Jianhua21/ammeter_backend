@@ -82,8 +82,54 @@ public class AmmeterInfoResult implements Serializable{
     private String tiltSensor;
     @ApiModelProperty("水位满溢传感器信息")
     private String waterLevelSensor;
+    @ApiModelProperty("环境温度")
+    private String enTemperature;
+    @ApiModelProperty("环境湿度")
+    private String enHumidity;
+    @ApiModelProperty("烟雾告警信息")
+    private String smokeWarning;
 
     private Integer platform;
+
+    public String getEnTemperature() {
+        if(enTemperature != null){
+            enTemperature = enTemperature+" ℃";
+        }else{
+            enTemperature = "-";
+        }
+        return enTemperature;
+    }
+
+    public void setEnTemperature(String enTemperature) {
+        this.enTemperature = enTemperature;
+    }
+
+    public String getEnHumidity() {
+        if(enHumidity != null){
+            enHumidity = enHumidity+" %";
+        }else{
+            enHumidity = "-";
+        }
+        return enHumidity;
+    }
+
+    public void setEnHumidity(String enHumidity) {
+        this.enHumidity = enHumidity;
+    }
+
+    public String getSmokeWarning() {
+        if(smokeWarning == null){
+            return "-";
+        }else if("A0".equals(smokeWarning)){
+            return " 正常 ";
+        }else{
+            return " 有告警发生 ";
+        }
+    }
+
+    public void setSmokeWarning(String smokeWarning) {
+        this.smokeWarning = smokeWarning;
+    }
 
     public Integer getPlatform() {
         return platform;
@@ -131,9 +177,9 @@ public class AmmeterInfoResult implements Serializable{
         if(tiltSensor == null){
             return "-";
         }else if("A0".equals(tiltSensor)){
-            return "正常";
+            return " 正常 ";
         }else{
-            return "倾斜";
+            return " 倾斜 ";
         }
 
     }
@@ -147,9 +193,9 @@ public class AmmeterInfoResult implements Serializable{
             return "-";
         }
         else if("W0".equals(waterLevelSensor)){
-            return "正常水位";
+            return " 正常水位 ";
         }else{
-            return  "水位已漫出";
+            return  " 水位已漫出 ";
         }
     }
 

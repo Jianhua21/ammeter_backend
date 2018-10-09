@@ -10,10 +10,13 @@
     <result column="surface_distance" property="surfaceDistance" jdbcType="VARCHAR" />
     <result column="tilt_sensor" property="tiltSensor" jdbcType="VARCHAR" />
     <result column="water_level_sensor" property="waterLevelSensor" jdbcType="VARCHAR" />
+    <result column="en_temperature" property="enTemperature" jdbcType="VARCHAR" />
+    <result column="en_humidity" property="enHumidity" jdbcType="VARCHAR" />
+    <result column="smoke_warning" property="smokeWarning" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, position_id, device_type, battery_status, sensor, surface_distance, tilt_sensor, 
-    water_level_sensor
+    water_level_sensor,en_temperature,en_humidity,smoke_warning
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -37,10 +40,11 @@
     </selectKey>
     insert into ammeter_wellcover (position_id, device_type, battery_status, 
       sensor, surface_distance, tilt_sensor, 
-      water_level_sensor)
+      water_level_sensor,en_temperature,en_humidity,smoke_warning)
     values (#{positionId,jdbcType=INTEGER}, #{deviceType,jdbcType=VARCHAR}, #{batteryStatus,jdbcType=VARCHAR}, 
       #{sensor,jdbcType=VARCHAR}, #{surfaceDistance,jdbcType=VARCHAR}, #{tiltSensor,jdbcType=VARCHAR}, 
-      #{waterLevelSensor,jdbcType=VARCHAR})
+      #{waterLevelSensor,jdbcType=VARCHAR},
+    #{enTemperature,jdbcType=VARCHAR},#{enHumidity,jdbcType=VARCHAR},#{smokeWarning,jdbcType=VARCHAR})
   </insert>
   <insert id="insertHistory" parameterType="com.kashuo.kcp.domain.AmmeterWellcover" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
@@ -48,10 +52,11 @@
     </selectKey>
     insert into ammeter_wellcover_history (position_id, device_type, battery_status,
     sensor, surface_distance, tilt_sensor,
-    water_level_sensor)
+    water_level_sensor,en_temperature,en_humidity,smoke_warning)
     values (#{positionId,jdbcType=INTEGER}, #{deviceType,jdbcType=VARCHAR}, #{batteryStatus,jdbcType=VARCHAR},
     #{sensor,jdbcType=VARCHAR}, #{surfaceDistance,jdbcType=VARCHAR}, #{tiltSensor,jdbcType=VARCHAR},
-    #{waterLevelSensor,jdbcType=VARCHAR})
+    #{waterLevelSensor,jdbcType=VARCHAR},
+    #{enTemperature,jdbcType=VARCHAR},#{enHumidity,jdbcType=VARCHAR},#{smokeWarning,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterWellcover" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
@@ -80,6 +85,15 @@
       <if test="waterLevelSensor != null" >
         water_level_sensor,
       </if>
+      <if test="enTemperature != null" >
+        en_temperature,
+      </if>
+      <if test="enHumidity != null" >
+        en_humidity,
+      </if>
+      <if test="smokeWarning != null" >
+        smoke_warning,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="positionId != null" >
@@ -102,6 +116,15 @@
       </if>
       <if test="waterLevelSensor != null" >
         #{waterLevelSensor,jdbcType=VARCHAR},
+      </if>
+      <if test="enTemperature != null" >
+        #{enTemperature,jdbcType=VARCHAR},
+      </if>
+      <if test="enHumidity != null" >
+        #{enHumidity,jdbcType=VARCHAR},
+      </if>
+      <if test="smokeWarning != null" >
+        #{smokeWarning,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -128,6 +151,15 @@
       </if>
       <if test="waterLevelSensor != null" >
         water_level_sensor = #{waterLevelSensor,jdbcType=VARCHAR},
+      </if>
+      <if test="enTemperature != null" >
+        en_temperature = #{enTemperature,jdbcType=VARCHAR},
+      </if>
+      <if test="enHumidity != null" >
+        en_humidity = #{enHumidity,jdbcType=VARCHAR},
+      </if>
+      <if test="smokeWarning != null" >
+        smoke_warning = #{smokeWarning,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
