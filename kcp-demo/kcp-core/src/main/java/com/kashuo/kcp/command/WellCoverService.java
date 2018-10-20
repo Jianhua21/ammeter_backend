@@ -70,31 +70,42 @@ public class WellCoverService {
 
     public AmmeterWellcover analysisResponse(String data){
         AmmeterWellcover wellcover = null;
-        if(data.length() ==19){
-            wellcover = new AmmeterWellcover();
-            wellcover.setDeviceType(data.substring(0,2));
-            wellcover.setBatteryStatus(data.substring(4,7));
-            wellcover.setSensor(data.substring(8,11));
-            wellcover.setSurfaceDistance(data.substring(12,15));
-            wellcover.setTiltSensor(data.substring(15,17));
-            wellcover.setWaterLevelSensor(data.substring(17,19));
-        }else if(data.length() ==15 ){
-            //烟感设备
-            wellcover = new AmmeterWellcover();
-            wellcover.setDeviceType(data.substring(0,2));
-            wellcover.setBatteryStatus(data.substring(4,7));
-            wellcover.setEnTemperature(data.substring(8,10));
-            wellcover.setEnHumidity(data.substring(10,13));
-            wellcover.setSmokeWarning(data.substring(13,15));
-        }else{
+        if(data != null) {
+            String deviceType = data.substring(0, 2);
+            if (data.length() == 19) {
+                wellcover = new AmmeterWellcover();
+                wellcover.setDeviceType(deviceType);
+                wellcover.setBatteryStatus(data.substring(4, 7));
+                wellcover.setSensor(data.substring(8, 11));
+                wellcover.setSurfaceDistance(data.substring(12, 15));
+                wellcover.setTiltSensor(data.substring(15, 17));
+                wellcover.setWaterLevelSensor(data.substring(17, 19));
+            } else if (data.length() == 15 && "P0".equals(deviceType)) {
+                //烟感设备
+                wellcover = new AmmeterWellcover();
+                wellcover.setDeviceType(deviceType);
+                wellcover.setBatteryStatus(data.substring(4, 7));
+                wellcover.setEnTemperature(data.substring(8, 10));
+                wellcover.setEnHumidity(data.substring(10, 13));
+                wellcover.setSmokeWarning(data.substring(13, 15));
+            } else if("P0".equals(deviceType) &&data.length() == 9 ) {
+                //烟感设备
+                wellcover = new AmmeterWellcover();
+                wellcover.setDeviceType(deviceType);
+                wellcover.setBatteryStatus(data.substring(4, 7));
+                wellcover.setEnTemperature("0");
+                wellcover.setEnHumidity("0");
+                wellcover.setSmokeWarning(data.substring(7,9));
+            }else{
 
+            }
         }
         return wellcover;
     }
 
 
     public static void main(String[] args) {
-        new WellCoverService().analysisResponse("P7BV342L255D310A0W0");
+        new WellCoverService().analysisResponse("P0BV361A0");
     }
 
 }

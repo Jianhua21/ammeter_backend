@@ -5,7 +5,9 @@ package com.kashuo.kcp.rpc.debug;
  */
 
 import com.alibaba.fastjson.JSONObject;
+import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.SysDictionaryService;
+import com.kashuo.kcp.redis.RedisService;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,8 @@ public class SampleController {
 
     @Autowired
     private SysDictionaryService sysDictionaryService;
+    @Autowired
+    private RedisService redisService;
 //
     @RequestMapping(value = "/hello1", method = RequestMethod.GET)
     public ModelAndView home(HttpServletRequest request) {
@@ -49,6 +53,11 @@ public class SampleController {
     public String getDictionary(){
         logger.info("============================");
         return JSONObject.toJSON(sysDictionaryService.getDictionartLists()).toString();
+    }
+    @GetMapping(value = "redisTest")
+    @ResponseBody
+    public String getIotNb(){
+        return JSONObject.toJSONString(redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER)) ;
     }
 
     public static void main(String[] args) {

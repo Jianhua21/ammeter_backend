@@ -34,7 +34,7 @@ public class HttpClientUtils {
         return json;
     }
 
-    public static Map getDataFromPostMethod(String url,String params) throws IOException{
+    public static String getDataFromPostMethod(String url,String params) throws IOException{
 
         //开启一个HttpClient
         HttpClient httpClient =new HttpClient();
@@ -50,9 +50,9 @@ public class HttpClientUtils {
         //获取返回的参数
         String responseJsonString = method.getResponseBodyAsString();
         //解析返回的数据格式
-        Map map = JSONObject.parseObject(responseJsonString, Map.class);
+        //Map map = JSONObject.parseObject(responseJsonString, Map.class);
         //关闭连接
         method.releaseConnection();
-        return map;
+        return responseJsonString;
     }
 }

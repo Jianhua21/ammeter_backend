@@ -21,6 +21,16 @@ public class WarningSmokeDetectorCategory {
     //烟雾告警
     private Integer smokeWarningDevices=0;
 
+    private Integer weakSignalDevices =0;
+
+    public Integer getWeakSignalDevices() {
+        return weakSignalDevices;
+    }
+
+    public void setWeakSignalDevices(Integer weakSignalDevices) {
+        this.weakSignalDevices = weakSignalDevices;
+    }
+
     public String getWarningName() {
         return warningName;
     }

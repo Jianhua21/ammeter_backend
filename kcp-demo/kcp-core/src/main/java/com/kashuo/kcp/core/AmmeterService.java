@@ -1,7 +1,9 @@
 package com.kashuo.kcp.core;
+import com.alibaba.fastjson.JSONObject;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
 import com.kashuo.kcp.api.entity.CommandParams;
+import com.kashuo.kcp.api.entity.callback.DeviceUdpData;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.dao.AmmeterDeviceMapper;
@@ -10,6 +12,8 @@ import com.kashuo.kcp.dao.AmmeterWorkingInfoMapper;
 import com.kashuo.kcp.dao.condition.AmmeterCondition;
 import com.kashuo.kcp.dao.result.AmmeterDeviceResult;
 import com.kashuo.kcp.domain.*;
+import com.kashuo.kcp.utils.HttpClientUtils;
+import com.kashuo.kcp.utils.HttpUtils;
 import com.kashuo.kcp.utils.Results;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -29,6 +34,8 @@ public class AmmeterService {
     private final static Logger logger = LoggerFactory.getLogger(AmmeterService.class);
     @Value("${socket.port}")
     public static Integer SOCKET_PORT ;
+
+    private final String SHIDING_BACKEND_URL ="http://127.0.0.1:8089/smart_device/udpNbiot/receive";
 
     @Autowired
     private AmmeterWorkingInfoMapper ammeterWorkingInfoMapper;
@@ -345,6 +352,21 @@ public class AmmeterService {
         if(param.length() > 20 && param.contains("RSSI")) {
 //            netWorkService.insertNetWorkInfo(device, param.substring(21));
         }
+    }
+
+    public String postUDPDeviceMessage(AmmeterDevice device){
+        String[] datas = device.getInputMsg().split(",");
+        DeviceUdpData data = new DeviceUdpData();
+        data.setData(datas[1]);
+        data.setImei(datas[0]);
+        data.setNotifyType("UDP_Nb_Iot");
+        try {
+            HttpClientUtils.getDataFromPostMethod(SHIDING_BACKEND_URL, JSONObject.toJSONString(data));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "-1";
+        }
+        return "OK";
     }
 
 

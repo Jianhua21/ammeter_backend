@@ -43,6 +43,13 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.8</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+        </dependency>
+
         <!-- 电信物联网SDK -->
         <dependency>
             <groupId>org.legend.api</groupId>

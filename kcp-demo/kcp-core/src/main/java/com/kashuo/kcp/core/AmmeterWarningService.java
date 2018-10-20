@@ -9,6 +9,8 @@ import com.kashuo.kcp.dao.result.*;
 import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.utils.BeanUtils;
 import com.kashuo.kcp.utils.MessageUtils;
+import com.kashuo.kcp.utils.StringUtil;
+import com.kashuo.kcp.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -97,11 +99,15 @@ public class AmmeterWarningService {
                     ruleService.checkWellCoverWarning(wellcover,"waterLevelSensor",warningWellCover.getAmmeterId());
                 }
                 if(warningWellCover.getTemperatureWarning() == null && warningWellCover.getDeviceType() ==1){
-                    ruleService.checkWellCoverWarning(wellcover,"enTemperature",warningWellCover.getAmmeterId());
+                    if(StringUtil.isNotEmpty(wellcover.getEnTemperature()) &&!"0".equals(wellcover.getEnTemperature())) {
+                        ruleService.checkWellCoverWarning(wellcover, "enTemperature", warningWellCover.getAmmeterId());
+                    }
                 }
                 if(warningWellCover.getHumidityWarning() == null && warningWellCover.getDeviceType() ==1){
-                    wellcover.setEnHumidity(wellcover.getEnHumidity().substring(1,3));
-                    ruleService.checkWellCoverWarning(wellcover,"enHumidity",warningWellCover.getAmmeterId());
+                    if(StringUtil.isNotEmpty(wellcover.getEnHumidity())&&!"0".equals(wellcover.getEnHumidity())) {
+                        wellcover.setEnHumidity(wellcover.getEnHumidity().substring(1, 3));
+                        ruleService.checkWellCoverWarning(wellcover, "enHumidity", warningWellCover.getAmmeterId());
+                    }
                 }
                 if(warningWellCover.getSmokeWarning() == null && warningWellCover.getDeviceType() ==1){
                     wellcover.setSmokeWarning(wellcover.getSmokeWarning().substring(1,2));
@@ -161,14 +167,14 @@ public class AmmeterWarningService {
                 if(warningWellCover.getTemperatureWarning() != null){
 
                 }else{
-                    if(deviceType ==1 ) {
+                    if(deviceType ==1 && StringUtil.isNotEmpty(wellcover.getEnTemperature()) &&!"0".equals(wellcover.getEnTemperature())) {
                         ruleService.checkWellCoverWarning(wellcover, "enTemperature", warningWellCover.getAmmeterId());
                     }
                 }
                 if(warningWellCover.getHumidityWarning() != null){
 
                 }else{
-                    if(deviceType ==1 ) {
+                    if(deviceType ==1 && StringUtil.isNotEmpty(wellcover.getEnHumidity()) &&!"0".equals(wellcover.getEnHumidity())) {
                         wellcover.setEnHumidity(wellcover.getEnHumidity().substring(1, 3));
                         ruleService.checkWellCoverWarning(wellcover, "enHumidity", warningWellCover.getAmmeterId());
                     }
@@ -268,7 +274,7 @@ public class AmmeterWarningService {
         smokeDetectorCategory.setTemperatureWarningDevices(Integer.parseInt(warningDevices.get("temperatureWarningDevices").toString()));
         smokeDetectorCategory.setHumidityWarningDevices(Integer.parseInt(warningDevices.get("humidityWarningDevices").toString()));
         smokeDetectorCategory.setSmokeWarningDevices(Integer.parseInt(warningDevices.get("smokeWarningDevices").toString()));
-
+        smokeDetectorCategory.setWeakSignalDevices(0);
         home.setSmokeDetectorCategory(smokeDetectorCategory);
         return home;
     }

@@ -40,7 +40,7 @@
     <logger name="org.mybatis.spring" level="WARN" />
     <logger name="org.springframework.web" level="WARN"/>
     <logger name="com.kashuo" level="INFO"/>
-    <logger name="dao" level="DEBUG"/>
+    <logger name="dao" level="INFO"/>
     <!--<logger name="com.kashuo.kop.server.dao" level="DEBUG"/>-->
     <!--<logger name="com.kashuo.kop.server.provider.impl.ZdManager" level="DEBUG"/>-->
     <!--<logger name="com.kashuo.kop.server.provider.impl.KsManager" level="DEBUG"/>-->

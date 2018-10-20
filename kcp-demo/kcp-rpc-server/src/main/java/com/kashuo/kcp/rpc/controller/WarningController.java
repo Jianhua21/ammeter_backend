@@ -41,12 +41,12 @@ public class WarningController extends BaseController{
 
     @PostMapping("/home")
     @ApiOperation("告警总览")
-    public Results getWarningHome(@RequestParam(required = false) Integer deviceType) throws Exception {
+    public Results getWarningHome(@RequestBody(required = false) WarningCondition warningCondition) throws Exception {
         AmmeterUser user = getCuruser();
         WarningDeviceHome warningHome;
-        if(deviceType == null || deviceType ==0) {
+        if(warningCondition.getDeviceType() == null || warningCondition.getDeviceType() ==0) {
             warningHome = warningService.reportWarningDeviceInfo();
-        }else if(deviceType ==1){
+        }else if(warningCondition.getDeviceType() ==1){
             warningHome = warningService.reportWarningSmokeDeviceInfo();
         }else{
             warningHome = new WarningDeviceHome();

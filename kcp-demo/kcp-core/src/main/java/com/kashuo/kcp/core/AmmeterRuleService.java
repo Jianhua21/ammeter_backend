@@ -53,6 +53,17 @@ public class AmmeterRuleService {
 
     public void saveWellCoverRule(AmmeterWellCoverSystemParams wellCoverSystemParams){
 
+        if(wellCoverSystemParams.getDeviceType() ==1){
+            AmmeterRule rule1 = new AmmeterRule();
+            rule1.setRuleParams("enTemperature");
+            rule1.setRuleValue(wellCoverSystemParams.getEnTemperature());
+            ammeterRuleMapper.updateByPrimaryName(rule1);
+
+            AmmeterRule rule2 = new AmmeterRule();
+            rule2.setRuleParams("enHumidity");
+            rule2.setRuleValue(wellCoverSystemParams.getEnHumidity());
+            ammeterRuleMapper.updateByPrimaryName(rule2);
+        }else {
             AmmeterRule rule1 = new AmmeterRule();
             rule1.setRuleParams("batteryStatus");
             rule1.setRuleKey(wellCoverSystemParams.getBatteryStatusKey());
@@ -70,7 +81,7 @@ public class AmmeterRuleService {
             rule3.setRuleKey(wellCoverSystemParams.getSurfaceDistanceKey());
             rule3.setRuleValue(wellCoverSystemParams.getSurfaceDistanceValue());
             ammeterRuleMapper.updateByPrimaryName(rule3);
-
+        }
            netWorkRuleList = ammeterRuleMapper.getNetWorkRules();
     }
 

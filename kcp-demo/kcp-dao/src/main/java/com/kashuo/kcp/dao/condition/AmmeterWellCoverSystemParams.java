@@ -21,6 +21,36 @@ public class AmmeterWellCoverSystemParams {
     private String surfaceDistanceKey ="<";
     @ApiModelProperty("水面距离阀值")
     private String surfaceDistanceValue;
+    @ApiModelProperty("设备类型")
+    private Integer deviceType;
+    @ApiModelProperty("温度阀值")
+    private String enTemperature;
+    @ApiModelProperty("湿度阀值")
+    private String enHumidity;
+
+    public String getEnTemperature() {
+        return enTemperature;
+    }
+
+    public void setEnTemperature(String enTemperature) {
+        this.enTemperature = enTemperature;
+    }
+
+    public String getEnHumidity() {
+        return enHumidity;
+    }
+
+    public void setEnHumidity(String enHumidity) {
+        this.enHumidity = enHumidity;
+    }
+
+    public Integer getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(Integer deviceType) {
+        this.deviceType = deviceType;
+    }
 
     public String getBatteryStatusKey() {
         return batteryStatusKey;

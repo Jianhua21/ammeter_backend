@@ -41,7 +41,7 @@ public class Client {
                 System.out.println("服务器端返回过来的是: " + ret);
 
                 // 如接收到 "OK" 则断开连接
-                if ("OK1".equals(ret)) {
+                if ("OK".equals(ret)) {
                     System.out.println("客户端将关闭连接");
                     Thread.sleep(500);
                     break;
