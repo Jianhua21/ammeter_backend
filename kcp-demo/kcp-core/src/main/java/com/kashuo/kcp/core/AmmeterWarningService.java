@@ -13,6 +13,7 @@ import com.kashuo.kcp.domain.AmmeterNetwork;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterWarning;
 import com.kashuo.kcp.domain.AmmeterWarningResult;
+import com.kashuo.kcp.manage.MessageService;
 import com.kashuo.kcp.utils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,8 @@ public class AmmeterWarningService {
 
     @Autowired
     private AmmeterPositionMapper ammeterPositionMapper;
+    @Autowired
+    private MessageService messageService;
 
     public void updateWarningInfo(){
         List<AmmeterNetwork> networks = networkMapper.selectForWarningReport();
@@ -47,6 +50,9 @@ public class AmmeterWarningService {
         List<AmmeterNetwork> offline_networks = networkMapper.selectOfflineDevice();
         offline_networks.forEach(n-> {
                 ruleService.offLineDeviceWarning(n);
+
+                messageService.sendMessageContent(ammeterPositionMapper.selectByDeviceId(n.getDeviceId()),"不在线告警");
+
                 AmmeterPosition position = new AmmeterPosition();
                 //设备不在线处理
                 position.setStatus(7);
