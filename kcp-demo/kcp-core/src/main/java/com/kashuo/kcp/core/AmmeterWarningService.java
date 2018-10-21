@@ -172,7 +172,10 @@ public class AmmeterWarningService {
                     }
                 }
                 if(warningWellCover.getHumidityWarning() != null){
-
+                    if(deviceType ==1 && StringUtil.isNotEmpty(wellcover.getEnHumidity()) &&!"0".equals(wellcover.getEnHumidity())) {
+                        wellcover.setEnHumidity(wellcover.getEnHumidity().substring(1, 3));
+                        ruleService.cancelWellCoverWarning(wellcover, "enHumidity", warningWellCover.getAmmeterId());
+                    }
                 }else{
                     if(deviceType ==1 && StringUtil.isNotEmpty(wellcover.getEnHumidity()) &&!"0".equals(wellcover.getEnHumidity())) {
                         wellcover.setEnHumidity(wellcover.getEnHumidity().substring(1, 3));
@@ -180,11 +183,14 @@ public class AmmeterWarningService {
                     }
                 }
                 if(warningWellCover.getSmokeWarning() != null){
-
-                }else{
-                    if(deviceType ==1 ) {
+                    if(deviceType ==1) {
                         wellcover.setSmokeWarning(wellcover.getSmokeWarning().substring(1, 2));
-                        ruleService.checkWellCoverWarning(wellcover, "enHumidity", warningWellCover.getAmmeterId());
+                        ruleService.cancelWellCoverWarning(wellcover, "smokeWarning", warningWellCover.getAmmeterId());
+                    }
+                }else{
+                    if(deviceType ==1) {
+                        wellcover.setSmokeWarning(wellcover.getSmokeWarning().substring(1, 2));
+                        ruleService.checkWellCoverWarning(wellcover, "smokeWarning", warningWellCover.getAmmeterId());
                     }
                 }
 
