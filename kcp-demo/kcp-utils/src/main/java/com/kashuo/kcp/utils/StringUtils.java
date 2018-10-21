@@ -60,4 +60,8 @@ public class StringUtils {
         }
         return temp;
     }
+
+    public static void main(String[] args) {
+        System.out.println(hexString2String("503742563334374c3031324431323041315730"));
+    }
 }

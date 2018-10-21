@@ -50,6 +50,16 @@ public class BaseService {
 
         private String rawdata;
 
+        private String upmessage;
+
+        public String getUpmessage() {
+            return upmessage;
+        }
+
+        public void setUpmessage(String upmessage) {
+            this.upmessage = upmessage;
+        }
+
         public String getRawdata() {
             return rawdata;
         }

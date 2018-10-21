@@ -45,6 +45,7 @@ public class WellCoverService {
     }
 
 
+
     public void processData(String response,String deviceId){
         AmmeterPosition position = positionMapper.selectByDeviceId(deviceId);
         AmmeterWellcover wellcover = analysisResponse(response);

@@ -13,6 +13,7 @@ import com.kashuo.kcp.core.NetWorkService;
 import com.kashuo.kcp.domain.AmmeterCallbackHistory;
 import com.kashuo.kcp.domain.SysDictionary;
 import com.kashuo.kcp.utils.CRC16x25Utils;
+import com.kashuo.kcp.utils.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -76,7 +77,7 @@ public class CallBackController {
         logger.info("正在处理通知类型为:{} 的数据",notifyType);
         if(IoTConstant.IOT_NOTIFY_TYPE_DEVICE_DATA_CHANGED.equals(notifyType)){
             DeviceDataChange dataChange = JSON.parseObject(result,DeviceDataChange.class);
-            String response = dataChange.getService().getData().getRawdata();
+            String response = StringUtils.hexString2String(dataChange.getService().getData().getUpmessage());
             logger.info("======实际数据============"+JSONObject.toJSONString(response));
             wellCoverService.processData(response,deviceId);
         }
