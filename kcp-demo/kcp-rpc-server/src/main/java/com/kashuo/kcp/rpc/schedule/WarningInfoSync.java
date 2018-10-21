@@ -18,6 +18,10 @@ public class WarningInfoSync {
 
     public void updateWarningInfoByCron() throws Exception {
         logger.info("定时把已经长时间失去连接和信号量不正常的列出警告");
-        warningService.updateWarningInfo();
+        try {
+            warningService.updateWarningInfo();
+        }catch (Exception e){
+
+        }
     }
 }

@@ -132,4 +132,11 @@
       rule_type = #{ruleType,jdbcType=CHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <update id="updateByPrimaryName" parameterType="com.kashuo.kcp.domain.AmmeterRule" >
+    update ammeter_rule
+    set rule_key = #{ruleKey,jdbcType=VARCHAR},
+    rule_value = #{ruleValue,jdbcType=VARCHAR}
+    where rule_params = #{ruleParams,jdbcType=VARCHAR}
+  </update>
 </mapper>

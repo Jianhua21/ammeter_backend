@@ -3,18 +3,14 @@ package com.kashuo.kcp.core;
 import com.alibaba.fastjson.JSONObject;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
-import com.kashuo.kcp.dao.AmmeterNetworkMapper;
-import com.kashuo.kcp.dao.AmmeterPositionMapper;
-import com.kashuo.kcp.dao.AmmeterWarningMapper;
+import com.kashuo.kcp.dao.*;
 import com.kashuo.kcp.dao.condition.WarningCondition;
-import com.kashuo.kcp.dao.result.WarningCategory;
-import com.kashuo.kcp.dao.result.WarningHome;
-import com.kashuo.kcp.domain.AmmeterNetwork;
-import com.kashuo.kcp.domain.AmmeterPosition;
-import com.kashuo.kcp.domain.AmmeterWarning;
-import com.kashuo.kcp.domain.AmmeterWarningResult;
+import com.kashuo.kcp.dao.result.*;
+import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.utils.BeanUtils;
 import com.kashuo.kcp.utils.MessageUtils;
+import com.kashuo.kcp.utils.StringUtil;
+import com.kashuo.kcp.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +32,8 @@ public class AmmeterWarningService {
 
     @Autowired
     private AmmeterPositionMapper ammeterPositionMapper;
+    @Autowired
+    private AmmeterDeviceMapper deviceMapper;
 
     public void updateWarningInfo(){
         List<AmmeterNetwork> networks = networkMapper.selectForWarningReport();
@@ -75,6 +73,74 @@ public class AmmeterWarningService {
         });
     }
 
+//    public void genereateWellCoverWarning(){
+//        List<WarningElectric> list = warningMapper.wellCoverWarningList(null);
+//        if(list != null){
+//            for (WarningElectric warningElectric :list){
+//                AmmeterWellcover wellcover = wellcoverMapper.selectByPositionId(warningWellCover.getId());
+//
+//                if(warningElectric.getRsrqWarning() == null){
+//                    ruleService.checkWellCoverWarning(wellcover,"rsrq",warningElectric.getAmmeterId());
+//                }
+//                if(warningElectric.getCurrentLimitWarning() == null){
+//                    ruleService.checkWellCoverWarning(wellcover,"currentLimit",warningElectric.getAmmeterId());
+//                }
+//                if(warningElectric.getElectricLimitWarning() == null){
+//                    ruleService.checkWellCoverWarning(wellcover,"electricLimit",warningElectric.getAmmeterId());
+//                }
+//
+//            }
+//        }
+//    }
+    public void cancelWellCoverWarning(Integer positionId,AmmeterWellcover wellcover){
+        cancelWellCoverWarning(positionId,0, wellcover);
+    }
+
+
+    public void cancelWellCoverWarning(Integer positionId,Integer deviceType,AmmeterWellcover wellcover){
+        WarningCondition condition = new WarningCondition();
+        condition.setPositionId(positionId);
+        List<WarningElectric> list = warningMapper.wellCoverWarningList(condition);
+        if(list != null){
+            for (WarningElectric warningElectric :list){
+                if(warningElectric.getRsrqWarning() != null){
+                    if(wellcover.getRsrq() != null) {
+                        ruleService.cancelWellCoverWarning(wellcover, "rsrq", warningElectric.getAmmeterId());
+                    }
+                }else{
+                    if(wellcover.getRsrq() != null) {
+                        ruleService.checkWellCoverWarning(wellcover, "rsrq", warningElectric.getAmmeterId());
+                    }
+                }
+                if(warningElectric.getCurrentLimitWarning() != null){
+//                    ruleService.cancelWellCoverWarning(wellcover,"sensor",warningWellCover.getAmmeterId());
+                }else{
+                    if(wellcover.getCurrentLimit() != null) {
+                        ruleService.checkWellCoverWarning(wellcover, "currentLimit", warningElectric.getAmmeterId());
+                    }
+                }
+                if(warningElectric.getElectricLimitWarning() != null){
+//                    ruleService.cancelWellCoverWarning(wellcover,"surfaceDistance",warningWellCover.getAmmeterId());
+                }else{
+                    if(wellcover.getElectricLimit() != null) {
+                        ruleService.checkWellCoverWarning(wellcover, "electricLimit", warningElectric.getAmmeterId());
+                    }
+                }
+            }
+        }
+    }
+
+    public void updateOfflineDeviceStatus(){
+        List<AmmeterDeviceResult> results = deviceMapper.queryOfflineDevice();
+        if(results != null){
+            results.forEach(r->{
+                AmmeterPosition position = ammeterPositionMapper.selectByDeviceId(r.getDeviceId());
+                position.setStatus(7);
+                ammeterPositionMapper.updateByPrimaryKeySelective(position);
+            });
+        }
+    }
+
     public Page<AmmeterWarningResult> queryWarningList(WarningCondition condition){
         PageHelper.startPage(condition.getPageIndex(),condition.getPageSize());
         return warningMapper.queryWarningList(condition);
@@ -91,16 +157,23 @@ public class AmmeterWarningService {
     public WarningHome reportWarningInfo() throws Exception {
         WarningHome home = warningMapper.getStatisticsDevices();
         Map<String,Object> warningInfo = warningMapper.reportWarningCount();
-        home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()) );
-        home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
-        home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
-        Map<String,Object> warningDevices = warningMapper.reportWarningDevices();
-        WarningCategory warningCategories = new WarningCategory();
-        warningCategories.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
-        warningCategories.setNormalDevices(Integer.parseInt(warningDevices.get("normalDevices").toString()));
-        warningCategories.setWarningRsrqDevices(Integer.parseInt(warningDevices.get("warningRsrqDevices").toString()));
-        warningCategories.setWarningOfflineDevices(Integer.parseInt(warningDevices.get("warningOfflineDevices").toString()));
-        home.setWarningCategories(warningCategories);
+        if(home != null) {
+            home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()));
+            home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
+            home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
+
+            Map<String,Object> warningDevices = warningMapper.reportWarningDevices();
+            WarningCategory warningCategories = new WarningCategory();
+            if(warningDevices != null) {
+                warningCategories.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
+                warningCategories.setNormalDevices(Integer.parseInt(warningDevices.get("normalDevices").toString()));
+                warningCategories.setWarningRsrqDevices(Integer.parseInt(warningDevices.get("warningRsrqDevices").toString()));
+                warningCategories.setWarningOfflineDevices(Integer.parseInt(warningDevices.get("warningOfflineDevices").toString()));
+                warningCategories.setCurrentLimitDevices(Integer.parseInt(warningDevices.get("currentLimitDevices").toString()));
+                warningCategories.setElectricLimitDevices(Integer.parseInt(warningDevices.get("electricLimitDevices").toString()));
+            }
+            home.setWarningCategories(warningCategories);
+        }
         return home;
 
     }

@@ -9,6 +9,7 @@ import com.kashuo.kcp.domain.AmmeterInfoResult;
 import com.kashuo.kcp.domain.AmmeterResult;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface AmmeterDeviceMapper {
@@ -34,6 +35,8 @@ public interface AmmeterDeviceMapper {
 
     List<AmmeterDeviceResult> validAmmeterDevice();
 
+    List<AmmeterDeviceResult> queryOfflineDevice();
+
     int updateByPrimaryKeySelective(AmmeterDevice record);
 
     int updateByImsiKeySelective(AmmeterDevice record);
@@ -43,6 +46,8 @@ public interface AmmeterDeviceMapper {
     int updateWarningStatusByPrimaryKey(AmmeterDevice record);
 
     int updateMeterNoByDeviceId(@Param("deviceId")String deviceId,@Param("meterNo")String meterNo);
+
+    int updateProductDateByDeviceId(@Param("deviceId")String deviceId,@Param("productDate")Date productDate);
 
     Page<AmmeterResult> selectByCondition();
 }

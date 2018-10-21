@@ -1,18 +1,29 @@
 package com.kashuo.kcp.rpc.controller;
 
+import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.core.AmmeterChannelService;
 import com.kashuo.kcp.core.AmmeterReportServer;
 import com.kashuo.kcp.core.AmmeterService;
 import com.kashuo.kcp.dao.condition.AmmeterCondition;
 import com.kashuo.kcp.domain.AmmeterDevice;
+import com.kashuo.kcp.domain.AmmeterInfoResult;
 import com.kashuo.kcp.domain.AmmeterUser;
 import com.kashuo.kcp.utils.DateUtils;
+import com.kashuo.kcp.utils.ExcelHelper;
+import com.kashuo.kcp.utils.ReflectHelper;
 import com.kashuo.kcp.utils.Results;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dell-pc on 2017/9/7.
@@ -34,7 +45,7 @@ public class AmmeterController extends BaseController{
 
     @PostMapping(value = "/list")
     @ApiOperation(value="电表信息列表")
-    public Results list(@RequestBody AmmeterCondition ammeterCondition ){
+    public Results<Page<AmmeterInfoResult>> list(@RequestBody AmmeterCondition ammeterCondition ){
         AmmeterUser user = getCuruser();
         ammeterCondition.setChannelId(user.getChannelId());
         ammeterCondition.setPageIndex(ammeterCondition.getPageIndex());
@@ -90,6 +101,27 @@ public class AmmeterController extends BaseController{
         return dailyOrMonthlyReport(imsi,reportDate,3);
     }
 
+    @RequestMapping(value = "export", method = RequestMethod.GET)
+    @ApiOperation(value = "列表导出", notes = "Created by Mr.ZHAO on 2018/10/21")
+    public void export(AmmeterCondition ammeterCondition, HttpServletRequest request, HttpServletResponse response) throws
+            ParseException {
+        ammeterCondition.setPageSize(10000000);
+        Page<AmmeterInfoResult> reports = list(ammeterCondition).getData();
+
+        String[] mappingFileds = new String[]{"id", "name", "address", "remark", "onlineStatus", "activePower",
+                "companyName", "agreementStatus", "contactInfo"};
+        String[] titles = new String[]{"设备编号", "设备名称", "电表位置", "备注", "在线状态", "电表即时度数", "用电单位", "合同状态",
+                "联系人信息"};
+
+        // 将 List<Report> 转化为 List<Map<String, Object>> 格式
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        for (AmmeterInfoResult report : reports) {
+            Map<String, Object> objectMap = ReflectHelper.fetchFields(report);
+            mapList.add(objectMap);
+        }
+        HSSFWorkbook excel = ExcelHelper.createExcel(mapList, titles, mappingFileds, null, false);
+        ExcelHelper.export(request, response, excel, "电表电量-" + DateUtils.getCurrentDate("yyyyMMdd"));
+    }
     public static void main(String[] args) {
         String str ="2017-09";
         System.out.println(str.substring(0,str.indexOf("-")));

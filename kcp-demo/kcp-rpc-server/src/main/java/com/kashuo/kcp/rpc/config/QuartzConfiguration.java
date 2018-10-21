@@ -43,41 +43,65 @@ public class QuartzConfiguration {
     @Scheduled(cron = "${app.constant.quartz}")
     public void registerSync() throws Exception {
         if (offSet) {
-            regSync.regInfo2IoM();
+            try {
+                regSync.regInfo2IoM();
+            }catch (Exception e){
+
+            }
         }
     }
 
     @Scheduled(cron = "${app.constant.quartz}")
     public void sendAddressCommand() throws Exception {
         if (offSet) {
+            try {
             regSync.sendAddressCommand();
+            }catch (Exception e){
+
+            }
         }
     }
 
     @Scheduled(cron = "${app.constant.quartz.hour.one}")
     public void send645PowerDeviceCommand() throws Exception {
         if (offSet) {
+            try {
             regSync.send645PowerDeviceCommand();
+            }catch (Exception e){
+
+            }
         }
     }
 
     @Scheduled(cron = "${app.constant.quartz.hour.two}")
     public void send645VoltageDeviceCommand() throws Exception {
         if (offSet) {
+            try {
             regSync.send645VoltageDeviceCommand();
+            }catch (Exception e){
+
+            }
         }
     }
     @Scheduled(cron = "${app.constant.quartz.hour.three}")
     public void send645CurrentDeviceCommand() throws Exception {
         if (offSet) {
+            try{
             regSync.send645CurrentDeviceCommand();
+            }catch (Exception e){
+
+            }
         }
     }
 
     @Scheduled(cron = "${app.constant.quartz.report}")
     public void generateMonthlyReport() throws Exception {
         if (offSet) {
+            try{
             regSync.updateMonthPowerReport();
+            }catch (Exception e){
+
+            }
         }
     }
 

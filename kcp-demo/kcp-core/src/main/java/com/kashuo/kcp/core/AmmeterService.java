@@ -123,10 +123,10 @@ public class AmmeterService {
          return Results.success(ammeterDeviceMapper.selectByCondition());
     }
 
-    public Results listAmmeterInfo(AmmeterCondition ammeterCondition){
+    public Results<Page<AmmeterInfoResult>> listAmmeterInfo(AmmeterCondition ammeterCondition){
         PageHelper.startPage(ammeterCondition.getPageIndex(),ammeterCondition.getPageSize());
         Page<AmmeterInfoResult> resultPage = ammeterDeviceMapper.selectAmmeterInfo(ammeterCondition);
-        Results results = new Results(resultPage);
+        Results<Page<AmmeterInfoResult>> results = new Results<>(resultPage);
         if(resultPage != null)
         results.setTotal(resultPage.getTotal());
         results.setSn(ammeterCondition.getSn());

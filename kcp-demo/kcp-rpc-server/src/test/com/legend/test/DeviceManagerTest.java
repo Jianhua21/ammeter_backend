@@ -20,11 +20,11 @@ public class DeviceManagerTest {
         ClientInfo ci = new ClientInfo();
 
 
-        String appId = "bpfcOrUv5lUvxiSOLeVtUMfxBhMa";
-        String secret = "p6m9oSn9FlXZc0nTCIeXPHpm3sYa";
+        String appId = "5XajQp0O7Cc0BlGLfmHP3bmTCDsa";
+        String secret = "zjnQUeXOL6D8D20OX5XvsrfpaMca";
 
         ci.setAppId(appId);
-        ci.setPlatformIp("180.101.147.89");
+        ci.setPlatformIp("device.api.ct10649.com");
         ci.setPlatformPort("8743");
         ci.setSecret(secret);
 
@@ -42,12 +42,12 @@ public class DeviceManagerTest {
 
         aod = aaa.getAuthToken();
 
-//        String accessToken = aod.getAccessToken();
-        String accessToken ="38f221b397288b4b6679ca9f76544d";
+        String accessToken = aod.getAccessToken();
+//        String accessToken ="38f221b397288b4b6679ca9f76544d";
         // 4.2.1 设备注册
 
         RegDirectDeviceInDTO rddid = new RegDirectDeviceInDTO();
-        String nodeid = "863703033404885";
+        String nodeid = "863703033414889";
         String verifyCode = nodeid;
         rddid.setNodeId(nodeid);
         rddid.setVerifyCode(verifyCode);

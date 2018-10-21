@@ -10,6 +10,7 @@
     <result column="create_by" property="createBy" jdbcType="VARCHAR" />
     <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
     <result column="warning_type" property="warningType" jdbcType="INTEGER" />
+      <result column="rule_id" property="ruleId" jdbcType="INTEGER" />
   </resultMap>
 
     <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterWarningResult" >
@@ -22,12 +23,13 @@
         <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
         <result column="ammeter_type" property="ammeterType" jdbcType="VARCHAR" />
         <result column="warning_type" property="warningType" jdbcType="INTEGER" />
-      <result column="warning_status" property="warningStatus" jdbcType="INTEGER" />
-      <result column="status_name" property="statusName" jdbcType="VARCHAR" />
-      <result column="reason" property="reason" jdbcType="VARCHAR" />
+        <result column="warning_status" property="warningStatus" jdbcType="INTEGER" />
+        <result column="status_name" property="statusName" jdbcType="VARCHAR" />
+        <result column="reason" property="reason" jdbcType="VARCHAR" />
+        <result column="rule_id" property="ruleId" jdbcType="INTEGER" />
     </resultMap>
   <sql id="Base_Column_List" >
-    id, ammeter_id, warning_status, warning_date, create_date, create_by, warning_desc,warning_type,reason
+    id, ammeter_id, warning_status, warning_date, create_date, create_by, warning_desc,warning_type,reason,rule_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -38,7 +40,7 @@
     
     <select id="queryWarningList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
       select p.id,w.id as warning_id,p.device_id,d.imsi ,p.name as ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type,
-      w.warning_status,w.reason,
+      w.warning_status,w.reason,w.rule_id,
       case when w.warning_status = 0 then '待处理'
       else '已消除' end as status_name
       from ammeter_warning w,ammeter_device d,ammeter_position p
@@ -80,11 +82,11 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into ammeter_warning (ammeter_id, warning_status, warning_date, 
-      create_date, create_by, warning_desc,warning_type,reason,messageFlag
+      create_date, create_by, warning_desc,warning_type,reason,messageFlag,rule_id
       )
     values (#{ammeterId,jdbcType=INTEGER}, #{warningStatus,jdbcType=CHAR}, #{warningDate,jdbcType=TIMESTAMP}, 
       #{createDate,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{warningDesc,jdbcType=VARCHAR},#{warningType,jdbcType=INTEGER}, #{reason,jdbcType=VARCHAR}
-    ,#{messageFlag,jdbcType=INTEGER}
+    ,#{messageFlag,jdbcType=INTEGER},#{ruleId,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterWarning" >
@@ -160,6 +162,32 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+    <update id="updateByRuleKey" parameterType="com.kashuo.kcp.domain.AmmeterWarning" >
+        update ammeter_warning
+        <set >
+            <if test="warningStatus != null" >
+                warning_status = #{warningStatus,jdbcType=CHAR},
+            </if>
+            <if test="warningDate != null" >
+                warning_date = #{warningDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createDate != null" >
+                create_date = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createBy != null" >
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="warningDesc != null" >
+                warning_desc = #{warningDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="reason != null" >
+                reason = #{reason,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ammeter_id = #{ammeterId,jdbcType=INTEGER} and rule_id =#{ruleId,jdbcType=INTEGER}
+        and warning_status = 0
+    </update>
   <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterWarning" >
     update ammeter_warning
     set ammeter_id = #{ammeterId,jdbcType=INTEGER},
@@ -184,6 +212,14 @@
         <result column="total_devices" property="totalDevices" jdbcType="INTEGER" />
     </resultMap>
 
+    <resultMap id="BaseWellCoverWaringResultMap" type="com.kashuo.kcp.dao.result.WarningElectric">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="ammeter_id" property="ammeterId" jdbcType="INTEGER"/>
+        <result column="rsrq_warning" property="deviceType" jdbcType="INTEGER"/>
+        <result column="currentLimit_warning" property="batteryWarning" jdbcType="VARCHAR" />
+        <result column="electricLimit_warning" property="sensorWarning" jdbcType="VARCHAR" />
+    </resultMap>
+
   <select id="getStatisticsDevices"  resultMap="BaseWarningHomeResultMap">
     select sum(case when `status` in (1,2,4,6,7,8) then 1 else 0 end ) as total_devices,
 sum(case when `status` =6 then 1 else 0 end ) as online_devices,
@@ -193,16 +229,22 @@ sum(case when `status` in (2,8)  then 1 else 0 end ) as problem_devices
   </select>
 
     <select id="reportWarningDevices" resultType="map">
-        select sum(case when w11.warning_type = 1 then 1 else 0 end) warningOfflineDevices
- , sum(case when w11.warning_type = 0 then 1 else 0 end)
+ select sum(case when w11.warning_type = 1 then 1 else 0 end) warningOfflineDevices
+ , sum(case when w11.warning_type = 0 and r.rule_params ='rsrq' then 1 else 0 end)
  as warningRsrqDevices
- , sum(case when w11.ammeter_id is null then 1 else 0 end) as normalDevices
- ,count(p.id) as totalDevices
+ , sum(case when w11.warning_type = 0 and r.rule_params ='currentLimit' then 1 else 0 end)
+ as currentLimitDevices
+ ,sum(case when w11.warning_type = 0 and r.rule_params ='electricLimit' then 1 else 0 end)
+ as electricLimitDevices,
+ sum(case when w11.ammeter_id is null then 1 else 0 end) as normalDevices
+ ,count(p.id) as totalDevices,
+ sum(case when p.`status` = 6 then 1 else 0 end) as onlineDevices
 from ammeter_position p INNER JOIN ammeter_device d on d.imsi =p.imei
 LEFT JOIN
 (select w1.* from ammeter_warning w1,(select max(id) id from ammeter_warning w GROUP BY ammeter_id) w2
 where w1.id = w2.id and w1.warning_status =0
 ) w11 on w11.ammeter_id = d.id
+LEFT JOIN ammeter_rule r on w11.rule_id = r.id
 where p.status != 3
     </select>
     <select id="reportWarningCount" resultType="map">
@@ -213,4 +255,33 @@ count(w.id) as warningNumbers
 INNER JOIN ammeter_position p on d.imsi =p.imei
 where p.status !=3
     </select>
+
+
+  <select id="wellCoverWarningList" resultMap="BaseWellCoverWaringResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
+      select p.id,d.id as ammeter_id,
+      a.warning_desc as rsrq_warning,
+      b.warning_desc as currentLimit_warning,
+      c.warning_desc as electricLimit_warning
+      from  ammeter_position p
+      INNER JOIN ammeter_device d on p.imei = d.imsi
+      LEFT JOIN
+      (select w1.ammeter_id,w1.warning_desc from ammeter_warning w1
+      INNER JOIN  ammeter_rule r1 on w1.rule_id = r1.id  and r1.rule_params='rsrq'  and w1.warning_status = 0
+      ) a on a.ammeter_id = d.id
+      LEFT JOIN
+      (select w2.ammeter_id,w2.warning_desc from ammeter_warning w2
+      INNER JOIN  ammeter_rule r2 on w2.rule_id = r2.id  and r2.rule_params='currentLimit'  and w2.warning_status = 0
+      ) b on b.ammeter_id = d.id
+      LEFT JOIN
+      (select w3.ammeter_id,w3.warning_desc from ammeter_warning w3
+      INNER JOIN  ammeter_rule r3 on w3.rule_id = r3.id  and r3.rule_params='electricLimit'  and w3.warning_status = 0
+      ) c on c.ammeter_id = d.id
+      where 1=1
+      <if test="positionId == null">
+          and p.status !=3
+      </if>
+        <if test="positionId != null">
+            and p.id =#{positionId,jdbcType=INTEGER}
+        </if>
+  </select>
 </mapper>

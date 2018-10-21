@@ -401,6 +401,15 @@ where d.imsi = p.imei
 and p.status in (1,6,7) and d.meter_no is null
 and p.device_id is not null
     </select>
+    <select id="queryOfflineDevice" resultMap="BaseAddressResultMap">
+        select d.id,p.imei,d.meter_no,p.device_id,p.`name`
+    from ammeter_position p
+    INNER JOIN ammeter_device d on p.imei = d.imsi
+    where p.`status` in(1,6) and p.device_id is not null
+     and (TIMESTAMPDIFF(HOUR,d.product_date,NOW())>= 3)
+     and not EXISTS(select * from ammeter_warning w where w.ammeter_id = d.id and w.warning_type=1
+     and w.warning_status =0)
+    </select>
 
     <select id="validAmmeterDevice"   resultMap="BaseAddressResultMap">
         select d.id,p.imei,d.meter_no,p.device_id,p.`name` from ammeter_device d ,ammeter_position p
@@ -411,6 +420,11 @@ and p.device_id is not null
 
     <update id="updateMeterNoByDeviceId" >
         update ammeter_device set meter_no =#{meterNo,jdbcType=VARCHAR}
+        where imsi in (select imei from ammeter_position where device_id =#{deviceId,jdbcType=VARCHAR})
+    </update>
+
+    <update id="updateProductDateByDeviceId" >
+        update ammeter_device set product_date =#{productDate,jdbcType=TIMESTAMP}
         where imsi in (select imei from ammeter_position where device_id =#{deviceId,jdbcType=VARCHAR})
     </update>
 </mapper>

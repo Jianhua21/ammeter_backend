@@ -2,10 +2,13 @@ package com.kashuo.kcp.dao;
 
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.dao.condition.WarningCondition;
+import com.kashuo.kcp.dao.result.WarningElectric;
 import com.kashuo.kcp.dao.result.WarningHome;
+import com.kashuo.kcp.dao.result.WarningWellCover;
 import com.kashuo.kcp.domain.AmmeterWarning;
 import com.kashuo.kcp.domain.AmmeterWarningResult;
 
+import java.util.List;
 import java.util.Map;
 
 public interface AmmeterWarningMapper {
@@ -19,6 +22,8 @@ public interface AmmeterWarningMapper {
 
     int updateByPrimaryKeySelective(AmmeterWarning record);
 
+    int updateByRuleKey(AmmeterWarning record);
+
     int updateByPrimaryKey(AmmeterWarning record);
 
     int updateStatusByType(AmmeterWarning record);
@@ -30,4 +35,6 @@ public interface AmmeterWarningMapper {
     Map<String,Object> reportWarningCount();
 
     Page<AmmeterWarningResult> queryWarningList(WarningCondition condition);
+
+    List<WarningElectric> wellCoverWarningList(WarningCondition condition);
 }

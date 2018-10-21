@@ -1,11 +1,14 @@
 package com.kashuo.kcp.core;
 
 import com.kashuo.kcp.dao.AmmeterMonthlyReportMapper;
+import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterReportMapper;
 import com.kashuo.kcp.dao.AmmeterWorkingInfoMapper;
 import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterMonthlyReport;
+import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterReport;
+import com.kashuo.kcp.domain.AmmeterWellcover;
 import com.kashuo.kcp.domain.AmmeterWorkingInfo;
 import com.kashuo.kcp.utils.AmmeterUtils;
 import com.kashuo.kcp.utils.DateUtils;
@@ -35,6 +38,10 @@ public class AmmeterReportServer {
 
     @Autowired
     private AmmeterWorkingInfoMapper workingInfoMapper;
+    @Autowired
+    private AmmeterWarningService ammeterWarningService;
+    @Autowired
+    private AmmeterPositionMapper ammeterPositionMapper;
 
     public int insertDailyReportServer(AmmeterDevice device, String result){
         AmmeterReport reportDB = reportMapper.queryMaxDailyReportByAmmeterId(device.getId(),DateUtils.getCurrentDate());
@@ -89,6 +96,11 @@ public class AmmeterReportServer {
             report.setVoltage(String.valueOf(f));
         }else if(type ==3){
             report.setCurrent(String.valueOf(f));
+            //电流值告警判断
+            AmmeterPosition position = ammeterPositionMapper.selectByImei(device.getImsi());
+            AmmeterWellcover wellcover = new AmmeterWellcover();
+            wellcover.setCurrentLimit(String.valueOf(f));
+            ammeterWarningService.cancelWellCoverWarning(position.getId(),wellcover);
         }
 
         Integer results  =0 ;

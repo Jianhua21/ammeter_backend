@@ -17,5 +17,7 @@ public interface AmmeterRuleMapper {
 
     int updateByPrimaryKey(AmmeterRule record);
 
+    int updateByPrimaryName(AmmeterRule record);
+
     List<AmmeterRule>  getNetWorkRules();
 }

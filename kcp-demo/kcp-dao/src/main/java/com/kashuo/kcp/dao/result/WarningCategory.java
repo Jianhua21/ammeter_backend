@@ -18,34 +18,24 @@ public class WarningCategory {
 
     private Integer totalDevices =0;
 
-    private Double offlineDevicesPercentage;
+    private Integer currentLimitDevices =0;
 
-    private Double rsrqDevicesPercentage;
+    private Integer electricLimitDevices =0;
 
-    private Double normalDevicePercentage;
-
-    public Double getOfflineDevicesPercentage() {
-        return (double)Math.round((double)warningOfflineDevices/totalDevices*100)/100;
+    public Integer getCurrentLimitDevices() {
+        return currentLimitDevices;
     }
 
-    public void setOfflineDevicesPercentage(Double offlineDevicesPercentage) {
-        this.offlineDevicesPercentage = offlineDevicesPercentage;
+    public void setCurrentLimitDevices(Integer currentLimitDevices) {
+        this.currentLimitDevices = currentLimitDevices;
     }
 
-    public Double getRsrqDevicesPercentage() {
-        return (double)Math.round((double)warningRsrqDevices/totalDevices*100)/100;
+    public Integer getElectricLimitDevices() {
+        return electricLimitDevices;
     }
 
-    public void setRsrqDevicesPercentage(Double rsrqDevicesPercentage) {
-        this.rsrqDevicesPercentage = rsrqDevicesPercentage;
-    }
-
-    public Double getNormalDevicePercentage() {
-        return (double)Math.round((double)normalDevices/totalDevices*100)/100;
-    }
-
-    public void setNormalDevicePercentage(Double normalDevicePercentage) {
-        this.normalDevicePercentage = normalDevicePercentage;
+    public void setElectricLimitDevices(Integer electricLimitDevices) {
+        this.electricLimitDevices = electricLimitDevices;
     }
 
     public Integer getWarningOfflineDevices() {

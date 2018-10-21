@@ -23,6 +23,16 @@ public class AmmeterWarning {
 
     private Integer messageFlag;
 
+    private Integer ruleId=0;
+
+    public Integer getRuleId() {
+        return ruleId;
+    }
+
+    public void setRuleId(Integer ruleId) {
+        this.ruleId = ruleId;
+    }
+
     public Integer getMessageFlag() {
         return messageFlag;
     }
