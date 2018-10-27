@@ -17,6 +17,8 @@ public class AmmeterLoginHistoryService {
 
     private static String AMAP_URL="https://restapi.amap.com/v3/ip?ip=";
 
+    private static String AMAP_GPS_URL = "https://restapi.amap.com/v3/assistant/coordinate/convert?key=";
+
     public static final String AMAP_PROVINCE ="province";
 
     public static final String AMAP_CITY ="city";
@@ -45,9 +47,15 @@ public class AmmeterLoginHistoryService {
 
     }
 
+    public JSONObject getAmapLocationByGps(String gpsLatitude,String gpsLongitude,String key) throws IOException{
+        StringBuilder sb = new StringBuilder(AMAP_GPS_URL);
+        sb.append(key).append("&output=JSON&locations=").append(gpsLatitude).append(",").append(gpsLongitude).append("&coordsys=gps");
+        return HttpClientUtils.getDataFromGetMethod(sb.toString());
+    }
+
     public static void main(String[] args) throws IOException {
         AmmeterLoginHistoryService service = new AmmeterLoginHistoryService();
-        service.getUserRemoteAddByIp("112.25.154.148","7af099c49bc59b423c4998a8bc01706b");
+        service.getAmapLocationByGps("116.481499","39.990475","7af099c49bc59b423c4998a8bc01706b");
     }
 
 }

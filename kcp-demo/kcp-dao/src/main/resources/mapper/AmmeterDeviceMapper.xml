@@ -398,7 +398,7 @@
     <select id="checkAmmeterMeterNo"   resultMap="BaseAddressResultMap">
         select d.id,p.imei,d.meter_no,p.device_id,p.`name` from ammeter_device d ,ammeter_position p
 where d.imsi = p.imei
-and p.status in (1,6,7) and d.meter_no is null
+and p.status in (1,6) and d.meter_no is null
 and p.device_id is not null
     </select>
     <select id="queryOfflineDevice" resultMap="BaseAddressResultMap">

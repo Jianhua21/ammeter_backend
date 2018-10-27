@@ -87,7 +87,7 @@ public class NetWorkService {
     public void insertNetWorkInfo(String message, String deviceId){
         AmmeterDevice ammeterDevice = ammeterDeviceMapper.selectByDeviceId(deviceId);
         AmmeterNetwork networkDB = networkMapper.selectByAmmeterId(ammeterDevice.getId());
-        String[] params = message.split(";");
+        String[] params = message.split(",");
         if(networkDB != null){
             if(DateUtils.getCurrentDate().equals(networkDB.getRecordDay()) && networkDB.getRecordHour() == DateUtils.getHour()){
                 setNetworkInfo(networkDB,params,ammeterDevice);

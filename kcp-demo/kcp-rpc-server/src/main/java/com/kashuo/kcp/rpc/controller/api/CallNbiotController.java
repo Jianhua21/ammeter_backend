@@ -78,75 +78,81 @@ public class CallNbiotController {
         /*************明文模式  start****************/
         NbiotUtils.BodyObj obj = NbiotUtils.resolveBody(body, false);
         if (obj != null){
-            boolean dataRight = NbiotUtils.checkSignature(obj, token);
-            if (dataRight){
-                NbiotCallResponse response = JSONObject.parseObject(obj.getMsg().toString(),NbiotCallResponse.class);
-                DeviceDataChange dataChange = new DeviceDataChange();
-                String deviceId = String.valueOf(response.getDevId());
-                dataChange.setDeviceId(deviceId);
-                dataChange.setNotifyType("Nb_Iot");
-                if(response.getType() ==2) {
-                    //设备上下线
-                    if(response.getStatus() == 0){
-                        netWorkService.updateDeviceStatusByNb(deviceId,null,true);
-                    }else{
-                        netWorkService.updateDeviceStatusByNb(deviceId,null,false);
-                    }
-                }else{
-                    //设备数据处理
-                    String command = response.getValue();
-                    if(command == ""){
-                        return "ok";
-                    }
-                    //处理CallBack 命令参数
-                    CommandDetail detail = commandService.processDeviceCallBackResponse(command);
-                    String crc_new = CRC16x25Utils.CRC16_Check(detail.getContext().getBytes(),detail.getContext().length());
-                    if(!crc_new.toUpperCase().equals(detail.getCrcValue())){
-                        logger.info("CRC值 不正确:{}", JSON.toJSONString(detail));
-                        return "";
-                    }
-                    if(IoTConstant.Command.DEVICE_COMMAND_NBM001.equals(detail.getCommand())){
-                        //处理保活数据
-                        netWorkService.insertNetWorkInfo(detail.getData(),deviceId);
-                        //
+            try {
+                boolean dataRight = NbiotUtils.checkSignature(obj, token);
+                if (dataRight) {
+                    NbiotCallResponse response = JSONObject.parseObject(obj.getMsg().toString(), NbiotCallResponse.class);
+                    DeviceDataChange dataChange = new DeviceDataChange();
+                    String deviceId = String.valueOf(response.getDevId());
+                    dataChange.setDeviceId(deviceId);
+                    dataChange.setNotifyType("Nb_Iot");
+                    if (response.getType() == 2) {
+                        //设备上下线
+                        if (response.getStatus() == 1) {
+                            netWorkService.updateDeviceStatusByNb(deviceId, null, true);
+                        } else {
+                            netWorkService.updateDeviceStatusByNb(deviceId, null, false);
+                        }
+                    } else {
+                        //设备数据处理
+                        String command = response.getValue();
+                        if (command == "") {
+                            return "ok";
+                        }
+                        //处理CallBack 命令参数
+                        CommandDetail detail = commandService.processDeviceCallBackResponse(command);
+                        String crc_new = CRC16x25Utils.CRC16_Check(detail.getContext().getBytes(), detail.getContext().length());
+                        if (!crc_new.toUpperCase().equals(detail.getCrcValue())) {
+                            logger.info("CRC值 不正确:{}", JSON.toJSONString(detail));
+                            return "";
+                        }
+                        if (IoTConstant.Command.DEVICE_COMMAND_NBM001.equals(detail.getCommand())) {
+                            //处理保活数据
+                            netWorkService.insertNetWorkInfo(detail.getData(), deviceId);
+                            //
 
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_NBM002.equals(detail.getCommand())){
-                        //设置CDP服务器IP
-                        callBackService.processRunningConfig(detail,deviceId);
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_NBM003.equals(detail.getCommand())){
-                        //设置APN地址
-                        callBackService.processRunningConfig(detail,deviceId);
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_STM001.equals(detail.getCommand())){
-                        //处理设备软重启CallBack
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_STM002.equals(detail.getCommand())){
-                        //恢复出厂设置
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_STM003.equals(detail.getCommand())){
-                        //保存系统配置
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_STM004.equals(detail.getCommand())){
-                        //配置NB处理流程时间
-                        callBackService.processRunningConfig(detail,deviceId);
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_IEM001.equals(detail.getCommand())){
-                        //拉闸处理
-                        callBackService.processSwitchPower(detail,deviceId,false);
-                    }else if(IoTConstant.Command.DEVICE_COMMAND_IEM002.equals(detail.getCommand())){
-                        //合闸处理
-                        callBackService.processSwitchPower(detail,deviceId,true);
-                    }else if(detail.getCommand().startsWith(IoTConstant.Command.DEVICE_COMMAND_FEFEFEFE)){
-                        //电表645命令
-                        callBackService.process645dltData(detail,deviceId);
-                        logger.info("--------------------------------------------");
+                        } else if (IoTConstant.Command.DEVICE_COMMAND_NBM002.equals(detail.getCommand())) {
+                            //设置CDP服务器IP
+                            callBackService.processRunningConfig(detail, deviceId);
+                        } else if (IoTConstant.Command.DEVICE_COMMAND_NBM003.equals(detail.getCommand())) {
+                            //设置APN地址
+                            callBackService.processRunningConfig(detail, deviceId);
+                        } else if (IoTConstant.Command.DEVICE_COMMAND_STM001.equals(detail.getCommand())) {
+                            //处理设备软重启CallBack
+                        } else if (IoTConstant.Command.DEVICE_COMMAND_STM002.equals(detail.getCommand())) {
+                            //恢复出厂设置
+                        } else if (IoTConstant.Command.DEVICE_COMMAND_STM003.equals(detail.getCommand())) {
+                            //保存系统配置
+                        } else if (IoTConstant.Command.DEVICE_COMMAND_STM004.equals(detail.getCommand())) {
+                            //配置NB处理流程时间
+                            callBackService.processRunningConfig(detail, deviceId);
+                        } else if (IoTConstant.Command.DEVICE_COMMAND_IEM001.equals(detail.getCommand()) ||
+                                IoTConstant.Command.DEVICE_COMMAND_IEM001_2.equals(detail.getCommand())) {
+                            //拉闸处理
+                            callBackService.processSwitchPower(detail, deviceId, false);
+                        } else if (IoTConstant.Command.DEVICE_COMMAND_IEM002.equals(detail.getCommand()) ||
+                                IoTConstant.Command.DEVICE_COMMAND_IEM002_2.equals(detail.getCommand())) {
+                            //合闸处理
+                            callBackService.processSwitchPower(detail, deviceId, true);
+                        } else if (detail.getCommand().startsWith(IoTConstant.Command.DEVICE_COMMAND_FEFEFEFE)) {
+                            //电表645命令
+                            callBackService.process645dltData(detail, deviceId);
+                            logger.info("--------------------------------------------");
+                        }
+                        commandService.updateCommandHistoryBySubscrible(dataChange, detail);
                     }
-                    commandService.updateCommandHistoryBySubscrible(dataChange,detail);
+                    AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
+                    callbackHistory.setDeviceId(deviceId);
+                    callbackHistory.setNotifyType(dataChange.getNotifyType());
+                    callbackHistory.setCreateTime(new Date());
+                    callbackHistory.setParams(JSONObject.toJSONString(obj));
+                    callBackService.insertCallBackHistory(callbackHistory);
+                    logger.info("--------Nbiot subscribe request data End------------------------");
+                } else {
+                    logger.info("data receive: signature error");
                 }
-                AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
-                callbackHistory.setDeviceId(deviceId);
-                callbackHistory.setNotifyType(dataChange.getNotifyType());
-                callbackHistory.setCreateTime(new Date());
-                callbackHistory.setParams(obj.toString());
-                callBackService.insertCallBackHistory(callbackHistory);
-                logger.info("--------Nbiot subscribe request data End------------------------");
-            }else {
-                logger.info("data receive: signature error");
+            }catch (Exception e){
+                logger.error("参数不正确：{}",JSONObject.toJSONString(obj));
             }
 
         }else {

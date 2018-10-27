@@ -1,5 +1,6 @@
 package com.kashuo.kcp.core;
 
+import com.alibaba.fastjson.JSONObject;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
 import com.kashuo.kcp.dao.AmmeterImeiMapper;
@@ -28,6 +29,9 @@ public class AmmeterPositionService {
 
     @Autowired
     private AmmeterImeiMapper ammeterImeiMapper;
+
+    @Autowired
+    private AmmeterLoginHistoryService loginHistoryService;
 
     public void insert(AmmeterPosition ammeterPosition){
         ammeterPositionMapper.insert(ammeterPosition);
@@ -72,6 +76,20 @@ public class AmmeterPositionService {
     public Page<PosotionHome> getGISList(AmmeterPositionCondition condition){
         PageHelper.startPage(condition.getPageIndex(),condition.getPageSize());
         return ammeterPositionMapper.getGISList(condition);
+    }
+    public void setAmapLocation(AmmeterPosition ammeterPosition,String amapKey){
+        if(ammeterPosition.getGpsLatitude() != null &&
+                ammeterPosition.getGpsLongitude() != null ) {
+            try {
+                JSONObject object = loginHistoryService.getAmapLocationByGps(ammeterPosition.getGpsLatitude(), ammeterPosition.getAmapLongitude(), amapKey);
+                String[] locations = object.getString("locations").split(",");
+                ammeterPosition.setAmapLatitude(locations[0]);
+                ammeterPosition.setAmapLongitude(locations[1]);
+            } catch (Exception e) {
+                ammeterPosition.setAmapLatitude(ammeterPosition.getGpsLatitude());
+                ammeterPosition.setAmapLongitude(ammeterPosition.getAmapLongitude());
+            }
+        }
     }
 
     public AmmeterImei selectIMEIbyKey(String IMEI){

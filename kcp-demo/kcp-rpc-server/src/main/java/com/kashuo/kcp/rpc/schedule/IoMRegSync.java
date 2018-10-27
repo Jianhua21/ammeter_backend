@@ -92,17 +92,18 @@ public class IoMRegSync {
 
     public void sendAddressCommand(){
         List<AmmeterDeviceResult>  results = ammeterService.checkAmmeterMeterNo();
-//        results.stream().collect(Collectors.partitioningBy(r->"1".equals(r.getImei())));
         results.forEach(r->{
             try {
                 String limitStr = redisService.get(r.getDeviceId());
-                Integer limit =0;
+                Integer limit;
                 try{
                     limit = Integer.parseInt(limitStr);
                 }catch (Exception e){
-                    logger.error("获取电表地址限制次数出错= {}",r.getDeviceId());
+                    limit =0;
+                    logger.error("获取电表地址限制次数出错=deviceId {},次数：{}",r.getDeviceId(),limit);
                 }
                 if(limit <=3) {
+                    redisService.set(r.getDeviceId(),String.valueOf(limit+1));
                     commandService.getAmmeterAddress(r.getDeviceId());
                 }
             } catch (NorthApiException e) {

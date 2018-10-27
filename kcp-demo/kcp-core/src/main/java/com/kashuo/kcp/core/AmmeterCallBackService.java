@@ -77,7 +77,6 @@ public class AmmeterCallBackService {
                 String  limits  = redisService.get(deviceId);
                 if(limits != null){
                     try {
-                        redisService.set(deviceId,String.valueOf(Integer.parseInt(limits)+1));
                         //设置获取地址1天的过期值，第二天重新获取
                         redisService.expire(deviceId,60*60*24);
                     }catch (Exception e){

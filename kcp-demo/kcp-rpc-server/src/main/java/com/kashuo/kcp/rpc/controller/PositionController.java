@@ -8,6 +8,7 @@ import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.command.NbiotCommandService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.AmmeterIMEIService;
+import com.kashuo.kcp.core.AmmeterLoginHistoryService;
 import com.kashuo.kcp.core.AmmeterPositionService;
 import com.kashuo.kcp.core.AmmeterService;
 import com.kashuo.kcp.core.SysDictionaryService;
@@ -28,6 +29,7 @@ import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -60,16 +62,25 @@ public class PositionController extends BaseController{
     private AmmeterIMEIService ammeterIMEIService;
 
 
+    @Value("${app.constant.gaode.appId}")
+    private String key;
+
     @PostMapping(value = "/create")
     @ApiOperation(value="电表位置信息录入")
     public Results CreateAmmeterPosition(@RequestBody AmmeterPosition ammeterPosition) throws NorthApiException {
 
         logger.info("录入设备信息参数：{}", JSON.toJSONString(ammeterPosition));
-        if(StringUtil.isEmpty(ammeterPosition.getAmapLatitude())){
-            return Results.error("高德经度信息不能为空!");
+        if(StringUtil.isEmpty(ammeterPosition.getImei())){
+            return Results.error("IMEI不能为空!");
         }
-        if(StringUtil.isEmpty(ammeterPosition.getAmapLongitude())){
-            return Results.error("高德纬度信息不能为空!");
+        if(ammeterPosition.getImei().length() != 15){
+            return Results.error("IMEI格式不对,请检查下!");
+        }
+        if(StringUtil.isEmpty(ammeterPosition.getGpsLatitude())|| StringUtil.isEmpty(ammeterPosition.getAmapLatitude())){
+            return Results.error("GPS经度信息不能为空!");
+        }
+        if(StringUtil.isEmpty(ammeterPosition.getGpsLongitude())||StringUtil.isEmpty(ammeterPosition.getAmapLongitude())){
+            return Results.error("GPS纬度信息不能为空!");
         }
         if(StringUtil.isEmpty(ammeterPosition.getName())){
             return Results.error("电表名称不能为空!");
@@ -85,6 +96,7 @@ public class PositionController extends BaseController{
         if(StringUtil.isEmpty(ammeterPosition.getInstaller())){
             ammeterPosition.setInstaller("-");
         }
+        ammeterPositionService.setAmapLocation(ammeterPosition,key);
         AmmeterPosition position = ammeterPositionService.selectByImei(ammeterPosition.getImei());
         boolean updateFlag = false;
         if(position != null && position.getStatus() != 3 &&
@@ -170,8 +182,6 @@ public class PositionController extends BaseController{
             position.setAddress(ammeterPosition.getAddress());
             position.setRemark(ammeterPosition.getRemark());
             position.setInstaller(ammeterPosition.getInstaller());
-            position.setAmapLongitude(ammeterPosition.getAmapLongitude());
-            position.setAmapLatitude(ammeterPosition.getAmapLatitude());
             position.setGpsLongitude(ammeterPosition.getGpsLongitude());
             position.setGpsLatitude(ammeterPosition.getGpsLatitude());
             position.setName(ammeterPosition.getName());
@@ -181,6 +191,7 @@ public class PositionController extends BaseController{
             position.setContactInfo(ammeterPosition.getContactInfo());
             position.setAgreementStatus(ammeterPosition.getAgreementStatus());
             position.setDeviceProject(ammeterPosition.getDeviceProject());
+            ammeterPositionService.setAmapLocation(position,key);
             ammeterPositionService.updateByPrimaryKeySelective(position);
 
             /***
@@ -189,9 +200,20 @@ public class PositionController extends BaseController{
              */
             if(positionDB.getStatus() !=3 && positionDB.getStatus() !=8 &&
                     positionDB.getStatus() != 2) {
-                position.setDeviceId(positionDB.getDeviceId());
-
-                commandService.autoSyncDeviceInfo(position);
+                AmmeterPosition update = new AmmeterPosition();
+                update.setProductId(positionDB.getProductId());
+                update.setName(position.getName());
+                update.setDeviceId(positionDB.getDeviceId());
+                update.setImei(positionDB.getImei());
+                update.setNumber(positionDB.getNumber());
+                if(properties.isNbiot()) {
+                logger.info("移动物联网设备更新!");
+                commandService.autoSyncDeviceInfoByIot(update);
+                }else {
+                    position.setProductId(positionDB.getProductId());
+                    position.setDeviceId(positionDB.getDeviceId());
+                    commandService.autoSyncDeviceInfo(position);
+                }
 
             }else if(positionDB.getStatus() ==8 || positionDB.getStatus() ==2){
                 if(properties.isNbiot()){
@@ -248,8 +270,14 @@ public class PositionController extends BaseController{
             ammeterPositionService.updateByPrimaryKeySelective(position);
 
             try {
-                commandService.deleteDeviceFromIoM(ammeterPosition.getDeviceId());
+                if(properties.isNbiot()){
+                    commandService.deleteDeviceFromIot(ammeterPosition.getDeviceId(),ammeterPosition.getProductId());
+                }else {
+                    commandService.deleteDeviceFromIoM(ammeterPosition.getDeviceId());
+                }
             } catch (NorthApiException e) {
+                logger.error("删除失败!");
+            }catch (Exception e){
                 logger.error("删除失败!");
             }
 

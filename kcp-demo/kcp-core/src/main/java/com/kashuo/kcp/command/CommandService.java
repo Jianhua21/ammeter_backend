@@ -21,6 +21,7 @@ import com.kashuo.kcp.auth.AuthService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.constant.IoTConstant;
 import com.kashuo.kcp.core.AmmeterPositionService;
+import com.kashuo.kcp.core.CommandSendThread;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.AmmeterCommandHistoryMapper;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
@@ -69,7 +70,7 @@ public class CommandService {
     @Value("${app.constant.nbiot}")
     private boolean nbiot;
 
-    ExecutorService pool = Executors.newFixedThreadPool(10);
+    private ExecutorService pool = Executors.newFixedThreadPool(20);
 
     public PostDeviceCommandOutDTO postDeviceCommand(PostDeviceCommandInDTO deviceCommandInDTO) throws NorthApiException {
         SignalDelivery signalDelivery = new SignalDelivery();
@@ -219,10 +220,28 @@ public class CommandService {
         }
     }
 
+    public void autoSyncDeviceInfoByIot(AmmeterPosition ammeterPosition){
+        AmmeterNbiot nbiot = authService.getNbiotInformation(ammeterPosition.getProductId());
+        Device device = new Device(ammeterPosition.getName(),ammeterPosition.getImei(),ammeterPosition.getNumber());
+        NbiotDeviceManagement management = new NbiotDeviceManagement(nbiot.getApiKey());
+        NbiotResult result = management.updateDeviceInfo(device,ammeterPosition.getDeviceId());
+        if("succ".equals(result.getError())){
+            logger.info("IoT平台同步成功!  IMEI:{}",ammeterPosition.getImei());
+        }else{
+            logger.info("IoT平台同步失败!  IMEI:{}",ammeterPosition.getImei());
+        }
+    }
+
     public void deleteDeviceFromIoM(String deviceId) throws NorthApiException {
         AmmeterAuth ammeterAuth = authService.getPlatIomAuth();
         DeviceManagement deviceManagement = new DeviceManagement(authService.getNorthApiClient());
         deviceManagement.deleteDirectDevice(deviceId,ammeterAuth.getAppId(),ammeterAuth.getAccessToken());
+    }
+
+    public void deleteDeviceFromIot(String deviceId,String productName) throws Exception{
+        AmmeterNbiot nbiot = authService.getNbiotInformation(productName);
+        NbiotDeviceManagement management = new NbiotDeviceManagement(nbiot.getApiKey());
+        management.deleteDeviceById(deviceId);
     }
 
     public CommandDetail processDeviceCallBackResponse(String response){
@@ -392,37 +411,39 @@ public class CommandService {
 
     public PostDeviceCommandOutDTO postNbiotDeviceCommand(AmmeterPosition position,String command){
         AmmeterNbiot nbiot = authService.getNbiotInformation(position.getProductId());
-        Device device = new Device("",position.getImei(),position.getNumber());
-        device.setCommand(command);
-        device.setWriteResId(nbiot.getResourceId());
-        device.setObjId(nbiot.getObjId());
-        device.setObjInstId(nbiot.getObjInstanceId());
-        NbiotDeviceManagement deviceManagement = new NbiotDeviceManagement(nbiot.getApiKey());
-        Integer times =1;
-        PostDeviceCommandOutDTO commandOutDTO = new PostDeviceCommandOutDTO();
-        try {
-            NbiotResult result = deviceManagement.sendWriteCommand(device);
-            logger.info("nbiot 返回数据:" + JSONObject.toJSONString(result));
-            boolean code = "5106".equals(result.getErrno());
-            while (times <= 3 && code) {
-                logger.info("nbiot 尝试第:" + (times + 1) + "次重新发送");
-                result = deviceManagement.sendWriteCommand(device);
-                logger.info("nbiot 返回数据:" + JSONObject.toJSONString(result));
-                if ("5106".equals(result.getErrno())) {
-                    times++;
-                } else {
-                    break;
-                }
-            }
-            commandOutDTO.setDeviceId(position.getDeviceId());
-            commandOutDTO.setAppId("Nb_Iot");
-            commandOutDTO.setStatus(result.getErrno());
-            commandOutDTO.setCommandId(command);
-        }catch(Exception e){
-            logger.error("发送失败!");
-        }
-
-        return commandOutDTO;
+        CommandSendThread sendThread = new CommandSendThread(nbiot,position,command,this,sysDictionaryService);
+        pool.execute(sendThread);
+//        Device device = new Device("",position.getImei(),position.getNumber());
+//        device.setCommand(command);
+//        device.setWriteResId(nbiot.getResourceId());
+//        device.setObjId(nbiot.getObjId());
+//        device.setObjInstId(nbiot.getObjInstanceId());
+//        NbiotDeviceManagement deviceManagement = new NbiotDeviceManagement(nbiot.getApiKey());
+//        Integer times =1;
+//        PostDeviceCommandOutDTO commandOutDTO = new PostDeviceCommandOutDTO();
+//        try {
+//            NbiotResult result = deviceManagement.sendWriteCommand(device);
+//            logger.info("nbiot 返回数据:" + JSONObject.toJSONString(result));
+//            boolean code = "5106".equals(result.getErrno());
+//            while (times <= 3 && code) {
+//                logger.info("nbiot 尝试第:" + (times + 1) + "次重新发送");
+//                result = deviceManagement.sendWriteCommand(device);
+//                logger.info("nbiot 返回数据:" + JSONObject.toJSONString(result));
+//                if ("5106".equals(result.getErrno())) {
+//                    times++;
+//                    Thread.sleep(10000);
+//                } else {
+//                    break;
+//                }
+//            }
+//            commandOutDTO.setDeviceId(position.getDeviceId());
+//            commandOutDTO.setAppId("Nb_Iot");
+//            commandOutDTO.setStatus(result.getErrno());
+//            commandOutDTO.setCommandId(command);
+//        }catch(Exception e){
+//            logger.error("发送失败!");
+//        }
+        return null;
     }
 
     /***

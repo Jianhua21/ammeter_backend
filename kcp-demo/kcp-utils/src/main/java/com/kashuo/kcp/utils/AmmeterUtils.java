@@ -423,8 +423,8 @@ public class AmmeterUtils {
 //
 //              new AmmeterUtils().analysis("FE FE FE FE 68 11 11 11 11 11 11 68 91 06 33 34 34 35 85 56 78 16",buf);
 //              String s ="FEFEFEFE680801000000006891063334343575550A16";//A箱电压
-//            String s ="FEFEFEFE6811111111111168910733343535B77533FE16";//电表地址
-              String s ="FEFEFEFE6811111111111168910733343535CA3333CF16";
+            String s ="FEFEFEFE6841341709180068930674674A3C4B33F516";//电表地址
+//              String s ="FEFEFEFE6811111111111168910733343535CA3333CF16";
 //              String s="FEFEFEFE68111111111111681104333334331816";
 //            String s ="FEFEFEFE6806010000000068110433333433ffffffb916";
 ////            new AmmeterUtils().analysis(unpackDeviceData(s),buf);

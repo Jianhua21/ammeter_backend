@@ -90,12 +90,15 @@ public class AmmeterService {
             params.setCommandType(3);
         }
         String command = status == 1 ? AppConstant.COMMAND_SWTICH_OFF_KEY:AppConstant.COMMAND_SWTICH_ON_KEY;
+
+        String command_2 = status == 1 ? AppConstant.COMMAND_SWTICH_OFF_KEY_2:AppConstant.COMMAND_SWTICH_ON_KEY_2;
+
         commandService.commonCommandSend(position, command, params);
+        Thread.sleep(10000);
+        commandService.commonCommandSend(position, command_2, params);
+
         return Results.success(status == 1 ? "正在拉闸" :"正在合闸");
     }
-
-
-
 
     public AmmeterDevice selectDeviceByImsi(String imsi){
         return ammeterDeviceMapper.selectByImsiKey(imsi);

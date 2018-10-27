@@ -35,7 +35,11 @@ public class AppConstant {
 
     public static final String COMMAND_SWTICH_ON_KEY = "switch_on";
 
+    public static final String COMMAND_SWTICH_ON_KEY_2 = "switch_on_2";
+
     public static final String COMMAND_SWTICH_OFF_KEY = "switch_off";
+
+    public static final String COMMAND_SWTICH_OFF_KEY_2 = "switch_off_2";
 
     public static final String COMMAND_CDP_IP_KEY ="cdp_ip";
 
