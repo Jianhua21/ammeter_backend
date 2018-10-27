@@ -13,11 +13,45 @@ public class DateUtils {
 
     private static final String formatPattern_year_month = "yyyy-MM";
 
-    private static final String formatPatternDateTime = "yyyy-MM-dd HH:mm:ss";
+    public static final String formatPatternDateTime = "yyyy-MM-dd HH:mm:ss";
 
     static final String formatPattern_Short = "yyyyMMdd";
 
     private static final String IoT_format_PatternDateTime="yyyyMMdd'T'HHmmss'Z'";
+
+
+    /**
+     * 把日期字符串格式化成日期类型
+     *
+     * @param dateStr
+     * @param format
+     * @return
+     */
+    public static Date convert2Date(String dateStr, String format) {
+        SimpleDateFormat simple = new SimpleDateFormat(format);
+        try {
+            simple.setLenient(false);
+            return simple.parse(dateStr);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 把日期类型格式化成字符串
+     *
+     * @param date
+     * @param format
+     * @return
+     */
+    public static String convert2String(Date date, String format) {
+        SimpleDateFormat formater = new SimpleDateFormat(format);
+        try {
+            return formater.format(date);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     /**
      * 获取当前日期

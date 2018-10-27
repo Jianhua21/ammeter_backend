@@ -34,7 +34,11 @@ public class HttpClientUtils {
         return json;
     }
 
-    public static String getDataFromPostMethod(String url,String params) throws IOException{
+    public static String getDataFromPostMethod(String url,String params) throws IOException {
+        return getDataFromPostMethod(url,params,"text/json");
+    }
+
+    public static String getDataFromPostMethod(String url,String params,String applciationType) throws IOException{
 
         //开启一个HttpClient
         HttpClient httpClient =new HttpClient();
@@ -42,7 +46,7 @@ public class HttpClientUtils {
         //根据一个url创建一个method对象
         PostMethod method = new PostMethod(url);
         if(params != null && !"".equals(params.trim())) {
-            RequestEntity requestEntity = new StringRequestEntity(params,"text/json","UTF-8");
+            RequestEntity requestEntity = new StringRequestEntity(params,applciationType,"UTF-8");
             method.setRequestEntity(requestEntity);
         }
         //执行method
@@ -53,6 +57,11 @@ public class HttpClientUtils {
         //Map map = JSONObject.parseObject(responseJsonString, Map.class);
         //关闭连接
         method.releaseConnection();
+        if (method.getStatusCode() == 200) {
+            System.out.println("send success!");
+        } else {
+            System.out.println("send error!");
+        }
         return responseJsonString;
     }
 }
