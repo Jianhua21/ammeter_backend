@@ -47,9 +47,9 @@ public class AmmeterLoginHistoryService {
 
     }
 
-    public JSONObject getAmapLocationByGps(String gpsLatitude,String gpsLongitude,String key) throws IOException{
+    public JSONObject getAmapLocationByGps(String gpsLongitude,String gpsLatitude,String key) throws IOException{
         StringBuilder sb = new StringBuilder(AMAP_GPS_URL);
-        sb.append(key).append("&output=JSON&locations=").append(gpsLatitude).append(",").append(gpsLongitude).append("&coordsys=gps");
+        sb.append(key).append("&output=JSON&locations=").append(gpsLongitude).append(",").append(gpsLatitude).append("&coordsys=gps");
         return HttpClientUtils.getDataFromGetMethod(sb.toString());
     }
 

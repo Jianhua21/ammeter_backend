@@ -128,6 +128,7 @@
     <result column="amap_longitude" property="amapLongitude" jdbcType="VARCHAR" />
     <result column="amap_latitude" property="amapLatitude" jdbcType="VARCHAR" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
     <result column="status_name" property="statusName" jdbcType="VARCHAR"/>
     <result column="warning_status" property="warningStatus" jdbcType="VARCHAR" />
     <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
@@ -136,7 +137,7 @@
 
   <select id="getGISList" resultMap="BaseHomeResultMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterPositionCondition">
     select p.id,p.device_id, p.name, p.amap_longitude, p.amap_latitude,
-    p.remark,
+    p.remark,p.address,
     s.desc as status_name,
     p.imei,
     case when f.id is null then '0' else '1' end as warning_status,

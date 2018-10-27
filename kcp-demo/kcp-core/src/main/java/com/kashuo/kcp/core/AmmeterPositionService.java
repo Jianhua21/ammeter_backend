@@ -81,13 +81,13 @@ public class AmmeterPositionService {
         if(ammeterPosition.getGpsLatitude() != null &&
                 ammeterPosition.getGpsLongitude() != null ) {
             try {
-                JSONObject object = loginHistoryService.getAmapLocationByGps(ammeterPosition.getGpsLatitude(), ammeterPosition.getAmapLongitude(), amapKey);
+                JSONObject object = loginHistoryService.getAmapLocationByGps(ammeterPosition.getGpsLongitude(), ammeterPosition.getGpsLatitude(), amapKey);
                 String[] locations = object.getString("locations").split(",");
-                ammeterPosition.setAmapLatitude(locations[0]);
-                ammeterPosition.setAmapLongitude(locations[1]);
+                ammeterPosition.setAmapLatitude(locations[1]);
+                ammeterPosition.setAmapLongitude(locations[0]);
             } catch (Exception e) {
                 ammeterPosition.setAmapLatitude(ammeterPosition.getGpsLatitude());
-                ammeterPosition.setAmapLongitude(ammeterPosition.getAmapLongitude());
+                ammeterPosition.setAmapLongitude(ammeterPosition.getGpsLongitude());
             }
         }
     }

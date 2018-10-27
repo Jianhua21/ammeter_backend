@@ -184,6 +184,7 @@ public class PositionController extends BaseController{
             position.setInstaller(ammeterPosition.getInstaller());
             position.setGpsLongitude(ammeterPosition.getGpsLongitude());
             position.setGpsLatitude(ammeterPosition.getGpsLatitude());
+            ammeterPositionService.setAmapLocation(position,key);
             position.setName(ammeterPosition.getName());
             position.setNumber(ammeterPosition.getNumber());
             position.setDeviceModel(ammeterPosition.getDeviceModel());
