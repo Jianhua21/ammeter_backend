@@ -9,6 +9,7 @@ import com.kashuo.kcp.dao.condition.AmmeterPositionCondition;
 import com.kashuo.kcp.dao.result.PosotionHome;
 import com.kashuo.kcp.domain.AmmeterImei;
 import com.kashuo.kcp.domain.AmmeterPosition;
+import com.kashuo.kcp.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,8 +79,8 @@ public class AmmeterPositionService {
         return ammeterPositionMapper.getGISList(condition);
     }
     public void setAmapLocation(AmmeterPosition ammeterPosition,String amapKey){
-        if(ammeterPosition.getGpsLatitude() != null &&
-                ammeterPosition.getGpsLongitude() != null ) {
+        if(StringUtil.isNotEmpty(ammeterPosition.getGpsLatitude()) &&
+                StringUtil.isNotEmpty(ammeterPosition.getGpsLongitude()) ) {
             try {
                 JSONObject object = loginHistoryService.getAmapLocationByGps(ammeterPosition.getGpsLongitude(), ammeterPosition.getGpsLatitude(), amapKey);
                 String[] locations = object.getString("locations").split(",");
