@@ -123,6 +123,40 @@ public class NetWorkService {
 
     }
 
+    public void updateDeviceStatusByNb(String deviceId,AmmeterDevice ammeterDevice,boolean flag) {
+        if (ammeterDevice != null) {
+
+        } else {
+            ammeterDevice = ammeterDeviceMapper.selectByDeviceId(deviceId);
+        }
+        AmmeterPosition positionDB = ammeterPositionMapper.selectByDeviceId(deviceId);
+        if (flag && positionDB != null && positionDB.getStatus() != 6) {
+            //更新在线状态
+            AmmeterPosition position = new AmmeterPosition();
+            position.setDeviceId(deviceId);
+            position.setStatus(6);
+            ammeterPositionMapper.updateStatusByDeviceId(position);
+            //设备不在线警告 消除
+            AmmeterWarning warning = new AmmeterWarning();
+            warning.setWarningType(1);
+            warning.setWarningStatus("1");
+            warning.setAmmeterId(ammeterDevice.getId());
+            ammeterWarningMapper.updateStatusByType(warning);
+        }
+        if (!flag) {
+            //更新在线状态
+            AmmeterPosition position = new AmmeterPosition();
+            position.setDeviceId(deviceId);
+            position.setStatus(7);
+            ammeterPositionMapper.updateStatusByDeviceId(position);
+            //设备不在线警告 消除
+            AmmeterWarning warning = new AmmeterWarning();
+            warning.setWarningType(1);
+            warning.setWarningStatus("0");
+            warning.setAmmeterId(ammeterDevice.getId());
+            ammeterWarningMapper.updateStatusByType(warning);
+        }
+    }
     public void insertNetWork(String[] params,AmmeterDevice ammeterDevice){
         AmmeterNetwork network = new AmmeterNetwork();
         setNetworkInfo(network,params,ammeterDevice);

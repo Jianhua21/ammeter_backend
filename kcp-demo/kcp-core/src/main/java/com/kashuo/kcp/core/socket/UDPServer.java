@@ -22,7 +22,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @Component
 public class UDPServer {
-    public static final int SOCKET_PORT  =5688;//监听的端口号
+    public static final int SOCKET_PORT  =5689;//监听的端口号
     private final static Logger logger = LoggerFactory.getLogger(UDPServer.class);
     private static final Integer maxThreadNumber =20;
 
@@ -44,7 +44,7 @@ public class UDPServer {
 //
 //        }).start();
 //    }
-//    @Autowired
+    @Autowired
     private void startServer(){
             System.out.println("Socket 服务器启动...\n"+SOCKET_PORT);
             new Thread(()->
@@ -103,36 +103,39 @@ public class UDPServer {
             AmmeterDevice device = new AmmeterDevice();
             String response;
             System.out.println("客户端说：" + info);
-            if(info != null && "test".equals(info.toLowerCase())){
-                response = "OK";
-            }else {
-                device.setInputMsg(info);
-                device.setAddress(address.getHostAddress());
-                //更新客户端的推送信息进数据库
-                response = service.updateAmmeterDevice(device);
-            }
-//            super.run();
-            System.out.println("操作结束");
-            if("".equals(response)||"-1".equals(response)){
-                try{
-                    if(socket != null){
-                        socket.disconnect();
-                    }
-                }catch (Exception e){
-                    System.out.println(socket.getInetAddress()+"断开失败!");
+            try {
+                if (info != null && "test".equals(info.toLowerCase())) {
+                    response = "OK";
+                } else {
+                    device.setInputMsg(info);
+                    device.setAddress(address.getHostAddress());
+                    //更新客户端的推送信息进数据库
+                    response = service.postUDPDeviceMessage(device);
                 }
-            }else {
-                byte[] infoBytes = response.getBytes();
-                DatagramPacket packet = new DatagramPacket(infoBytes, infoBytes.length, address, port);
-                try {
-                    socket.send(packet);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if(socket != null) {
-                        socket.disconnect();
+                System.out.println("操作结束 结果为:"+response);
+                if ("".equals(response) || "OK".equals(response.toUpperCase())) {
+                    try {
+                        if (socket != null) {
+                            socket.disconnect();
+                        }
+                    } catch (Exception e) {
+                        System.out.println(socket.getInetAddress() + "断开失败!");
+                    }
+                } else {
+                    byte[] infoBytes = response.getBytes();
+                    DatagramPacket packet = new DatagramPacket(infoBytes, infoBytes.length, address, port);
+                    try {
+                        socket.send(packet);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (socket != null) {
+                            socket.disconnect();
+                        }
                     }
                 }
+            }catch (Exception e){
+                logger.error("receipt data error happened,{}  ,{}",info,e.getMessage());
             }
         }
     }
