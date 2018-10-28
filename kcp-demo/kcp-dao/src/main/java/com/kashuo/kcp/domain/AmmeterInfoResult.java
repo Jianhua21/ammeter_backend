@@ -106,7 +106,7 @@ public class AmmeterInfoResult implements Serializable{
 
     public String getEnHumidity() {
         if(enHumidity != null){
-            enHumidity = enHumidity.substring(1)+" %";
+            enHumidity = enHumidity+" %";
         }else{
             enHumidity = "-";
         }

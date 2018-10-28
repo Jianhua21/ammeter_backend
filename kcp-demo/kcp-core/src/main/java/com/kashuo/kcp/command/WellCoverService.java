@@ -73,7 +73,7 @@ public class WellCoverService {
         AmmeterWellcover wellcover = null;
         if(data != null) {
             String deviceType = data.substring(0, 2);
-            if (data.length() == 19) {
+            if (data.length() == 19 && "P7".equals(deviceType)) {
                 wellcover = new AmmeterWellcover();
                 wellcover.setDeviceType(deviceType);
                 wellcover.setBatteryStatus(data.substring(4, 7));
@@ -87,7 +87,7 @@ public class WellCoverService {
                 wellcover.setDeviceType(deviceType);
                 wellcover.setBatteryStatus(data.substring(4, 7));
                 wellcover.setEnTemperature(data.substring(8, 10));
-                wellcover.setEnHumidity(data.substring(10, 13));
+                wellcover.setEnHumidity(data.substring(11, 13));
                 wellcover.setSmokeWarning(data.substring(13, 15));
             } else if("P0".equals(deviceType) &&data.length() == 9 ) {
                 //烟感设备
@@ -97,8 +97,14 @@ public class WellCoverService {
                 wellcover.setEnTemperature("0");
                 wellcover.setEnHumidity("0");
                 wellcover.setSmokeWarning(data.substring(7,9));
-            }else{
-
+            }else if("P0".equals(deviceType) && data.length()==17){
+                //烟感设备  P0BV342T605H405A1
+                wellcover = new AmmeterWellcover();
+                wellcover.setDeviceType(deviceType);
+                wellcover.setBatteryStatus(data.substring(4, 7));
+                wellcover.setEnTemperature(data.substring(8, 10));
+                wellcover.setEnHumidity(data.substring(12, 14));
+                wellcover.setSmokeWarning(data.substring(15,17));
             }
         }
         return wellcover;

@@ -78,7 +78,7 @@ public class CallBackController {
         if(IoTConstant.IOT_NOTIFY_TYPE_DEVICE_DATA_CHANGED.equals(notifyType)){
             DeviceDataChange dataChange = JSON.parseObject(result,DeviceDataChange.class);
             String response = StringUtils.hexString2String(dataChange.getService().getData().getUpmessage());
-            logger.info("======实际数据============"+JSONObject.toJSONString(response));
+            logger.info("======实际数据============"+response);
             wellCoverService.processData(response,deviceId);
         }
         netWorkService.updateDeviceStatusByNb(deviceId,null,true);

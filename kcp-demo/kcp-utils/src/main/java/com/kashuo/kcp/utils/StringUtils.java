@@ -53,6 +53,9 @@ public class StringUtils {
      */
     public static String hexString2String(String src) {
         String temp = "";
+        if(src.startsWith("0010")){
+            src = src.substring(4);
+        }
         for (int i = 0; i < src.length() / 2; i++) {
             temp = temp
                     + (char) Integer.valueOf(src.substring(i * 2, i * 2 + 2),
@@ -62,6 +65,6 @@ public class StringUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(hexString2String("503742563334374c3031324431323041315730"));
+        System.out.println(hexString2String("00105030425633343254363035483430354131"));
     }
 }

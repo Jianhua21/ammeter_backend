@@ -105,7 +105,7 @@ public class AmmeterWarningService {
                 }
                 if(warningWellCover.getHumidityWarning() == null && warningWellCover.getDeviceType() ==1){
                     if(StringUtil.isNotEmpty(wellcover.getEnHumidity())&&!"0".equals(wellcover.getEnHumidity())) {
-                        wellcover.setEnHumidity(wellcover.getEnHumidity().substring(1, 3));
+                        wellcover.setEnHumidity(wellcover.getEnHumidity());
                         ruleService.checkWellCoverWarning(wellcover, "enHumidity", warningWellCover.getAmmeterId());
                     }
                 }
