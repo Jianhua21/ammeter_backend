@@ -129,6 +129,9 @@ public class NetWorkService {
         } else {
             ammeterDevice = ammeterDeviceMapper.selectByDeviceId(deviceId);
         }
+        if(ammeterDevice == null){
+            return;
+        }
         AmmeterPosition positionDB = ammeterPositionMapper.selectByDeviceId(deviceId);
         if (flag && positionDB != null && positionDB.getStatus() != 6) {
             //更新在线状态

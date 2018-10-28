@@ -76,6 +76,9 @@ public class PositionController extends BaseController{
         if(StringUtil.isEmpty(ammeterPosition.getInstaller())){
             ammeterPosition.setInstaller("-");
         }
+        if(StringUtil.isNotEmpty(ammeterPosition.getRemark())&&ammeterPosition.getRemark().contains("联通")){
+            ammeterPosition.setPlatform(2);
+        }
         AmmeterPosition position = ammeterPositionService.selectByImei(ammeterPosition.getImei());
         boolean updateFlag = false;
         if(position != null && position.getStatus() != 3 &&
@@ -128,10 +131,12 @@ public class PositionController extends BaseController{
             return  Results.error("位置信息录入失败!");
         }
 
-        AmmeterPosition positionDB = ammeterPositionService.selectByImei(ammeterPosition.getImei());
-        //向IoT平台注册和设备信息同步
-        Integer result = commandService.autoRegDevice(positionDB);
+        if("0".equals(ammeterPosition.getPlatform())) {
+            AmmeterPosition positionDB = ammeterPositionService.selectByImei(ammeterPosition.getImei());
+            //向IoT平台注册和设备信息同步
+            Integer result = commandService.autoRegDevice(positionDB);
 
+        }
         return Results.success("位置信息录入成功!");
 
     }
@@ -169,17 +174,21 @@ public class PositionController extends BaseController{
             position.setContactInfo(ammeterPosition.getContactInfo());
             position.setAgreementStatus(ammeterPosition.getAgreementStatus());
             ammeterPositionService.updateByPrimaryKeySelective(position);
-
+            if(StringUtil.isNotEmpty(ammeterPosition.getRemark())&&ammeterPosition.getRemark().contains("联通")){
+                ammeterPosition.setPlatform(2);
+            }
             /***
              * Web删除和 IoM删除的设备不能同步信息给IoM
              * 注册失败的，不需要同步信息给IoM平台
              */
-            if(positionDB.getStatus() !=3 && positionDB.getStatus() !=8 &&
-                    positionDB.getStatus() != 2) {
-                position.setDeviceId(positionDB.getDeviceId());
-                commandService.autoSyncDeviceInfo(position);
-            }else if(positionDB.getStatus() ==8 || positionDB.getStatus() ==2){
-                commandService.autoRegDevice(position);
+            if("0".equals(position.getPlatform())) {
+                if (positionDB.getStatus() != 3 && positionDB.getStatus() != 8 &&
+                        positionDB.getStatus() != 2) {
+                    position.setDeviceId(positionDB.getDeviceId());
+                    commandService.autoSyncDeviceInfo(position);
+                } else if (positionDB.getStatus() == 8 || positionDB.getStatus() == 2) {
+                    commandService.autoRegDevice(position);
+                }
             }
         }catch (Exception e){
             logger.error("出错了:{}",e);

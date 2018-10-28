@@ -347,8 +347,10 @@ public class AmmeterService {
     public String postUDPDeviceMessage(AmmeterDevice device){
         String[] datas = device.getInputMsg().split(",");
         DeviceUdpData data = new DeviceUdpData();
-        data.setData(datas[1]);
-        data.setImei(datas[0]);
+        data.setData(device.getInputMsg());
+        if(datas.length >13) {
+            data.setImei(datas[12]);
+        }
         data.setNotifyType("UDP_Nb_Iot");
         try {
             HttpClientUtils.getDataFromPostMethod(SHIDING_BACKEND_URL, JSONObject.toJSONString(data));

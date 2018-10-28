@@ -3,6 +3,7 @@ package com.kashuo.kcp.core;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
 import com.kashuo.kcp.api.entity.CommandDetail;
+import com.kashuo.kcp.api.entity.callback.DataUdpParams;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.dao.*;
 import com.kashuo.kcp.dao.condition.CallBackCondition;
@@ -13,6 +14,8 @@ import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.redis.RedisService;
 import com.kashuo.kcp.redis.RedisServiceImpl;
 import com.kashuo.kcp.utils.AmmeterUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +26,7 @@ import java.util.List;
  */
 @Service
 public class AmmeterCallBackService {
-
+    private Logger logger = LoggerFactory.getLogger(AmmeterCallBackService.class);
     @Autowired
     private AmmeterCallbackHistoryMapper callbackHistoryMapper;
 
@@ -177,5 +180,31 @@ public class AmmeterCallBackService {
             }
         }
         configMapper.updateStatusByPositionKeySelective(config);
+    }
+
+    public DataUdpParams parseUdpData(String response){
+        DataUdpParams params = new DataUdpParams();
+        if(response != null){
+            try {
+                String[] datas = response.split(",");
+                params.setActivePower(datas[0]);
+                params.setStrongPower(datas[1]);
+                params.setHighPower(datas[2]);
+                params.setNormalPower(datas[3]);
+                params.setLowerPower(datas[4]);
+                params.setVoltage(datas[5]);
+                params.setCurrent(datas[6]);
+                params.setInstantPower(datas[7]);
+                params.setPowerFactor(datas[8]);
+                params.setPowerOffTimes(datas[9]);
+                params.setRecord(datas[10]);
+                params.setAmmeterNumber(datas[11]);
+                params.setImei(datas[12]);
+                params.setRssi(datas[13]);
+            }catch (ArrayIndexOutOfBoundsException e){
+                logger.error("UDP 返回数据解析失败，{}",response);
+            }
+        }
+        return params;
     }
 }

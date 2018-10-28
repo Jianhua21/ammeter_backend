@@ -36,6 +36,16 @@ public class AmmeterPositionBaseInfo {
     private String agreementStatus;
     @ApiModelProperty("联系人信息")
     private String contactInfo;
+    @ApiModelProperty("设备所属平台")
+    private Integer platform =0;
+
+    public String getPlatform() {
+        return String.valueOf(platform);
+    }
+
+    public void setPlatform(Integer platform) {
+        this.platform = platform;
+    }
 
     public String getDeviceModel() {
         return deviceModel;

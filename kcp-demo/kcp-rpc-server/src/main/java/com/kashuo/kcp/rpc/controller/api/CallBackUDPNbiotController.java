@@ -1,6 +1,7 @@
 package com.kashuo.kcp.rpc.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
+import com.kashuo.kcp.api.entity.callback.DataUdpParams;
 import com.kashuo.kcp.api.entity.callback.DeviceUdpData;
 import com.kashuo.kcp.core.AmmeterCallBackService;
 import com.kashuo.kcp.core.AmmeterPositionService;
@@ -39,13 +40,14 @@ public class CallBackUDPNbiotController {
         if (obj != null){
                 try {
                     String imei = obj.getImei();
+                    DataUdpParams params =callBackService.parseUdpData(obj.getData());
                     AmmeterPosition position = positionService.selectByImei(imei);
                     if(position == null){
-                        logger.info("IMEI 不存在!");
-                        return "ok";
+                        logger.info("IMEI 不存在!{}",JSONObject.toJSONString(params));
+                    }//设备上线
+                    else {
+                        netWorkService.updateDeviceStatusByNb(position.getDeviceId(), null, true);
                     }
-                    //设备上线
-                    netWorkService.updateDeviceStatusByNb(position.getDeviceId(), null, true);
                     //设备数据处理
                     String command = obj.getData();
                     if ("".equals(command)) {
@@ -54,7 +56,7 @@ public class CallBackUDPNbiotController {
                     //处理CallBack 命令参数
                     logger.info("======UDP 实际数据============" + JSONObject.toJSONString(obj));
                     AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
-                    callbackHistory.setDeviceId(position.getDeviceId());
+                    callbackHistory.setDeviceId(position != null ?position.getDeviceId():imei);
                     callbackHistory.setNotifyType(obj.getNotifyType());
                     callbackHistory.setCreateTime(new Date());
                     callbackHistory.setParams(JSONObject.toJSONString(obj));
