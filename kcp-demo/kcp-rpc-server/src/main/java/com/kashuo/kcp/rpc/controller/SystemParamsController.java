@@ -1,14 +1,22 @@
 package com.kashuo.kcp.rpc.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.AmmeterRuleService;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.AmmeterRuleMapper;
 import com.kashuo.kcp.dao.condition.AmmeterSystemParams;
 import com.kashuo.kcp.dao.condition.AmmeterWellCoverSystemParams;
+import com.kashuo.kcp.domain.AmmeterMsgContact;
 import com.kashuo.kcp.domain.AmmeterRule;
+import com.kashuo.kcp.domain.AmmeterUser;
 import com.kashuo.kcp.domain.SysDictionary;
+import com.kashuo.kcp.manage.DeviceConfigService;
+import com.kashuo.kcp.redis.RedisService;
 import com.kashuo.kcp.utils.Results;
 import com.kashuo.kcp.utils.StringUtil;
+import com.kashuo.kcp.utils.ValidateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.map.HashedMap;
@@ -25,13 +33,19 @@ import java.util.Map;
 @RestController
 @Api("系统参数管理")
 @RequestMapping("/system")
-public class SystemParamsController {
+public class SystemParamsController extends BaseController {
 
     @Autowired
     private SysDictionaryService sysDictionaryService;
 
     @Autowired
     private AmmeterRuleService ruleService;
+
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private DeviceConfigService deviceConfigService;
 
     @PostMapping("/list")
     @ApiOperation(value = "系统参数列表")
@@ -47,6 +61,7 @@ public class SystemParamsController {
 
         return  Results.success("更新成功!",params.getSn());
     }
+
     @ApiOperation("更新井盖参数阀值")
     @PostMapping("/updateWellCover")
     public Results updateWellCover(@RequestBody AmmeterWellCoverSystemParams wellCoverSystemParams){
@@ -64,6 +79,63 @@ public class SystemParamsController {
             params.put(rule.getRuleParams(),rule);
         }
         return Results.success(params);
+    }
+
+    @ApiOperation("获取短信推送联系人")
+    @GetMapping("/getMsgContactInfo")
+    public Results getMsgContactInfo(@RequestParam(required = false) Integer projectId){
+        AmmeterUser user = getCuruser();
+        if(projectId == null){
+            projectId =1;
+        }
+        String msg = redisService.get(AppConstant.NB_CONTACTINFO+"_"+user.getLoginName()+"_"+projectId);
+        AmmeterMsgContact contact ;
+        if(msg != null){
+            contact = JSON.parseObject(msg,AmmeterMsgContact.class);
+        }else{
+            contact = deviceConfigService.getMsgInfoByCondition(user.getChannelId(),projectId);
+            redisService.set(AppConstant.NB_CONTACTINFO+"_"+user.getLoginName()+"_"+projectId, JSONObject.toJSONString(contact));
+        }
+        if(contact == null){
+            Results.error("获取短信联系人出错!");
+        }
+        return Results.success(contact);
+    }
+    @PostMapping("/updateMsgContactInfo")
+    public Results updateMsgInfo(@RequestBody AmmeterMsgContact contact){
+        if(StringUtil.isEmpty(contact.getContactName1())){
+            return Results.error("第一联系人姓名不能为空!");
+        }
+        if(contact.getContactPhone1()== null){
+            return Results.error("第一联系人联系号码不能为空!");
+        }
+        if(contact.getContactPhone1()!= null && ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone1()))){
+            return Results.error("第一联系人联系号码不合法!");
+        }
+        if(contact.getContactPhone2()!= null && ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone2()))){
+            return Results.error("第二联系人联系号码不合法!");
+        }
+        if(contact.getContactPhone3()!= null && ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone3()))){
+            return Results.error("第三联系人联系号码不合法!");
+        }
+        AmmeterUser user = getCuruser();
+        if(contact.getProjectId() == null){
+            contact.setProjectId(1);
+        }
+        String msg = redisService.get(AppConstant.NB_CONTACTINFO+"_"+user.getLoginName()+"_"+contact.getProjectId());
+        AmmeterMsgContact cacheContact ;
+        if(msg != null){
+            cacheContact = JSON.parseObject(msg,AmmeterMsgContact.class);
+        }else{
+            cacheContact = deviceConfigService.getMsgInfoByCondition(user.getChannelId(),contact.getProjectId());
+        }
+        if(cacheContact != null){
+            deviceConfigService.updateMsgInfoByCondition(contact);
+        }else{
+            deviceConfigService.insertMsgInfo(contact);
+        }
+        redisService.set(AppConstant.NB_CONTACTINFO+"_"+user.getLoginName()+"_"+contact.getProjectId(),JSONObject.toJSONString(contact));
+        return Results.success("保存联系人成功!");
     }
 
 
