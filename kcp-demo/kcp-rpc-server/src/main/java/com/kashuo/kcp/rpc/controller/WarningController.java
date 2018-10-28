@@ -11,6 +11,7 @@ import com.kashuo.kcp.domain.AmmeterUser;
 import com.kashuo.kcp.domain.AmmeterWarning;
 import com.kashuo.kcp.domain.AmmeterWarningResult;
 import com.kashuo.kcp.utils.Results;
+import com.kashuo.kcp.utils.StringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -70,7 +71,7 @@ public class WarningController extends BaseController{
      * @return
      */
     @GetMapping("/avoid/{warningId}/{sn}")
-    public Results avoidWarning(@PathVariable("warningId") Integer warningId,@PathVariable("sn") String sn,@RequestParam String reason){
+    public Results avoidWarning(@PathVariable("warningId") Integer warningId,@PathVariable("sn") String sn,@RequestParam(required = false) String reason){
         AmmeterWarning  warningDB = warningService.selectWarningByKey(warningId);
         if(warningDB == null){
             return Results.error("该警告不存在,请确认!",sn);
@@ -78,7 +79,7 @@ public class WarningController extends BaseController{
         AmmeterWarning warning = new AmmeterWarning();
         warning.setId(warningId);
         warning.setWarningStatus("1");
-        warning.setReason(reason);
+        warning.setReason(StringUtil.nullToEmpty(reason));
         Integer result = warningService.updateWarning(warning);
         if(warningDB.getWarningType() == 0) {
             AmmeterDevice device = ammeterService.selectByPrimaryKey(warningDB.getId());

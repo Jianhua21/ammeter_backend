@@ -76,10 +76,10 @@ public class PositionController extends BaseController{
         if(ammeterPosition.getImei().length() != 15){
             return Results.error("IMEI格式不对,请检查下!");
         }
-        if(StringUtil.isEmpty(ammeterPosition.getGpsLatitude())|| StringUtil.isEmpty(ammeterPosition.getAmapLatitude())){
+        if(StringUtil.isEmpty(ammeterPosition.getGpsLatitude())&& StringUtil.isEmpty(ammeterPosition.getAmapLatitude())){
             return Results.error("GPS经度信息不能为空!");
         }
-        if(StringUtil.isEmpty(ammeterPosition.getGpsLongitude())||StringUtil.isEmpty(ammeterPosition.getAmapLongitude())){
+        if(StringUtil.isEmpty(ammeterPosition.getGpsLongitude())&&StringUtil.isEmpty(ammeterPosition.getAmapLongitude())){
             return Results.error("GPS纬度信息不能为空!");
         }
         if(StringUtil.isEmpty(ammeterPosition.getName())){
