@@ -299,8 +299,12 @@
   </update>
 
   <update id="updateStatusByDeviceId" parameterType="com.kashuo.kcp.domain.AmmeterPosition">
+  update ammeter_position set status = #{status,jdbcType=INTEGER}
+  where device_id = #{deviceId,jdbcType=VARCHAR}
+</update>
+  <update id="updateStatusByImei" parameterType="com.kashuo.kcp.domain.AmmeterPosition">
     update ammeter_position set status = #{status,jdbcType=INTEGER}
-    where device_id = #{deviceId,jdbcType=VARCHAR}
+    where imei = #{imei,jdbcType=VARCHAR}
   </update>
 
 </mapper>

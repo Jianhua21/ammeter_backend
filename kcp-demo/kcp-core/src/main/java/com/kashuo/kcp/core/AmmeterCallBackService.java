@@ -11,7 +11,6 @@ import com.kashuo.kcp.domain.AmmeterCallbackHistory;
 import com.kashuo.kcp.domain.AmmeterConfig;
 import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterPosition;
-import com.kashuo.kcp.redis.RedisService;
 import com.kashuo.kcp.redis.RedisServiceImpl;
 import com.kashuo.kcp.utils.AmmeterUtils;
 import org.slf4j.Logger;
@@ -50,6 +49,9 @@ public class AmmeterCallBackService {
 
     @Autowired
     private RedisServiceImpl redisService;
+
+    @Autowired
+    private  NetWorkService netWorkService;
 
     public Page<AmmeterCallbackHistory> getCallBackHistoryByDeviceId(CallBackCondition condition){
         PageHelper.startPage(condition.getPageIndex(),condition.getPageSize());
@@ -206,5 +208,11 @@ public class AmmeterCallBackService {
             }
         }
         return params;
+    }
+
+    public void processDataByUDPServer(DataUdpParams params) throws Exception {
+        AmmeterDevice device = ammeterDeviceMapper.selectByImsiKey(params.getImei());
+        netWorkService.insertNetWorkInfoByUDP(device,params);
+        ammeterReportServer.processDailyReportByUDP(device,params);
     }
 }

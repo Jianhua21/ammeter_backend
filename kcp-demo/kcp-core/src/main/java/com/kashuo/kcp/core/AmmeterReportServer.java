@@ -1,5 +1,6 @@
 package com.kashuo.kcp.core;
 
+import com.kashuo.kcp.api.entity.callback.DataUdpParams;
 import com.kashuo.kcp.dao.AmmeterMonthlyReportMapper;
 import com.kashuo.kcp.dao.AmmeterReportMapper;
 import com.kashuo.kcp.dao.AmmeterWorkingInfoMapper;
@@ -104,7 +105,51 @@ public class AmmeterReportServer {
         return results;
     }
 
-
+    public int processDailyReportByUDP(AmmeterDevice device, DataUdpParams params) throws Exception {
+        AmmeterReport reportDB = reportMapper.queryMaxDailyReportByCondition(device.getId(),
+                DateUtils.getCurrentDate(),DateUtils.getHour()+1);
+        AmmeterReport report = new AmmeterReport();
+        report.setAmmeterId(device.getId());
+        report.setDateTime(DateUtils.getCurrentDate());
+        Float power = 0f;
+        Float voltage = 0f;
+        Float current =0f;
+        boolean updateFlag = false;
+        if(reportDB != null) {
+            updateFlag = true;
+        }
+        try{
+            power = Float.parseFloat(params.getActivePower());
+        }catch (Exception e){
+            logger.error("parse Power error ",e);
+        }
+        try{
+            voltage = Float.parseFloat(params.getVoltage());
+        }catch (Exception e){
+            logger.error("parse Power error ",e);
+        }
+        try{
+            current = Float.parseFloat(params.getCurrent());
+        }catch (Exception e){
+            logger.error("parse Power error ",e);
+        }
+            report.setActiveEnergy(String.valueOf(power));
+            report.setVoltage(String.valueOf(voltage));
+            report.setCurrent(String.valueOf(current));
+        Integer results ;
+        if(updateFlag) {
+            logger.info("------------更新数据采集-------------IMEI:{}",params.getImei());
+            report.setId(reportDB.getId());
+            results = reportMapper.updateByPrimaryKeySelective(report);
+        }else{
+            logger.info("------------新增数据采集-------------IMEI:{}",params.getImei());
+            report.setHour(DateUtils.getHour()+1);
+            report.setType(3);
+            report.setSendTime(new Date());
+            results = reportMapper.insertSelective(report);
+        }
+        return results;
+    }
 
     public String sendReponseParamsForReport(AmmeterReport report){
         String reponseStr ="-1";
@@ -155,10 +200,43 @@ public class AmmeterReportServer {
         return  reportMapper.dailyReportByParams(report);
     }
 
+    public Integer getMaxHourByReportDate(List<AmmeterReport> dailyReport){
+        Integer maxvalue = 0;
+        for (AmmeterReport report:dailyReport) {
+            if(maxvalue < report.getHour()){
+                maxvalue = report.getHour();
+            }
+        }
+        return maxvalue;
+    }
+
+
+    public Float getRightValue(Map<String, Object> dailyMap,Integer startFlag){
+        Float result =0f;
+        boolean selected = false;
+        if(dailyMap != null && dailyMap.size() >0) {
+            for (int i = startFlag; i <= dailyMap.size(); i++) {
+                if(dailyMap.get(String.valueOf(i)) != null){
+                    result = Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(i))));
+                    selected =true;
+                    break;
+                }
+            }
+            if(!selected){
+                for (int i = dailyMap.size(); i >0; i--) {
+                    if(dailyMap.get(String.valueOf(i)) != null){
+                        result = Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(i))));
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
     public List<Float> list645DailyReport(String reportDate,Integer ammeterId,Integer reportType){
         List<Float> data = new ArrayList<>();
         List<AmmeterReport> dailyReport = listDailyReport(reportDate, ammeterId);
-        Map<String, Object> dailyMap = StringUtils.initDailyReportMap();
+        Map<String, Object> dailyMap = StringUtils.initDailyReportMap(getMaxHourByReportDate(dailyReport));
         if (dailyReport != null) {
             for (AmmeterReport report : dailyReport) {
                 if(reportType == 1) {
@@ -177,16 +255,17 @@ public class AmmeterReportServer {
         for (int i =1;i<=dailyMap.size();i++){
             Float result = 0f;
             try {
-                if(i>1 && dailyMap.get(String.valueOf(i)) == null){
-                    if(DateUtils.dateToString(new Date()).equals(reportDate) ) {
-                        if(i < DateUtils.getHour()) {
-                            dailyMap.put(String.valueOf(i), dailyMap.get(String.valueOf(i - 1)));
-                            result = Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(1))));
-                        }
-                    }else {
-                        dailyMap.put(String.valueOf(i), dailyMap.get(String.valueOf(i - 1)));
-                        result =  Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(1))));
-                    }
+                if(dailyMap.get(String.valueOf(i)) == null){
+                    result =  getRightValue(dailyMap,i);
+//                    if(DateUtils.dateToString(new Date()).equals(reportDate) ) {
+//                        if(i < DateUtils.getHour()) {
+//                            dailyMap.put(String.valueOf(i), dailyMap.get(String.valueOf(i - 1)));
+//                            result = Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(i))));
+//                        }
+//                    }else {
+//                        dailyMap.put(String.valueOf(i), dailyMap.get(String.valueOf(i - 1)));
+//                        result =  Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(i))));
+//                    }
 
                 }else {
                     result = Float.parseFloat(String.valueOf(dailyMap.get(String.valueOf(i))));

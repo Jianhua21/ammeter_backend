@@ -1,12 +1,15 @@
 package com.kashuo.kcp.rpc.controller.api;
 
 import com.alibaba.fastjson.JSONObject;
+import com.huawei.iotplatform.client.dto.DeviceService;
 import com.kashuo.kcp.api.entity.callback.DataUdpParams;
 import com.kashuo.kcp.api.entity.callback.DeviceUdpData;
 import com.kashuo.kcp.core.AmmeterCallBackService;
 import com.kashuo.kcp.core.AmmeterPositionService;
+import com.kashuo.kcp.core.AmmeterService;
 import com.kashuo.kcp.core.NetWorkService;
 import com.kashuo.kcp.domain.AmmeterCallbackHistory;
+import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -28,7 +31,7 @@ public class CallBackUDPNbiotController {
     @Autowired
     private NetWorkService netWorkService;
     @Autowired
-    private AmmeterPositionService positionService;
+    private AmmeterService ammeterService;
 
 
     @RequestMapping(value = "/receive",method = RequestMethod.POST)
@@ -41,22 +44,20 @@ public class CallBackUDPNbiotController {
                 try {
                     String imei = obj.getImei();
                     DataUdpParams params =callBackService.parseUdpData(obj.getData());
-                    AmmeterPosition position = positionService.selectByImei(imei);
-                    if(position == null){
+                    AmmeterDevice device = ammeterService.selectDeviceByImsi(imei);
+                    if(device == null){
                         logger.info("IMEI 不存在!{}",JSONObject.toJSONString(params));
+                        return "ok";
                     }//设备上线
                     else {
-                        netWorkService.updateDeviceStatusByNb(position.getDeviceId(), null, true);
+                        netWorkService.updateDeviceStatusByNb(null, device, true);
                     }
                     //设备数据处理
-                    String command = obj.getData();
-                    if ("".equals(command)) {
-                        return "ok";
-                    }
+                    callBackService.processDataByUDPServer(params);
                     //处理CallBack 命令参数
                     logger.info("======UDP 实际数据============" + JSONObject.toJSONString(obj));
                     AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
-                    callbackHistory.setDeviceId(position != null ?position.getDeviceId():imei);
+                    callbackHistory.setDeviceId(imei);
                     callbackHistory.setNotifyType(obj.getNotifyType());
                     callbackHistory.setCreateTime(new Date());
                     callbackHistory.setParams(JSONObject.toJSONString(obj));

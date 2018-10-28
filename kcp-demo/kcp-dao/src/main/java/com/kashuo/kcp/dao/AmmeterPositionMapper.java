@@ -31,6 +31,7 @@ public interface AmmeterPositionMapper {
 
     int updateStatusByDeviceId(AmmeterPosition record);
 
+    int updateStatusByImei(AmmeterPosition record);
 
     Page<AmmeterPosition> getPositionList(AmmeterPositionCondition condition);
 

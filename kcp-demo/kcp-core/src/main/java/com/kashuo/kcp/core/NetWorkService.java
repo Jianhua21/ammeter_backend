@@ -3,6 +3,7 @@ package com.kashuo.kcp.core;
 import com.huawei.iotplatform.client.NorthApiException;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
+import com.kashuo.kcp.api.entity.callback.DataUdpParams;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.dao.*;
@@ -123,22 +124,36 @@ public class NetWorkService {
 
     }
 
-    public void updateDeviceStatusByNb(String deviceId,AmmeterDevice ammeterDevice,boolean flag) {
-        if (ammeterDevice != null) {
+    public void insertNetWorkInfoByUDP(AmmeterDevice ammeterDevice,DataUdpParams param){
+        AmmeterNetwork networkDB = networkMapper.selectByAmmeterId(ammeterDevice.getId());
+        if(networkDB != null){
+            if(DateUtils.getCurrentDate().equals(networkDB.getRecordDay()) && networkDB.getRecordHour() == DateUtils.getHour()){
+                networkMapper.updateByPrimaryKeySelective(networkDB);
+            }else{
+                insertNetWorkByUDP(param.getRssi(),ammeterDevice);
+            }
+        }else{
+            insertNetWorkByUDP(param.getRssi(),ammeterDevice);
+        }
+    }
 
+    public void updateDeviceStatusByNb(String deviceId,AmmeterDevice ammeterDevice,boolean flag) {
+        AmmeterPosition positionDB;
+        if (ammeterDevice != null) {
+            positionDB =  ammeterPositionMapper.selectByImei(ammeterDevice.getImsi());
         } else {
             ammeterDevice = ammeterDeviceMapper.selectByDeviceId(deviceId);
+            positionDB = ammeterPositionMapper.selectByDeviceId(deviceId);
         }
         if(ammeterDevice == null){
             return;
         }
-        AmmeterPosition positionDB = ammeterPositionMapper.selectByDeviceId(deviceId);
         if (flag && positionDB != null && positionDB.getStatus() != 6) {
             //更新在线状态
             AmmeterPosition position = new AmmeterPosition();
-            position.setDeviceId(deviceId);
+            position.setImei(positionDB.getImei());
             position.setStatus(6);
-            ammeterPositionMapper.updateStatusByDeviceId(position);
+            ammeterPositionMapper.updateStatusByImei(position);
             //设备不在线警告 消除
             AmmeterWarning warning = new AmmeterWarning();
             warning.setWarningType(1);
@@ -147,9 +162,9 @@ public class NetWorkService {
             ammeterWarningMapper.updateStatusByType(warning);
         }
         if (!flag) {
-            //更新在线状态
+            //更新不在线状态
             AmmeterPosition position = new AmmeterPosition();
-            position.setDeviceId(deviceId);
+            position.setImei(positionDB.getImei());
             position.setStatus(7);
             ammeterPositionMapper.updateStatusByDeviceId(position);
             //设备不在线警告 消除
@@ -163,6 +178,16 @@ public class NetWorkService {
     public void insertNetWork(String[] params,AmmeterDevice ammeterDevice){
         AmmeterNetwork network = new AmmeterNetwork();
         setNetworkInfo(network,params,ammeterDevice);
+        network.setCreatedTime(new Timestamp(new Date().getTime()));
+        network.setAmmeterId(ammeterDevice.getId());
+        network.setRecordDay(DateUtils.getCurrentDate());
+        network.setRecordHour(DateUtils.getHour());
+        networkMapper.insert(network);
+    }
+
+    public void insertNetWorkByUDP(String rssi,AmmeterDevice ammeterDevice){
+        AmmeterNetwork network = new AmmeterNetwork();
+        network.setRssi(rssi);
         network.setCreatedTime(new Timestamp(new Date().getTime()));
         network.setAmmeterId(ammeterDevice.getId());
         network.setRecordDay(DateUtils.getCurrentDate());
@@ -207,6 +232,15 @@ public class NetWorkService {
 
     public List<AmmeterNetwork>  queryNetWorkParams(AmmeterNetwork network){
         return networkMapper.queryNetWorkParams(network);
+    }
+    public Integer getMaxHourByReportDate(List<AmmeterNetwork> netWorkReport){
+        Integer maxvalue = 0;
+        for (AmmeterNetwork report:netWorkReport) {
+            if(maxvalue < report.getRecordHour()){
+                maxvalue = report.getRecordHour();
+            }
+        }
+        return maxvalue;
     }
 
     public Page<AmmeterNetWorkResult> networkList(AmmeterNetWorkCondition condition){
