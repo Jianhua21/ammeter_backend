@@ -34,7 +34,9 @@ public class CallBackTestController {
     }
     @GetMapping("/redis/set")
     public String redisSet(){
-        redisService.set("jianhua","123");
+//        redisService.set("jianhua","123");
+        int i=0;
+        i= 1/i;
         return "123";
     }
 

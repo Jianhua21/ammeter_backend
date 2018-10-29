@@ -51,7 +51,7 @@
         </javaClientGenerator>
 
         <!-- 表生成映射，tableName 支持通配符，此处使用"%"表示所有表 -->
-        <table schema="MySQL" tableName="ammeter_wellcover_history" enableSelectByExample="false" enableDeleteByExample="false"
+        <table schema="MySQL" tableName="sys_log_error" enableSelectByExample="false" enableDeleteByExample="false"
                enableCountByExample="false" enableUpdateByExample="false" selectByExampleQueryId="false">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>

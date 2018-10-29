@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.SysLogErrorMapper" >
+
+  <insert id="insert">
+    insert into sys_log_error(exception,create_time,url,create_user,parameter) value
+    (#{map.exception},#{map.createTime},#{map.url},#{map.createUser},#{map.parameter})
+  </insert>
+
+</mapper>

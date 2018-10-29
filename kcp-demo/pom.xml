@@ -92,11 +92,11 @@
     </dependencies>
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.kashuo.kcp</groupId>
-                <artifactId>kcp-engine-boot-starter</artifactId>
-                <version>${kcp.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>com.kashuo.kcp</groupId>-->
+                <!--<artifactId>kcp-engine-boot-starter</artifactId>-->
+                <!--<version>${kcp.version}</version>-->
+            <!--</dependency>-->
 
             <dependency>
                 <groupId>com.kashuo.kcp</groupId>
