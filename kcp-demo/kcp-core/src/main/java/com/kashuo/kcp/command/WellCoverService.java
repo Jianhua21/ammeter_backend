@@ -98,7 +98,7 @@ public class WellCoverService {
                 wellcover.setEnHumidity("0");
                 wellcover.setSmokeWarning(data.substring(7,9));
             }else if("P0".equals(deviceType) && data.length()==17){
-                //烟感设备  P0BV342T605H405A1
+                //烟感设备  P0BV342T605H405A1  P0BV355T592H538A0
                 wellcover = new AmmeterWellcover();
                 wellcover.setDeviceType(deviceType);
                 wellcover.setBatteryStatus(data.substring(4, 7));
