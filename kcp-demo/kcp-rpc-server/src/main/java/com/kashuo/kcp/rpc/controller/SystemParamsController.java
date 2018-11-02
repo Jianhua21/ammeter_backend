@@ -85,19 +85,9 @@ public class SystemParamsController extends BaseController {
     @GetMapping("/getMsgContactInfo")
     public Results getMsgContactInfo(@RequestParam(required = false) Integer projectId){
         AmmeterUser user = getCuruser();
-        if(projectId == null){
-            projectId =1;
-        }
-        String msg = redisService.get(AppConstant.NB_CONTACTINFO+"_"+user.getLoginName()+"_"+projectId);
-        AmmeterMsgContact contact ;
-        if(msg != null){
-            contact = JSON.parseObject(msg,AmmeterMsgContact.class);
-        }else{
-            contact = deviceConfigService.getMsgInfoByCondition(user.getChannelId(),projectId);
-            redisService.set(AppConstant.NB_CONTACTINFO+"_"+user.getLoginName()+"_"+projectId, JSONObject.toJSONString(contact));
-        }
+        AmmeterMsgContact contact = deviceConfigService.getMsgFromCache(user,projectId);
         if(contact == null){
-            Results.error("获取短信联系人出错!");
+            contact = new AmmeterMsgContact();
         }
         return Results.success(contact);
     }
@@ -109,29 +99,40 @@ public class SystemParamsController extends BaseController {
         if(contact.getContactPhone1()== null){
             return Results.error("第一联系人联系号码不能为空!");
         }
-        if(contact.getContactPhone1()!= null && ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone1()))){
+        if(contact.getContactPhone1()!= null && !ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone1()))){
             return Results.error("第一联系人联系号码不合法!");
         }
-        if(contact.getContactPhone2()!= null && ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone2()))){
+        if(contact.getContactPhone2()!= null && !ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone2()))){
             return Results.error("第二联系人联系号码不合法!");
         }
-        if(contact.getContactPhone3()!= null && ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone3()))){
+        if(contact.getContactPhone3()!= null && !ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone3()))){
             return Results.error("第三联系人联系号码不合法!");
         }
+        if(contact.getContactPhone1()!= null && contact.getContactPhone2()!= null &&
+                contact.getContactPhone1().trim().equals(contact.getContactPhone2().trim())){
+            return Results.error("第一联系人联系号码不可以和第二联系人联系号码相同!");
+        }
+        if(contact.getContactPhone1()!= null && contact.getContactPhone3()!= null &&
+                contact.getContactPhone1().trim().equals(contact.getContactPhone3().trim())){
+            return Results.error("第一联系人联系号码不可以和第三联系人联系号码相同!");
+        }
+        if(contact.getContactPhone2()!= null && contact.getContactPhone3()!= null &&
+                contact.getContactPhone2().trim().equals(contact.getContactPhone3().trim())){
+            return Results.error("第二联系人联系号码不可以和第三联系人联系号码相同!");
+        }
         AmmeterUser user = getCuruser();
+        contact.setChannelId(user.getChannelId());
         if(contact.getProjectId() == null){
             contact.setProjectId(1);
         }
-        String msg = redisService.get(AppConstant.NB_CONTACTINFO+"_"+user.getLoginName()+"_"+contact.getProjectId());
-        AmmeterMsgContact cacheContact ;
-        if(msg != null){
-            cacheContact = JSON.parseObject(msg,AmmeterMsgContact.class);
-        }else{
-            cacheContact = deviceConfigService.getMsgInfoByCondition(user.getChannelId(),contact.getProjectId());
-        }
+        AmmeterMsgContact cacheContact = deviceConfigService.getMsgFromCache(user,contact.getProjectId());
+
         if(cacheContact != null){
+            contact.setId(cacheContact.getId());
             deviceConfigService.updateMsgInfoByCondition(contact);
         }else{
+            contact.setChannelId(user.getChannelId());
+            contact.setProjectId(1);
             deviceConfigService.insertMsgInfo(contact);
         }
         redisService.set(AppConstant.NB_CONTACTINFO+"_"+user.getLoginName()+"_"+contact.getProjectId(),JSONObject.toJSONString(contact));

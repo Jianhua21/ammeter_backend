@@ -6,6 +6,9 @@ package com.kashuo.kcp.rpc.debug;
 
 import com.alibaba.fastjson.JSONObject;
 import com.kashuo.kcp.core.SysDictionaryService;
+import com.kashuo.kcp.dao.AmmeterPositionMapper;
+import com.kashuo.kcp.domain.AmmeterPosition;
+import com.kashuo.kcp.manage.DeviceConfigService;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +27,12 @@ import javax.servlet.http.HttpServletRequest;
 public class SampleController {
 
     private final static Logger logger = LoggerFactory.getLogger(SampleController.class);
-
+    @Autowired
+    private DeviceConfigService deviceConfigService;
     @Autowired
     private SysDictionaryService sysDictionaryService;
+    @Autowired
+    private AmmeterPositionMapper ammeterPositionMapper;
 //
     @RequestMapping(value = "/hello1", method = RequestMethod.GET)
     public ModelAndView home(HttpServletRequest request) {
@@ -48,7 +54,10 @@ public class SampleController {
     @ResponseBody
     public String getDictionary(){
         logger.info("============================");
-        return JSONObject.toJSON(sysDictionaryService.getDictionartLists()).toString();
+        AmmeterPosition p = ammeterPositionMapper.selectByDeviceId("501343600");
+        //发送短信提醒
+        deviceConfigService.sendMsgInfoBySMS(p,"未上电",1);
+        return "OK";
     }
 
     public static void main(String[] args) {

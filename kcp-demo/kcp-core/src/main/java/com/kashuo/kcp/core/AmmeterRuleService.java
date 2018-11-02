@@ -7,6 +7,7 @@ import com.kashuo.kcp.dao.AmmeterRuleMapper;
 import com.kashuo.kcp.dao.AmmeterWarningMapper;
 import com.kashuo.kcp.dao.condition.AmmeterWellCoverSystemParams;
 import com.kashuo.kcp.domain.*;
+import com.kashuo.kcp.manage.DeviceConfigService;
 import com.kashuo.kcp.utils.CompareUtils;
 import com.kashuo.kcp.utils.MessageUtils;
 import com.kashuo.kcp.utils.StringUtil;
@@ -36,6 +37,9 @@ public class AmmeterRuleService {
     private AmmeterPositionMapper positionMapper;
     @Autowired
     private AmmeterWarningMapper warningMapper;
+    @Autowired
+    private DeviceConfigService deviceConfigService;
+
     private Logger logger = LoggerFactory.getLogger(AmmeterRuleService.class);
     private static List<AmmeterRule> netWorkRuleList = new ArrayList<>();
 
@@ -160,7 +164,8 @@ public class AmmeterRuleService {
                     if(flag){
 
                         AmmeterPosition position = positionMapper.selectByPrimaryKey(wellcover.getPositionId());
-                        boolean messageFlag = MessageUtils.sendMessage(position.getImei(),rule.getRuleDesc(),position.getContactInfo());
+                        //boolean messageFlag = MessageUtils.sendMessage(position.getImei(),rule.getRuleDesc(),position.getContactInfo());
+                        deviceConfigService.sendMsgInfoBySMS(position,rule.getRuleDesc(),1);
 
                         AmmeterWarning warning = new AmmeterWarning();
                         warning.setCreateBy("system");
@@ -170,7 +175,7 @@ public class AmmeterRuleService {
                         warning.setWarningDesc(rule.getRuleDesc());
                         warning.setWarningStatus("0");
                         warning.setWarningType(0);
-                        warning.setMessageFlag(messageFlag? 1:0);
+                        warning.setMessageFlag(1);
                         warning.setRuleId(rule.getId());
                         try {
                             warningMapper.insert(warning);

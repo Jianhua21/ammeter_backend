@@ -10,9 +10,12 @@
     <result column="cdp_status" property="cdpStatus" jdbcType="INTEGER" />
     <result column="nb" property="nb" jdbcType="INTEGER" />
     <result column="nb_status" property="nbStatus" jdbcType="INTEGER" />
+    <result column="current_value" property="currentValue" jdbcType="VARCHAR" />
+    <result column="voltage_value" property="voltageValue" jdbcType="VARCHAR" />
+    <result column="power_value" property="powerValue" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, position_id, apn_address,apn_status, cdp,cdp_status, nb,nb_status
+    id, position_id, apn_address,apn_status, cdp,cdp_status, nb,nb_status,current_value,voltage_value,power_value
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -66,6 +69,15 @@
       <if test="nbStatus != null" >
         nb_status,
       </if>
+      <if test="currentValue != null" >
+        current_value,
+      </if>
+      <if test="voltageValue != null" >
+        voltage_value,
+      </if>
+      <if test="powerValue != null" >
+        power_value,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="positionId != null" >
@@ -88,6 +100,15 @@
       </if>
       <if test="nbStatus != null" >
         #{nbStatus,jdbcType=INTEGER},
+      </if>
+      <if test="currentValue != null" >
+        #{currentValue,jdbcType=VARCHAR},
+      </if>
+      <if test="voltageValue != null" >
+        #{voltageValue,jdbcType=VARCHAR},
+      </if>
+      <if test="powerValue != null" >
+        #{powerValue,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -114,6 +135,15 @@
       </if>
       <if test="nbStatus != null" >
         nb_status = #{nbStatus,jdbcType=INTEGER},
+      </if>
+      <if test="currentValue != null" >
+        current_value = #{currentValue,jdbcType=VARCHAR},
+      </if>
+      <if test="voltageValue != null" >
+        voltage_value = #{voltageValue,jdbcType=VARCHAR},
+      </if>
+      <if test="powerValue != null" >
+        power_value = #{powerValue,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}

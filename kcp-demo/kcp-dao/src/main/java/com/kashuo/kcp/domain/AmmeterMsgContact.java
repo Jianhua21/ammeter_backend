@@ -5,15 +5,15 @@ public class AmmeterMsgContact {
 
     private String contactName1;
 
-    private Integer contactPhone1;
+    private String contactPhone1;
 
     private String contactName2;
 
-    private Integer contactPhone2;
+    private String contactPhone2;
 
     private String contactName3;
 
-    private Integer contactPhone3;
+    private String contactPhone3;
 
     private Integer channelId;
 
@@ -35,11 +35,11 @@ public class AmmeterMsgContact {
         this.contactName1 = contactName1 == null ? null : contactName1.trim();
     }
 
-    public Integer getContactPhone1() {
+    public String getContactPhone1() {
         return contactPhone1;
     }
 
-    public void setContactPhone1(Integer contactPhone1) {
+    public void setContactPhone1(String contactPhone1) {
         this.contactPhone1 = contactPhone1;
     }
 
@@ -51,11 +51,11 @@ public class AmmeterMsgContact {
         this.contactName2 = contactName2 == null ? null : contactName2.trim();
     }
 
-    public Integer getContactPhone2() {
+    public String getContactPhone2() {
         return contactPhone2;
     }
 
-    public void setContactPhone2(Integer contactPhone2) {
+    public void setContactPhone2(String contactPhone2) {
         this.contactPhone2 = contactPhone2;
     }
 
@@ -67,11 +67,11 @@ public class AmmeterMsgContact {
         this.contactName3 = contactName3 == null ? null : contactName3.trim();
     }
 
-    public Integer getContactPhone3() {
+    public String getContactPhone3() {
         return contactPhone3;
     }
 
-    public void setContactPhone3(Integer contactPhone3) {
+    public void setContactPhone3(String contactPhone3) {
         this.contactPhone3 = contactPhone3;
     }
 

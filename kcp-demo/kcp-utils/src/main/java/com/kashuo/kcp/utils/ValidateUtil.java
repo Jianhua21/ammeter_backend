@@ -19,13 +19,23 @@ public class ValidateUtil {
     }
 
     public static boolean validatePhoneNumber(String phoneNumber){
-        String check = "^((17[0-9])|(14[0-9])|(13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$";
+        String check = "^((17[0-9])|(14[0-9])|(13[0-9])|(15[^4,\\D])|(18[0-9]))\\d{8}$";
         Pattern regex = Pattern.compile(check);
         return regex.matcher(phoneNumber).matches();
     }
+    public  static boolean validateNumber(String number){
+        boolean check = false;
+        try {
+            Double.parseDouble(number);
+            check = true;
+        }catch (Exception e){
+System.out.println(e);
+        }
+        return check;
+    }
 
     public static void main(String[] args) {
-        System.out.print(validatePhoneNumber("18888888888"));
+        System.out.print(validateNumber("15.2"));
     }
 
 }

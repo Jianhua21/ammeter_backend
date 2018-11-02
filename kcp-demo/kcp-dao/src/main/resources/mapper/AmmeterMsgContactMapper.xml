@@ -4,11 +4,11 @@
   <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterMsgContact" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="contact_name1" property="contactName1" jdbcType="VARCHAR" />
-    <result column="contact_phone1" property="contactPhone1" jdbcType="INTEGER" />
+    <result column="contact_phone1" property="contactPhone1" jdbcType="VARCHAR" />
     <result column="contact_name2" property="contactName2" jdbcType="VARCHAR" />
-    <result column="contact_phone2" property="contactPhone2" jdbcType="INTEGER" />
+    <result column="contact_phone2" property="contactPhone2" jdbcType="VARCHAR" />
     <result column="contact_name3" property="contactName3" jdbcType="VARCHAR" />
-    <result column="contact_phone3" property="contactPhone3" jdbcType="INTEGER" />
+    <result column="contact_phone3" property="contactPhone3" jdbcType="VARCHAR" />
     <result column="channel_id" property="channelId" jdbcType="INTEGER" />
     <result column="project_id" property="projectId" jdbcType="INTEGER" />
   </resultMap>
@@ -41,8 +41,8 @@
     insert into ammeter_msg_contact (contact_name1, contact_phone1, contact_name2, 
       contact_phone2, contact_name3, contact_phone3, 
       channel_id, project_id)
-    values (#{contactName1,jdbcType=VARCHAR}, #{contactPhone1,jdbcType=INTEGER}, #{contactName2,jdbcType=VARCHAR}, 
-      #{contactPhone2,jdbcType=INTEGER}, #{contactName3,jdbcType=VARCHAR}, #{contactPhone3,jdbcType=INTEGER}, 
+    values (#{contactName1,jdbcType=VARCHAR}, #{contactPhone1,jdbcType=VARCHAR}, #{contactName2,jdbcType=VARCHAR},
+      #{contactPhone2,jdbcType=VARCHAR}, #{contactName3,jdbcType=VARCHAR}, #{contactPhone3,jdbcType=VARCHAR},
       #{channelId,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterMsgContact" >
@@ -81,19 +81,19 @@
         #{contactName1,jdbcType=VARCHAR},
       </if>
       <if test="contactPhone1 != null" >
-        #{contactPhone1,jdbcType=INTEGER},
+        #{contactPhone1,jdbcType=VARCHAR},
       </if>
       <if test="contactName2 != null" >
         #{contactName2,jdbcType=VARCHAR},
       </if>
       <if test="contactPhone2 != null" >
-        #{contactPhone2,jdbcType=INTEGER},
+        #{contactPhone2,jdbcType=VARCHAR},
       </if>
       <if test="contactName3 != null" >
         #{contactName3,jdbcType=VARCHAR},
       </if>
       <if test="contactPhone3 != null" >
-        #{contactPhone3,jdbcType=INTEGER},
+        #{contactPhone3,jdbcType=VARCHAR},
       </if>
       <if test="channelId != null" >
         #{channelId,jdbcType=INTEGER},
@@ -110,19 +110,19 @@
         contact_name1 = #{contactName1,jdbcType=VARCHAR},
       </if>
       <if test="contactPhone1 != null" >
-        contact_phone1 = #{contactPhone1,jdbcType=INTEGER},
+        contact_phone1 = #{contactPhone1,jdbcType=VARCHAR},
       </if>
       <if test="contactName2 != null" >
         contact_name2 = #{contactName2,jdbcType=VARCHAR},
       </if>
       <if test="contactPhone2 != null" >
-        contact_phone2 = #{contactPhone2,jdbcType=INTEGER},
+        contact_phone2 = #{contactPhone2,jdbcType=VARCHAR},
       </if>
       <if test="contactName3 != null" >
         contact_name3 = #{contactName3,jdbcType=VARCHAR},
       </if>
       <if test="contactPhone3 != null" >
-        contact_phone3 = #{contactPhone3,jdbcType=INTEGER},
+        contact_phone3 = #{contactPhone3,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -130,11 +130,11 @@
   <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterMsgContact" >
     update ammeter_msg_contact
     set contact_name1 = #{contactName1,jdbcType=VARCHAR},
-      contact_phone1 = #{contactPhone1,jdbcType=INTEGER},
+      contact_phone1 = #{contactPhone1,jdbcType=VARCHAR},
       contact_name2 = #{contactName2,jdbcType=VARCHAR},
-      contact_phone2 = #{contactPhone2,jdbcType=INTEGER},
+      contact_phone2 = #{contactPhone2,jdbcType=VARCHAR},
       contact_name3 = #{contactName3,jdbcType=VARCHAR},
-      contact_phone3 = #{contactPhone3,jdbcType=INTEGER},
+      contact_phone3 = #{contactPhone3,jdbcType=VARCHAR},
       channel_id = #{channelId,jdbcType=INTEGER},
       project_id = #{projectId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}

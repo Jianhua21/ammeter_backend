@@ -20,6 +20,36 @@ public class AmmeterConfig {
     private Integer nb;
     @ApiModelProperty("NB状态")
     private Integer nbStatus;
+    @ApiModelProperty("电流告警值")
+    private String currentValue;
+    @ApiModelProperty("电压告警值")
+    private String voltageValue;
+    @ApiModelProperty("电量告警值")
+    private  String powerValue;
+
+    public String getPowerValue() {
+        return powerValue;
+    }
+
+    public void setPowerValue(String powerValue) {
+        this.powerValue = powerValue;
+    }
+
+    public String getCurrentValue() {
+        return currentValue;
+    }
+
+    public void setCurrentValue(String currentValue) {
+        this.currentValue = currentValue;
+    }
+
+    public String getVoltageValue() {
+        return voltageValue;
+    }
+
+    public void setVoltageValue(String voltageValue) {
+        this.voltageValue = voltageValue;
+    }
 
     public Integer getApnStatus() {
         return apnStatus;

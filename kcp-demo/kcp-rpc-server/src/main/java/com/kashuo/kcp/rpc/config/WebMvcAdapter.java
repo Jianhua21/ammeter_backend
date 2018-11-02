@@ -16,7 +16,7 @@ public class WebMvcAdapter extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-        registry.addInterceptor(userSecurityInterceptor).addPathPatterns("/device/**","/user/**","/position/**","/warning/**")
+        registry.addInterceptor(userSecurityInterceptor).addPathPatterns("/device/**","/user/**","/position/**","/warning/**","/system/**")
                 .excludePathPatterns("/user/add/**","/nbiot/**","/**/export/**")
         ;
 

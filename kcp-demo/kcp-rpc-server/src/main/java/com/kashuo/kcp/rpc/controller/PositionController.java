@@ -21,6 +21,7 @@ import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.manage.DeviceConfigService;
 import com.kashuo.kcp.utils.Results;
 import com.kashuo.kcp.utils.StringUtil;
+import com.kashuo.kcp.utils.ValidateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -340,6 +341,34 @@ public class PositionController extends BaseController{
     return Results.success(config);
 
     }
+
+    @PostMapping("/config/warning")
+    @ApiOperation("保存告警设置")
+    public Results  saveWarningConfig(@RequestBody AmmeterConfig config){
+        logger.info("更新告警配置信息:{}",JSON.toJSONString(config));
+        if(config.getCurrentValue()!= null && !ValidateUtil.validateNumber(config.getCurrentValue())){
+            return Results.error("电流告警值格式错误!");
+        }
+        if(config.getPowerValue()!= null && !ValidateUtil.validateNumber(config.getPowerValue())){
+            return Results.error("电压告警值格式错误!");
+        }
+        AmmeterPosition position = ammeterPositionService.selectByPrimaryKey(config.getPositionId());
+        if(position == null || position.getStatus() == 8 || position.getStatus() ==3){
+            return Results.error("设备异常或已删除,不可操作!");
+        }
+        AmmeterConfig configDB = configService.selectByPositionId(config.getPositionId());
+        AmmeterConfig configUpdate = new AmmeterConfig();
+        if(configDB != null){
+            configUpdate.setId(configDB.getId());
+            configUpdate.setCurrentValue(config.getCurrentValue());
+            configUpdate.setPowerValue(config.getPowerValue());
+            configService.updateConfig(configUpdate);
+        }else{
+            configService.insertConfig(config);
+        }
+        return Results.success("告警配置保存成功!");
+    }
+
     @PostMapping("/config/save")
     @ApiOperation("保存配置修改")
     public Results saveConfig(@RequestBody AmmeterConfig config) throws Exception {
