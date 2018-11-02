@@ -13,6 +13,8 @@ public class MessageUtils {
 
     private static String MESSAGE_HOST ="http://smsmsgs.market.alicloudapi.com";
 
+    private  static String MESSAGE_LARGE_HOST ="https://largesms.market.alicloudapi.com";
+
     private static String MESSAGE_APPCODE ="3157cedf8b4e407bacdd3d82f3b72341";
 
     public static boolean sendMessage(String imei,String status,String phone){
@@ -37,12 +39,36 @@ public class MessageUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return isSuccess;
+    }
 
+    public static boolean sendLargeMessage(String imei,String status,String phone,String name,String address){
+        if(phone == null||"".equals(phone)){
+            phone ="13773075845";
+        }
+        boolean isSuccess = false;
+        String path = "/largesms";
+        String method = "GET";
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Authorization", "APPCODE " + MESSAGE_APPCODE);
+        Map<String, String> querys = new HashMap<>();
+        querys.put("param", "{ "+imei+" } {"+name+"}|{"+address+"}|{ "+status+" }|异常");
+        querys.put("phone", phone);
+        querys.put("sign", "46613");
+        querys.put("skin", "43310");
+        try {
+            HttpResponse response = HttpUtils.doGet(MESSAGE_LARGE_HOST, path, method, headers, querys);
+            if(200 == response.getStatusLine().getStatusCode()){
+                isSuccess = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return isSuccess;
     }
 
     public static void main(String[] args) {
-        System.out.println(MessageUtils.sendMessage("123456789012345","井盖可能性","13773075845"));
+        System.out.println(MessageUtils.sendLargeMessage("123456789012345","未上电","13773075845","移动光华大道044灯杆微站10电表","光华大道044灯杆配电箱"));
     }
 //    public static void main(String[] args) {
 //        String host = "http://smsmsgs.market.alicloudapi.com";

@@ -26,17 +26,7 @@ public class PushBeanText {
         pushBean.setImei("863703032904901");
         pushBean.setStatus("ONLINE");
         Map<String, Object> map = new HashMap<>();
-        Map<String, String> location = new HashMap<>();
-        map.put("full",1);
-        map.put("fire",1);
-        map.put("fall",1);
-        map.put("cap",1);
-        location.put("lng","116.34");
-        location.put("lat","39.92");
-        map.put("location",location);
-        map.put("battery",1);
-        map.put("height",349);
-
+        map.put("data","P7BV347L012D120A1W0LG123.23LT31.212");
         pushBean.setService(map);
         System.out.println(JSONObject.toJSONString(pushBean));
         //发送数据
