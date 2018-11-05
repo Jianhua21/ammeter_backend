@@ -96,27 +96,27 @@ public class SystemParamsController extends BaseController {
         if(StringUtil.isEmpty(contact.getContactName1())){
             return Results.error("第一联系人姓名不能为空!");
         }
-        if(contact.getContactPhone1()== null){
+        if(StringUtil.isEmpty(contact.getContactPhone1())){
             return Results.error("第一联系人联系号码不能为空!");
         }
-        if(contact.getContactPhone1()!= null && !ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone1()))){
+        if(StringUtil.isNotEmpty(contact.getContactPhone1()) && !ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone1()))){
             return Results.error("第一联系人联系号码不合法!");
         }
-        if(contact.getContactPhone2()!= null && !ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone2()))){
+        if(StringUtil.isNotEmpty(contact.getContactPhone2())&& !ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone2()))){
             return Results.error("第二联系人联系号码不合法!");
         }
-        if(contact.getContactPhone3()!= null && !ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone3()))){
+        if(StringUtil.isNotEmpty(contact.getContactPhone3()) && !ValidateUtil.validatePhoneNumber(String.valueOf(contact.getContactPhone3()))){
             return Results.error("第三联系人联系号码不合法!");
         }
-        if(contact.getContactPhone1()!= null && contact.getContactPhone2()!= null &&
+        if(StringUtil.isNotEmpty(contact.getContactPhone1()) && StringUtil.isNotEmpty(contact.getContactPhone2()) &&
                 contact.getContactPhone1().trim().equals(contact.getContactPhone2().trim())){
             return Results.error("第一联系人联系号码不可以和第二联系人联系号码相同!");
         }
-        if(contact.getContactPhone1()!= null && contact.getContactPhone3()!= null &&
+        if(StringUtil.isNotEmpty(contact.getContactPhone1()) && StringUtil.isNotEmpty(contact.getContactPhone3()) &&
                 contact.getContactPhone1().trim().equals(contact.getContactPhone3().trim())){
             return Results.error("第一联系人联系号码不可以和第三联系人联系号码相同!");
         }
-        if(contact.getContactPhone2()!= null && contact.getContactPhone3()!= null &&
+        if(StringUtil.isNotEmpty(contact.getContactPhone2())&& StringUtil.isNotEmpty(contact.getContactPhone3()) &&
                 contact.getContactPhone2().trim().equals(contact.getContactPhone3().trim())){
             return Results.error("第二联系人联系号码不可以和第三联系人联系号码相同!");
         }

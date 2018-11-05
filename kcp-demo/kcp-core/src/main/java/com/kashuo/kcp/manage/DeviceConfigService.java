@@ -14,6 +14,7 @@ import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterUser;
 import com.kashuo.kcp.redis.RedisService;
 import com.kashuo.kcp.utils.MessageUtils;
+import com.kashuo.kcp.utils.StringUtil;
 import com.kashuo.kcp.utils.ValidateUtil;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,16 +90,16 @@ public class DeviceConfigService {
                 AmmeterUser user = userMapper.selectByPrimaryKey(position.getCreateBy());
                 AmmeterMsgContact cacheContact = getMsgFromCache(user, projectId);
                 if(cacheContact != null){
-                    if(cacheContact.getContactPhone1() != null && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone1())){
+                    if(StringUtil.isNotEmpty(cacheContact.getContactPhone1()) && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone1())){
                         sendMsgByLimit(position,status,cacheContact.getContactPhone1());
                     }
-                    if(cacheContact.getContactPhone2() != null && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone2())){
+                    if(StringUtil.isNotEmpty(cacheContact.getContactPhone2()) && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone2())){
                         sendMsgByLimit(position,status,cacheContact.getContactPhone2());
                     }
-                    if(cacheContact.getContactPhone3() != null && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone3())){
+                    if(StringUtil.isNotEmpty(cacheContact.getContactPhone3()) && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone3())){
                         sendMsgByLimit(position,status,cacheContact.getContactPhone3());
                     }
-                }else if(position.getContactInfo() != null && ValidateUtil.validatePhoneNumber(position.getContactInfo())){
+                }else if(StringUtil.isNotEmpty(position.getContactInfo()) && ValidateUtil.validatePhoneNumber(position.getContactInfo())){
                     sendMsgByLimit(position,status,position.getContactInfo());
                 }
 
