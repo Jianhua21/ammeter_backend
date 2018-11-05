@@ -70,14 +70,14 @@ public class DeviceConfigService {
         if(projectId == null){
             projectId =1;
         }
-        String msg = redisService.get(AppConstant.NB_CONTACTINFO+"_"+user.getLoginName()+"_"+projectId);
+        String msg = redisService.get(AppConstant.NB_CONTACTINFO+"_"+user.getChannelId()+"_"+projectId);
         AmmeterMsgContact cacheContact ;
         if(msg != null){
             cacheContact = JSON.parseObject(msg,AmmeterMsgContact.class);
         }else{
             cacheContact = getMsgInfoByCondition(user.getChannelId(),projectId);
             if(cacheContact != null) {
-                redisService.set(AppConstant.NB_CONTACTINFO + "_" + user.getLoginName() + "_" + projectId, JSONObject.toJSONString(cacheContact));
+                redisService.set(AppConstant.NB_CONTACTINFO + "_" + user.getChannelId() + "_" + projectId, JSONObject.toJSONString(cacheContact));
             }
         }
         return cacheContact;
