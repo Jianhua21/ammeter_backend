@@ -35,7 +35,7 @@ System.out.println(e);
     }
 
     public static void main(String[] args) {
-        System.out.print(validateNumber("15.2"));
+        System.out.print(validatePhoneNumber("13773075845"));
     }
 
 }

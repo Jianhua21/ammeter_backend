@@ -9,6 +9,7 @@ import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.manage.DeviceConfigService;
+import com.kashuo.kcp.redis.RedisService;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,8 @@ public class SampleController {
     private SysDictionaryService sysDictionaryService;
     @Autowired
     private AmmeterPositionMapper ammeterPositionMapper;
+    @Autowired
+    private RedisService redisService;
 //
     @RequestMapping(value = "/hello1", method = RequestMethod.GET)
     public ModelAndView home(HttpServletRequest request) {
@@ -56,7 +59,8 @@ public class SampleController {
         logger.info("============================");
         AmmeterPosition p = ammeterPositionMapper.selectByDeviceId("501343600");
         //发送短信提醒
-        deviceConfigService.sendMsgInfoBySMS(p,"未上电",1);
+        logger.info(String.valueOf(redisService.getExpire("nbiot_contact_13773075845")));
+        deviceConfigService.sendMsgInfoBySMS(p,"测试",1);
         return "OK";
     }
 

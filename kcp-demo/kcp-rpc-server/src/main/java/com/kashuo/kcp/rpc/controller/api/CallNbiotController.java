@@ -145,7 +145,7 @@ public class CallNbiotController {
                     callbackHistory.setDeviceId(deviceId);
                     callbackHistory.setNotifyType(dataChange.getNotifyType());
                     callbackHistory.setCreateTime(new Date());
-                    callbackHistory.setParams(JSONObject.toJSONString(obj));
+                    callbackHistory.setParams(JSONObject.toJSONString(response));
                     callBackService.insertCallBackHistory(callbackHistory);
                     logger.info("--------Nbiot subscribe request data End------------------------");
                 } else {

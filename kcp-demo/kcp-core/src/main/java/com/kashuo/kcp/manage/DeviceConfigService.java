@@ -125,7 +125,7 @@ public class DeviceConfigService {
         if(flag){
             redisService.set(AppConstant.NB_CONTACTINFO+"_"+phone,String.valueOf(number+1));
             if(number == 0){
-                redisService.expire(AppConstant.NB_CONTACTINFO+"_"+phone,60*60*24*1000);
+                redisService.expire(AppConstant.NB_CONTACTINFO+"_"+phone,60*60*24);
             }
         }
         sendMsgHistory(position.getImei(),phone,flag,status);

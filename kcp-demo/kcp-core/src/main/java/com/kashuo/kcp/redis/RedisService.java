@@ -10,6 +10,8 @@ public interface RedisService {
 
     String get(String key);
 
+    boolean getExpire(String key);
+
     boolean expire(String key, long expire);
 
     <T> boolean setList(String key, List<T> list);
