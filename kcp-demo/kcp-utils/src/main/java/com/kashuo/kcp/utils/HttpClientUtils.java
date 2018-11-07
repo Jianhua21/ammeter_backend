@@ -8,7 +8,10 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Map;
 
 /**
@@ -52,7 +55,14 @@ public class HttpClientUtils {
         //执行method
         httpClient.executeMethod(method);
         //获取返回的参数
-        String responseJsonString = method.getResponseBodyAsString();
+//        String responseJsonString = method.getResponseBodyAsString();
+        InputStream inputStream = method.getResponseBodyAsStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
+        StringBuilder responseJsonString = new StringBuilder();
+        String str;
+        while((str = br.readLine()) != null){
+            responseJsonString .append(str );
+        }
         //解析返回的数据格式
         //Map map = JSONObject.parseObject(responseJsonString, Map.class);
         //关闭连接
@@ -62,6 +72,6 @@ public class HttpClientUtils {
         } else {
             System.out.println("send error!");
         }
-        return responseJsonString;
+        return responseJsonString.toString();
     }
 }

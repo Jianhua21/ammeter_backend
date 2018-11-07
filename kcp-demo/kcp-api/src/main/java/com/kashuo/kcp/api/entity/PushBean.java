@@ -8,7 +8,16 @@ public class PushBean implements Serializable {
     private String imei;
     private String status;
     private String eventTime;
+    private String deviceType;
     private Map<String, Object> service;
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
 
     public String getImei() {
         return imei;

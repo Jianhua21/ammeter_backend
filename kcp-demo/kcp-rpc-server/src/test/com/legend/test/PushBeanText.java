@@ -19,12 +19,13 @@ public class PushBeanText {
 
 
         //设置推送URL
-        String appURL = "http://127.0.0.1:8089/smart_device/na/1.0/updateDeviceDatas";
+        String appURL = "http://111.85.219.23/smartcity/api/auth/tenpen/updateDeviceDatas";
         //封装推送数据格式
         PushBean pushBean = new PushBean();
         pushBean.setEventTime(DateUtils.convert2String(new Date(),DateUtils.formatPatternDateTime));
         pushBean.setImei("863703032904901");
         pushBean.setStatus("ONLINE");
+        pushBean.setDeviceType("P101");
         Map<String, Object> map = new HashMap<>();
         map.put("data","P7BV347L012D120A1W0LG123.23LT31.212");
         pushBean.setService(map);
