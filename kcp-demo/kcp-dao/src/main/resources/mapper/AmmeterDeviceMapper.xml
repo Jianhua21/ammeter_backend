@@ -108,8 +108,11 @@
       (select r11.* from ammeter_report r11,
       (select max(id) id from ammeter_report r12 where active_energy is not null group by ammeter_id) r13
       where r11.id = r13.id ) r on device.id = r.ammeter_id
-      where device.channel_id =#{channelId,jdbcType=INTEGER} and p.status !=3
+      where  p.status !=3
       and p.device_type = #{deviceType,jdbcType=INTEGER}
+      <if test="channelId != null">
+         and  p.channel_id =#{channelId,jdbcType=INTEGER}
+      </if>
       <if test="name != null and name != ''">
       and p.name  like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
     </if>

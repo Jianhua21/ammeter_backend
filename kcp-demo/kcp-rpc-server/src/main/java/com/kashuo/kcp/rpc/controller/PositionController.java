@@ -108,10 +108,12 @@ public class PositionController extends BaseController{
             updateFlag = true;
             ammeterPosition.setId(position.getId());
         }
+        AmmeterUser user = getCuruser();
         ammeterPosition.setProductId(DeviceTypes.parseName(String.valueOf(ammeterPosition.getDeviceType())));
         ammeterPosition.setStatus(0);
         ammeterPosition.setCreateTime(new Date());
-        ammeterPosition.setCreateBy(getCuruserId());
+        ammeterPosition.setCreateBy(user.getId());
+        ammeterPosition.setChannelId(user.getChannelId());
         try {
             if(updateFlag){
                 ammeterPositionService.updateAllByPrimaryKeySelective(ammeterPosition);
@@ -155,8 +157,8 @@ public class PositionController extends BaseController{
         //向IoT平台注册和设备信息同步
         if("1".equals(ammeterPosition.getPlatform())){
              nbiotCommandService.createDevice(positionDB);
-        }else {
-            Integer result = commandService.autoRegDevice(positionDB);
+        }else if("0".equals(ammeterPosition.getPlatform())){
+             commandService.autoRegDevice(positionDB);
         }
         return Results.success("位置信息录入成功!");
     }
@@ -228,7 +230,7 @@ public class PositionController extends BaseController{
             }else if(positionDB.getStatus() ==8 || positionDB.getStatus() ==2){
                 if("1".equals(ammeterPosition.getPlatform())){
                     nbiotCommandService.createDevice(positionDB);
-                }else {
+                }else if("0".equals(ammeterPosition.getPlatform())) {
                     commandService.autoRegDevice(position);
                 }
             }
@@ -325,6 +327,10 @@ public class PositionController extends BaseController{
     @PostMapping("/queryImeiList")
     @ApiOperation("IMEI列表")
     public Results queryImeiList(@RequestBody AmmeterImei imei){
+        AmmeterUser user = getCuruser();
+        if(!isAdmin(user.getChannelId())){
+            imei.setChannelId(user.getChannelId());
+        }
         List<AmmeterIMEIResult>  results = ammeterIMEIService.listPages(imei);
         return Results.success(results);
     }

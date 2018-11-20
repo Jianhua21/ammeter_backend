@@ -44,10 +44,14 @@ public class WarningController extends BaseController{
     public Results getWarningHome(@RequestBody(required = false) WarningCondition warningCondition) throws Exception {
         AmmeterUser user = getCuruser();
         WarningDeviceHome warningHome;
+        Integer channelId = null;
+        if(!isAdmin(user.getChannelId())){
+            channelId = user.getChannelId();
+        }
         if(warningCondition.getDeviceType() == null || warningCondition.getDeviceType() ==0) {
-            warningHome = warningService.reportWarningDeviceInfo();
+            warningHome = warningService.reportWarningDeviceInfo(channelId);
         }else if(warningCondition.getDeviceType() ==1){
-            warningHome = warningService.reportWarningSmokeDeviceInfo();
+            warningHome = warningService.reportWarningSmokeDeviceInfo(channelId);
         }else{
             warningHome = new WarningDeviceHome();
         }

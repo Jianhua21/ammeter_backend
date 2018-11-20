@@ -222,9 +222,9 @@ public class AmmeterWarningService {
         return warningMapper.selectByPrimaryKey(warningId);
     }
 
-    public WarningHome reportWarningInfo() throws Exception {
+    public WarningHome reportWarningInfo(Integer channelId) throws Exception {
         WarningHome home = warningMapper.getStatisticsDevices();
-        Map<String,Object> warningInfo = warningMapper.reportWarningCount(0);
+        Map<String,Object> warningInfo = warningMapper.reportWarningCount(0,channelId);
         home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()) );
         home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
         home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
@@ -239,13 +239,13 @@ public class AmmeterWarningService {
 
     }
 
-    public WarningDeviceHome reportWarningDeviceInfo() throws Exception{
+    public WarningDeviceHome reportWarningDeviceInfo(Integer channelId) throws Exception{
         WarningDeviceHome  home = new WarningDeviceHome();
-        Map<String,Object> warningInfo = warningMapper.reportWarningCount(0);
+        Map<String,Object> warningInfo = warningMapper.reportWarningCount(0,channelId);
         home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()) );
         home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
         home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
-        Map<String,Object> warningDevices = warningMapper.reportWarningSmartDevices();
+        Map<String,Object> warningDevices = warningMapper.reportWarningSmartDevices(channelId);
         WarningDeviceCategory category = new WarningDeviceCategory();
         home.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
         home.setOnlineDevices(Integer.parseInt(warningDevices.get("onlineDevices").toString()));
@@ -260,14 +260,14 @@ public class AmmeterWarningService {
         return home;
     }
 
-    public WarningDeviceHome reportWarningSmokeDeviceInfo() throws Exception{
+    public WarningDeviceHome reportWarningSmokeDeviceInfo(Integer channelId) throws Exception{
         WarningDeviceHome  home = new WarningDeviceHome();
-        Map<String,Object> warningInfo = warningMapper.reportWarningCount(1);
+        Map<String,Object> warningInfo = warningMapper.reportWarningCount(1,channelId);
         home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()) );
         home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
         home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
 
-        Map<String,Object> warningDevices = warningMapper.reportWarningSmokeDevices();
+        Map<String,Object> warningDevices = warningMapper.reportWarningSmokeDevices(channelId);
         home.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
         home.setOnlineDevices(Integer.parseInt(warningDevices.get("onlineDevices").toString()));
 

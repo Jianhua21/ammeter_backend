@@ -60,8 +60,8 @@ public class UserController extends BaseController {
         Byte userType = condition.getUserType();// 0:管理员 1:普通用户 2:商户管理员
         newuser.setUserType(userType == null ? (byte) 1 : userType);
         newuser.setRoleId(condition.getRoleId());
-        newuser.setCreateBy(getCuruser().getRealname());
-//        newuser.setCreateBy("system");
+//        newuser.setCreateBy(getCuruser().getRealname());
+        newuser.setCreateBy("system");
         Integer channelId = condition.getChannelId();
         newuser.setChannelId(channelId == null ? getCuruser().getChannelId() : channelId);
         newuser.setCreateTime(new Date());

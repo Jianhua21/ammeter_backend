@@ -7,6 +7,7 @@ import com.kashuo.kcp.dao.result.WarningHome;
 import com.kashuo.kcp.dao.result.WarningWellCover;
 import com.kashuo.kcp.domain.AmmeterWarning;
 import com.kashuo.kcp.domain.AmmeterWarningResult;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -33,11 +34,11 @@ public interface AmmeterWarningMapper {
 
     Map<String,Object> reportWarningDevices();
 
-    Map<String,Object> reportWarningSmartDevices();
+    Map<String,Object> reportWarningSmartDevices(@Param("channelId")Integer channelId);
 
-    Map<String,Object> reportWarningSmokeDevices();
+    Map<String,Object> reportWarningSmokeDevices(@Param("channelId")Integer channelId);
 
-    Map<String,Object> reportWarningCount(Integer deviceType);
+    Map<String,Object> reportWarningCount(@Param("deviceType") Integer deviceType,@Param("channelId")Integer channelId);
 
     Page<AmmeterWarningResult> queryWarningList(WarningCondition condition);
 

@@ -32,7 +32,7 @@ import java.util.Map;
 public class NotifyController {
     private Logger logger = LoggerFactory.getLogger(getClass());
     //设置推送URL
-    private String appURL = "http://111.85.219.23/smartcity/api/auth/tenpen/updateDeviceDatas";
+    private String appURL = "http://111.85.219.23/smartcity/api/tenpin/updateDeviceDatas";
 
     /**
      * 接收推送的数据

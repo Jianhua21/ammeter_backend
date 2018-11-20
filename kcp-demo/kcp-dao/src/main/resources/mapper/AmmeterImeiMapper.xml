@@ -25,6 +25,9 @@
     <if test="imei != null and imei !=''" >
       and i.imei  like CONCAT('%',#{imei,jdbcType=VARCHAR},'%')
     </if>
+    <if test="channelId != null">
+      and p.channel_id= #{channelId,jdbcType=INTEGER}
+    </if>
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 

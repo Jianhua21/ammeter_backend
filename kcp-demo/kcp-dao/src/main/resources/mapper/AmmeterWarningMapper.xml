@@ -63,7 +63,7 @@
         and p.name like CONCAT('%',#{name,jdbcType=VARCHAR},'%')
       </if>
         <if test="channelId != null">
-            and d.channel_id =  #{channelId,jdbcType=INTEGER}
+            and p.channel_id =  #{channelId,jdbcType=INTEGER}
         </if>
          <if test="ammeterType != null">
             and   d.type  like CONCAT('%',#{ammeterType,jdbcType=VARCHAR},'%')
@@ -251,15 +251,18 @@ where w1.id = w2.id and w1.warning_status =0
 ) w11 on w11.ammeter_id = d.id
 where p.status != 3
     </select>
-    <select id="reportWarningCount" resultType="map" parameterType="java.lang.Integer">
+    <select id="reportWarningCount" resultType="map" >
         select IFNULL(sum(case when w.warning_status = 0 then 1 else 0 end ),0) currentWarnings,
 IFNULL(sum(case when w.warning_status = 1 then 1 else 0 end ),0) historyWarnings,
 count(w.id) as warningNumbers
  from ammeter_warning w INNER JOIN ammeter_device d on w.ammeter_id = d.id
 INNER JOIN ammeter_position p on d.imsi =p.imei
 where p.status !=3 and p.device_type =#{deviceType,jdbcType=INTEGER}
+<if test="channelId != null">
+    and p.channel_id =#{channelId,jdbcType=INTEGER}
+</if>
     </select>
-    <select id="reportWarningSmartDevices" resultType="map">
+    <select id="reportWarningSmartDevices" resultType="map" parameterType="java.lang.Integer">
  select sum(case when w11.warning_type = 1 then 1 else 0 end) warningOfflineDevices
  , sum(case when w11.warning_type = 0 and r.rule_params ='batteryStatus' then 1 else 0 end)
  as batteryWarningDevices
@@ -281,6 +284,10 @@ where w1.id = w2.id and w1.warning_status =0
 ) w11 on w11.ammeter_id = d.id
 LEFT JOIN ammeter_rule r on w11.rule_id = r.id
 where p.status != 3 and p.device_type=0
+<if test="channelId != null">
+    and p.channel_id =#{channelId,jdbcType=INTEGER}
+</if>
+
     </select>
 
     <select id="reportWarningSmokeDevices" resultType="map">
@@ -302,7 +309,10 @@ LEFT JOIN
 where w1.id = w2.id and w1.warning_status =0
 ) w11 on w11.ammeter_id = d.id
 LEFT JOIN ammeter_rule r on w11.rule_id = r.id
-where p.status != 3 and p.device_type=1;
+where p.status != 3 and p.device_type=1
+        <if test="channelId != null">
+            and p.channel_id =#{channelId,jdbcType=INTEGER}
+        </if>
     </select>
 
 

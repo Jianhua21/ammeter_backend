@@ -57,6 +57,16 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     private String en_humidity;
     @ApiModelProperty("烟雾告警信息")
     private String smokeWarning;
+    @ApiModelProperty("机构Id")
+    private Integer channelId;
+
+    public Integer getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(Integer channelId) {
+        this.channelId = channelId;
+    }
 
     public Integer getDeviceType() {
         return deviceType;

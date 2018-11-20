@@ -12,7 +12,17 @@ public class AmmeterImei extends AmmeterImeiKey {
     private Integer pageIndex =1;
     @ApiModelProperty(value = "当前显示数")
     private Integer pageSize =10;
+    @ApiModelProperty("机构Id")
+    private Integer channelId ;
 
+
+    public Integer getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(Integer channelId) {
+        this.channelId = channelId;
+    }
 
     public Integer getPageIndex() {
         return pageIndex;

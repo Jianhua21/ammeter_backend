@@ -116,7 +116,7 @@
       where w.id = e.id ) f on f.ammeter_id = d.id WHERE p.status !=3
       and p.device_type = #{deviceType,jdbcType=INTEGER}
       <if test="channelId != null and channelId != ''" >
-        and  u.channel_id =#{channelId,jdbcType=INTEGER}
+        and  p.channel_id =#{channelId,jdbcType=INTEGER}
       </if>
       <if test="positionId != null and positionId != ''" >
         and  p.id =#{positionId,jdbcType=INTEGER}
@@ -165,7 +165,7 @@
     (select max(id) id from ammeter_warning where warning_status = 0 group by ammeter_id) e
     where w.id = e.id ) f on f.ammeter_id = d.id WHERE p.status !=3
     <if test="channelId != null and channelId != ''" >
-      and  u.channel_id =#{channelId,jdbcType=INTEGER}
+      and  p.channel_id =#{channelId,jdbcType=INTEGER}
     </if>
 
       </select>
@@ -179,12 +179,12 @@
     </selectKey>
     insert into ammeter_position (name, number, address, 
       amap_longitude, amap_latitude, gps_longitude, 
-      gps_latitude, remark,create_by,create_time,imei,installer,platform,product_id,device_type)
+      gps_latitude, remark,create_by,create_time,imei,installer,platform,product_id,device_type,channel_id)
     values (#{name,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
       #{amapLongitude,jdbcType=VARCHAR}, #{amapLatitude,jdbcType=VARCHAR}, #{gpsLongitude,jdbcType=VARCHAR}, 
       #{gpsLatitude,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},#{createBy,jdbcType=INTEGER},
     #{createTime,jdbcType=TIMESTAMP}, #{imei,jdbcType=VARCHAR}, #{installer,jdbcType=VARCHAR}, #{platform,jdbcType=INTEGER},
-    #{productId,jdbcType=VARCHAR},#{deviceType,jdbcType=INTEGER})
+    #{productId,jdbcType=VARCHAR},#{deviceType,jdbcType=INTEGER},#{channelId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterPosition" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
@@ -376,6 +376,9 @@
       </if>
       <if test="platform != null" >
         platform = #{platform,jdbcType=VARCHAR},
+      </if>
+      <if test="channelId != null" >
+        channel_id = #{channelId,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}

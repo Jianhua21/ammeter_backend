@@ -1,5 +1,6 @@
 package com.kashuo.kcp.rpc.controller;
 
+import com.fasterxml.jackson.databind.deser.Deserializers;
 import com.kashuo.kcp.core.AmmeterRuleService;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.AmmeterRuleMapper;
@@ -27,7 +28,7 @@ import java.util.Map;
 @RestController
 @Api("系统参数管理")
 @RequestMapping("/system")
-public class SystemParamsController {
+public class SystemParamsController extends BaseController {
 
     @Autowired
     private SysDictionaryService sysDictionaryService;
@@ -52,6 +53,9 @@ public class SystemParamsController {
     @ApiOperation("更新井盖参数阀值")
     @PostMapping("/updateWellCover")
     public Results updateWellCover(@RequestBody AmmeterWellCoverSystemParams wellCoverSystemParams){
+        if(!isAdmin(getCuruser().getChannelId())){
+            return Results.error("请联系管理员进行操作!");
+        }
        ruleService.saveWellCoverRule(wellCoverSystemParams);
        return Results.success("更新成功!");
     }

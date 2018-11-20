@@ -36,7 +36,9 @@ public class AmmeterController extends BaseController{
     @ApiOperation(value="电表信息列表")
     public Results list(@RequestBody AmmeterCondition ammeterCondition ){
         AmmeterUser user = getCuruser();
-        ammeterCondition.setChannelId(user.getChannelId());
+        if(!isAdmin(user.getChannelId())) {
+            ammeterCondition.setChannelId(user.getChannelId());
+        }
         ammeterCondition.setPageIndex(ammeterCondition.getPageIndex());
         ammeterCondition.setPageSize(ammeterCondition.getPageSize());
         return ammeterService.listAmmeterInfo(ammeterCondition);
