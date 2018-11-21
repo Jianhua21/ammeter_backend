@@ -75,7 +75,7 @@ public class QuartzConfiguration {
 
     @Scheduled(cron = "${app.constant.quartz.hour.two}")
     public void send645VoltageDeviceCommand() throws Exception {
-        if (offSet) {
+        if (false) {
             try {
             regSync.send645VoltageDeviceCommand();
             }catch (Exception e){
@@ -85,7 +85,7 @@ public class QuartzConfiguration {
     }
     @Scheduled(cron = "${app.constant.quartz.hour.three}")
     public void send645CurrentDeviceCommand() throws Exception {
-        if (offSet) {
+        if (false) {
             try{
             regSync.send645CurrentDeviceCommand();
             }catch (Exception e){

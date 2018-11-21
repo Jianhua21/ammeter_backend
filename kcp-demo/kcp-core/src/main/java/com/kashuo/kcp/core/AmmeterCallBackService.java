@@ -16,6 +16,7 @@ import com.kashuo.kcp.utils.AmmeterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -97,6 +98,7 @@ public class AmmeterCallBackService {
                 //记录电量值
                 if(!detail.getData().contains("ERR")) {
                     ammeterReportServer.processDailyReportServer(device, detail.getData(), 1);
+                    ammeterDeviceMapper.updateProductDateByDeviceId(deviceId,new Date());
                 }
 
             }else if(detail.getCommand().equals(voltage)){
