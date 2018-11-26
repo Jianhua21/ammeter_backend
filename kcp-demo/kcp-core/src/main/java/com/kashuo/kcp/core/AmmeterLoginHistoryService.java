@@ -17,6 +17,8 @@ public class AmmeterLoginHistoryService {
 
     private static String AMAP_URL="https://restapi.amap.com/v3/ip?ip=";
 
+    private static String AMAP_GPS_URL = "https://restapi.amap.com/v3/assistant/coordinate/convert?key=";
+
     public static final String AMAP_PROVINCE ="province";
 
     public static final String AMAP_CITY ="city";
@@ -43,6 +45,12 @@ public class AmmeterLoginHistoryService {
         sb.append(IP).append("&output=JSON&key=").append(key);
         return HttpClientUtils.getDataFromGetMethod(sb.toString());
 
+    }
+
+    public JSONObject getAmapLocationByGps(String gpsLongitude,String gpsLatitude,String key) throws IOException{
+        StringBuilder sb = new StringBuilder(AMAP_GPS_URL);
+        sb.append(key).append("&output=JSON&locations=").append(gpsLongitude).append(",").append(gpsLatitude).append("&coordsys=gps");
+        return HttpClientUtils.getDataFromGetMethod(sb.toString());
     }
 
     public static void main(String[] args) throws IOException {

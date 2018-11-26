@@ -1,5 +1,6 @@
 package com.kashuo.kcp.core;
 
+import com.alibaba.fastjson.JSONObject;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
 import com.kashuo.kcp.dao.AmmeterImeiMapper;
@@ -8,6 +9,7 @@ import com.kashuo.kcp.dao.condition.AmmeterPositionCondition;
 import com.kashuo.kcp.dao.result.PosotionHome;
 import com.kashuo.kcp.domain.AmmeterImei;
 import com.kashuo.kcp.domain.AmmeterPosition;
+import com.kashuo.kcp.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class AmmeterPositionService {
 
     @Autowired
     private AmmeterImeiMapper ammeterImeiMapper;
+
+    @Autowired
+    private AmmeterLoginHistoryService loginHistoryService;
 
     public void insert(AmmeterPosition ammeterPosition){
         ammeterPositionMapper.insert(ammeterPosition);
@@ -76,6 +81,20 @@ public class AmmeterPositionService {
     public Page<PosotionHome> getGISList(AmmeterPositionCondition condition){
         PageHelper.startPage(condition.getPageIndex(),condition.getPageSize());
         return ammeterPositionMapper.getGISList(condition);
+    }
+    public void setAmapLocation(AmmeterPosition ammeterPosition,String amapKey){
+        if(StringUtil.isNotEmpty(ammeterPosition.getGpsLatitude()) &&
+                StringUtil.isNotEmpty(ammeterPosition.getGpsLongitude()) ) {
+            try {
+                JSONObject object = loginHistoryService.getAmapLocationByGps(ammeterPosition.getGpsLongitude(), ammeterPosition.getGpsLatitude(), amapKey);
+                String[] locations = object.getString("locations").split(",");
+                ammeterPosition.setAmapLatitude(locations[1]);
+                ammeterPosition.setAmapLongitude(locations[0]);
+            } catch (Exception e) {
+                ammeterPosition.setAmapLatitude(ammeterPosition.getGpsLatitude());
+                ammeterPosition.setAmapLongitude(ammeterPosition.getGpsLongitude());
+            }
+        }
     }
 
     public AmmeterImei selectIMEIbyKey(String IMEI){

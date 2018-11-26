@@ -95,7 +95,7 @@ public class CallNbiotController {
                             netWorkService.updateDeviceStatusByNb(deviceId, null, true);
                         } else {
                             //设备下线处理
-                           // netWorkService.updateDeviceStatusByNb(deviceId, null, false);
+                            netWorkService.updateDeviceStatusByNb(deviceId, null, false);
                         }
                     } else {
                         //设备数据处理

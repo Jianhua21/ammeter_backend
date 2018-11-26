@@ -29,6 +29,7 @@ import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -61,6 +62,9 @@ public class PositionController extends BaseController{
     private AmmeterIMEIService ammeterIMEIService;
 
 
+    @Value("${app.constant.gaode.appId}")
+    private String key;
+
     @PostMapping(value = "/create")
     @ApiOperation(value="电表位置信息录入")
     public Results createAmmeterPosition(@RequestBody AmmeterPosition ammeterPosition) throws NorthApiException {
@@ -72,11 +76,11 @@ public class PositionController extends BaseController{
         if(ammeterPosition.getImei().length() != 15){
             return Results.error("IMEI格式不对,请检查下!");
         }
-        if(StringUtil.isEmpty(ammeterPosition.getAmapLatitude())){
-            return Results.error("高德经度信息不能为空!");
+        if(StringUtil.isEmpty(ammeterPosition.getGpsLatitude())&& StringUtil.isEmpty(ammeterPosition.getAmapLatitude())){
+            return Results.error("GPS经度信息不能为空!");
         }
-        if(StringUtil.isEmpty(ammeterPosition.getAmapLongitude())){
-            return Results.error("高德纬度信息不能为空!");
+        if(StringUtil.isEmpty(ammeterPosition.getGpsLongitude())&&StringUtil.isEmpty(ammeterPosition.getAmapLongitude())){
+            return Results.error("GPS纬度信息不能为空!");
         }
         if(StringUtil.isEmpty(ammeterPosition.getName())){
             return Results.error("电表名称不能为空!");
@@ -95,6 +99,7 @@ public class PositionController extends BaseController{
         if(StringUtil.isEmpty(ammeterPosition.getInstaller())){
             ammeterPosition.setInstaller("-");
         }
+        ammeterPositionService.setAmapLocation(ammeterPosition,key);
         if(StringUtil.isEmpty(String.valueOf(ammeterPosition.getPlatform()))){
             return Results.error("请选择设备注册平台!");
         }
@@ -193,10 +198,9 @@ public class PositionController extends BaseController{
             position.setAddress(ammeterPosition.getAddress());
             position.setRemark(ammeterPosition.getRemark());
             position.setInstaller(ammeterPosition.getInstaller());
-            position.setAmapLongitude(ammeterPosition.getAmapLongitude());
-            position.setAmapLatitude(ammeterPosition.getAmapLatitude());
             position.setGpsLongitude(ammeterPosition.getGpsLongitude());
             position.setGpsLatitude(ammeterPosition.getGpsLatitude());
+            ammeterPositionService.setAmapLocation(position,key);
             position.setName(ammeterPosition.getName());
             position.setNumber(ammeterPosition.getNumber());
             position.setDeviceModel(ammeterPosition.getDeviceModel());
