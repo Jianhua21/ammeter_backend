@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kashuo.kcp.dao.AmmeterMsgHistoryMapper" >
+  <resultMap id="BaseResultMap" type="com.kashuo.kcp.domain.AmmeterMsgHistory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="imei" property="imei" jdbcType="VARCHAR" />
+    <result column="send_date" property="sendDate" jdbcType="TIMESTAMP" />
+    <result column="send_flag" property="sendFlag" jdbcType="CHAR" />
+    <result column="send_status" property="sendStatus" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, imei, send_date, send_flag, send_status,phone
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_msg_history
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ammeter_msg_history
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kashuo.kcp.domain.AmmeterMsgHistory" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_msg_history (imei, send_date, send_flag,
+      send_status,phone)
+    values (#{imei,jdbcType=VARCHAR}, #{sendDate,jdbcType=TIMESTAMP}, #{sendFlag,jdbcType=CHAR},
+      #{sendStatus,jdbcType=VARCHAR},#{phone,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterMsgHistory" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ammeter_msg_history
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="imei != null" >
+        imei,
+      </if>
+      <if test="sendDate != null" >
+        send_date,
+      </if>
+      <if test="sendFlag != null" >
+        send_flag,
+      </if>
+      <if test="sendStatus != null" >
+        send_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="imei != null" >
+        #{imei,jdbcType=VARCHAR},
+      </if>
+      <if test="sendDate != null" >
+        #{sendDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendFlag != null" >
+        #{sendFlag,jdbcType=CHAR},
+      </if>
+      <if test="sendStatus != null" >
+        #{sendStatus,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterMsgHistory" >
+    update ammeter_msg_history
+    <set >
+      <if test="imei != null" >
+        imei = #{imei,jdbcType=VARCHAR},
+      </if>
+      <if test="sendDate != null" >
+        send_date = #{sendDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendFlag != null" >
+        send_flag = #{sendFlag,jdbcType=CHAR},
+      </if>
+      <if test="sendStatus != null" >
+        send_status = #{sendStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kashuo.kcp.domain.AmmeterMsgHistory" >
+    update ammeter_msg_history
+    set imei = #{imei,jdbcType=VARCHAR},
+      send_date = #{sendDate,jdbcType=TIMESTAMP},
+      send_flag = #{sendFlag,jdbcType=CHAR},
+      send_status = #{sendStatus,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

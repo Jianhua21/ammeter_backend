@@ -1,6 +1,7 @@
 package com.kashuo.kcp.redis;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by dell-pc on 2018/5/7.
@@ -11,6 +12,8 @@ public interface RedisService {
     String get(String key);
 
     boolean expire(String key, long expire);
+
+    void expireKey(String key, long time, TimeUnit timeUnit);
 
     <T> boolean setList(String key, List<T> list);
 

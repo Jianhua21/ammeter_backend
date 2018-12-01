@@ -7,6 +7,7 @@ import com.kashuo.kcp.dao.*;
 import com.kashuo.kcp.dao.condition.WarningCondition;
 import com.kashuo.kcp.dao.result.*;
 import com.kashuo.kcp.domain.*;
+import com.kashuo.kcp.manage.DeviceConfigService;
 import com.kashuo.kcp.utils.BeanUtils;
 import com.kashuo.kcp.utils.MessageUtils;
 import com.kashuo.kcp.utils.StringUtil;
@@ -36,6 +37,8 @@ public class AmmeterWarningService {
     private AmmeterWellcoverMapper wellcoverMapper;
     @Autowired
     private AmmeterDeviceMapper deviceMapper;
+    @Autowired
+    private DeviceConfigService deviceConfigService;
 
     public void updateWarningInfo(){
         List<AmmeterNetwork> networks = networkMapper.selectForWarningReport();
@@ -48,9 +51,9 @@ public class AmmeterWarningService {
         List<AmmeterNetwork> offline_networks = networkMapper.selectOfflineDevice();
         offline_networks.forEach(n-> {
             AmmeterPosition p = ammeterPositionMapper.selectByDeviceId(n.getDeviceId());
-                boolean messageFlag = MessageUtils.sendMessage(p.getImei(),"未上电",p.getContactInfo());
-
-                ruleService.offLineDeviceWarning(n,messageFlag);
+//                boolean messageFlag = MessageUtils.sendMessage(p.getImei(),"未上电",p.getContactInfo());
+                deviceConfigService.sendMsgInfoBySMS(p,"未上电",p.getDeviceType());
+                ruleService.offLineDeviceWarning(n,true);
                 AmmeterPosition position = new AmmeterPosition();
                 //设备不在线处理
                 position.setStatus(7);

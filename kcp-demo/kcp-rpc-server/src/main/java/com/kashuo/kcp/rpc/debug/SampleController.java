@@ -7,6 +7,9 @@ package com.kashuo.kcp.rpc.debug;
 import com.alibaba.fastjson.JSONObject;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.SysDictionaryService;
+import com.kashuo.kcp.dao.AmmeterPositionMapper;
+import com.kashuo.kcp.domain.AmmeterPosition;
+import com.kashuo.kcp.manage.DeviceConfigService;
 import com.kashuo.kcp.redis.RedisService;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import org.slf4j.Logger;
@@ -31,6 +34,10 @@ public class SampleController {
     private SysDictionaryService sysDictionaryService;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private AmmeterPositionMapper ammeterPositionMapper;
+    @Autowired
+    private DeviceConfigService deviceConfigService;
 //
     @RequestMapping(value = "/hello1", method = RequestMethod.GET)
     public ModelAndView home(HttpServletRequest request) {
@@ -57,6 +64,9 @@ public class SampleController {
     @GetMapping(value = "redisTest")
     @ResponseBody
     public String getIotNb(){
+        AmmeterPosition p = ammeterPositionMapper.selectByDeviceId("504902032");
+//                boolean messageFlag = MessageUtils.sendMessage(p.getImei(),"未上电",p.getContactInfo());
+        deviceConfigService.sendMsgInfoBySMS(p,"未上电",p.getDeviceType());
         return JSONObject.toJSONString(redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER)) ;
     }
 

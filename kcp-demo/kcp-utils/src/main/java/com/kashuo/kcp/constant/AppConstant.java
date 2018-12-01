@@ -20,6 +20,8 @@ public class AppConstant {
 
     public static final String IOM_PLATFORM_IP ="platformIp";
 
+    public static final String NB_CONTACTINFO ="smartdevice_contact";
+
     //系统参数typeId
     public static final String SYSTEM_PARAMS_TYPE_ID = "7";
 

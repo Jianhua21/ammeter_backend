@@ -2,10 +2,12 @@ package com.kashuo.kcp.redis;
 
 import com.alibaba.fastjson.JSON;
 import com.kashuo.kcp.utils.JSONUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 public class RedisServiceImpl implements RedisService {
     @Resource
     private RedisTemplate<String, ?> redisTemplate;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public boolean set(final String key, final String value) {
@@ -49,8 +53,21 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public boolean expire(final String key, long expire) {
-        return redisTemplate.expire(key, expire, TimeUnit.SECONDS);
+        return redisTemplate.expire(key, expire, TimeUnit.HOURS);
     }
+
+
+    /**
+     * 设置key的生命周期
+     *
+     * @param key
+     * @param time
+     * @param timeUnit
+     */
+    public void expireKey(String key, long time, TimeUnit timeUnit) {
+        stringRedisTemplate.expire(key, time, timeUnit);
+    }
+
 
     @Override
     public <T> boolean setList(String key, List<T> list) {
