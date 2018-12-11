@@ -93,8 +93,10 @@ public class PositionController extends BaseController{
 //            return Results.error("电表编号不能为空!");
         }
         if(StringUtil.isEmpty(ammeterPosition.getAddress())){
+            if(StringUtil.isEmpty(ammeterPosition.getRemark())){
+                return Results.error("设备地址不能为空!");
+            }
             ammeterPosition.setAddress(ammeterPosition.getRemark());
-//            return Results.error("电表位置信息地址不能为空!");
         }
         if(StringUtil.isEmpty(ammeterPosition.getInstaller())){
             ammeterPosition.setInstaller("-");
