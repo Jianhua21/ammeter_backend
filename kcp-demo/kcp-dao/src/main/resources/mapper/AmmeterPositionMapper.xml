@@ -57,6 +57,7 @@
     <result column="tilt_sensor" property="tiltSensor" jdbcType="VARCHAR" />
     <result column="water_level_sensor" property="waterLevelSensor" jdbcType="VARCHAR" />
     <result column="platform" property="platform" jdbcType="INTEGER" />
+    <result column="contact_info" property="contactInfo" jdbcType="VARCHAR" />
     <result column="device_type" property="deviceType" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
@@ -98,7 +99,7 @@
   </select>
     <select id="getPositionList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterPositionCondition">
       select p.id,p.device_id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude,
-      p.gps_longitude, p.gps_latitude, p.remark,p.status,
+      p.gps_longitude, p.gps_latitude, p.remark,p.status,p.contact_info,
       s.desc as status_name,IFNULL(info.`status`,2) as work_status,
       p.create_by,p.create_time,d.type,p.imei,p.installer,p.platform,p.company_name,
       wc.battery_status,wc.sensor,wc.surface_distance,wc.tilt_sensor,wc.water_level_sensor,
