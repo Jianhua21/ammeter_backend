@@ -37,7 +37,7 @@ public class CommandSendThread implements Runnable
 
     @Override
     public void run() {
-        logger.debug("nbiot 尝试 命令 "+command+" 发送");
+        logger.info("nbiot 尝试 命令 "+command+" 发送");
         Device device = new Device("",position.getImei(),position.getNumber());
         device.setCommand(command);
         device.setWriteResId(nbiot.getResourceId());
@@ -51,10 +51,10 @@ public class CommandSendThread implements Runnable
             logger.info("Nb Iot返回结果:{}"+JSONObject.toJSONString(result));
             boolean code = "5106".equals(result.getErrno());
             while (times < retryTime && code) {
-                logger.debug("nbiot 尝试第:" + (times + 1) + "次重新发送");
+                logger.info("nbiot 尝试第:" + (times + 1) + "次重新发送");
                 System.out.println("nbiot 尝试第:" + (times + 1) + "次重新发送");
                 result = deviceManagement.sendWriteCommand(device);
-                logger.debug("nbiot 返回数据:" + JSONObject.toJSONString(result));
+                logger.info("nbiot 返回数据:" + JSONObject.toJSONString(result));
                 if ("5106".equals(result.getErrno())) {
                     times++;
                     Thread.sleep(delaySecond);
