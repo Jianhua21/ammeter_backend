@@ -208,6 +208,8 @@ public class AmmeterWarningService {
                 AmmeterPosition position = ammeterPositionMapper.selectByDeviceId(r.getDeviceId());
                 position.setStatus(7);
                 ammeterPositionMapper.updateByPrimaryKeySelective(position);
+                //发送短信提醒
+                deviceConfigService.sendMsgInfoBySMS(position,"未上电",1);
             });
         }
     }

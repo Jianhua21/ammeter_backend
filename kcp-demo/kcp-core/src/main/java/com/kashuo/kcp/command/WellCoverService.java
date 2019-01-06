@@ -78,7 +78,12 @@ public class WellCoverService {
                 wellcover.setDeviceType(deviceType);
                 wellcover.setBatteryStatus(data.substring(4, 7));
                 wellcover.setSensor(data.substring(8, 11));
-                wellcover.setSurfaceDistance(data.substring(12, 15));
+                try {
+                    int distance = Integer.parseInt(data.substring(12, 15));
+                    wellcover.setSurfaceDistance(String.valueOf(distance/2));
+                }catch (Exception e){
+                    wellcover.setSurfaceDistance(data.substring(12, 15));
+                }
                 wellcover.setTiltSensor(data.substring(15, 17));
                 wellcover.setWaterLevelSensor(data.substring(17, 19));
             } else if (data.length() == 15 && "P0".equals(deviceType)) {

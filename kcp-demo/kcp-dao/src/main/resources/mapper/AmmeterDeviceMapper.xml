@@ -119,7 +119,7 @@
     <if test="installer != null and installer != ''">
       and p.installer  like CONCAT('%',#{installer,jdbcType=VARCHAR},'%')
     </if>
-      order by p.create_time desc
+      order by device.product_date desc, p.status asc
   </select>
 
   <select id="selectByImsiKey" resultMap="BaseResultMap" parameterType="java.lang.String" >

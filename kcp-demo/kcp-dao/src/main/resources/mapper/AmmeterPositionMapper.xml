@@ -134,7 +134,7 @@
         <if test="address != null and address != ''" >
             and  p.address like CONCAT('%',#{address,jdbcType=VARCHAR},'%')
         </if>
-      order by p.create_time desc
+      order by d.product_date desc, p.status asc
     </select>
 
   <resultMap id="BaseHomeResultMap" type="com.kashuo.kcp.dao.result.PosotionHome"  >
