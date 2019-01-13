@@ -26,6 +26,7 @@
     <result column="product_id" property="productId" jdbcType="VARCHAR" />
     <result column="platform" property="platform" jdbcType="INTEGER" />
     <result column="device_type" property="deviceType" jdbcType="INTEGER" />
+    <result column="channel_id" property="channelId" jdbcType="INTEGER" />
   </resultMap>
 
   <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterPosition" >
@@ -63,7 +64,7 @@
   <sql id="Base_Column_List" >
     id, name, number, address, amap_longitude, amap_latitude, gps_longitude, gps_latitude, 
     remark,status,create_by,create_time,imei,device_id,verify_code,psk,Activated,installer,'-' as status_name,
-    device_model,company_name,agreement_status,contact_info,product_id,platform,device_type
+    device_model,company_name,agreement_status,contact_info,product_id,platform,device_type,channel_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 

@@ -20,7 +20,9 @@ import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -88,8 +90,12 @@ public class DeviceConfigService {
 
         if(position != null) {
             try {
-                AmmeterUser user = userMapper.selectByPrimaryKey(position.getCreateBy());
+                AmmeterUser user = new AmmeterUser();
+                user.setChannelId(position.getChannelId());
                 AmmeterMsgContact cacheContact = getMsgFromCache(user, projectId);
+                if(isBlackImei(position.getImei())){
+                    return;
+                }
                 if(cacheContact != null){
                     if(StringUtil.isNotEmpty(cacheContact.getContactPhone1()) && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone1())){
                         sendMsgByLimit(position,status,cacheContact.getContactPhone1());
@@ -118,16 +124,14 @@ public class DeviceConfigService {
         }catch (Exception e){
 
         }
-        if(number >10){
+        if(number >30){
             return;
         }
         boolean flag = MessageUtils.sendLargeMessage(position.getImei(), status,phone,
                 position.getName(), position.getAddress());
         if(flag){
             redisService.set(AppConstant.NB_CONTACTINFO+"_"+phone,String.valueOf(number+1));
-            if(number == 0){
-                redisService.expireKey(AppConstant.NB_CONTACTINFO+"_"+phone,24, TimeUnit.HOURS);
-            }
+            redisService.expireKey(AppConstant.NB_CONTACTINFO+"_"+phone,24, TimeUnit.HOURS);
         }
         sendMsgHistory(position.getImei(),phone,flag,status);
     }
@@ -141,6 +145,55 @@ public class DeviceConfigService {
         msgHistory.setSendStatus(status);
         msgHistory.setPhone(phone);
         msgHistoryMapper.insert(msgHistory);
+    }
+
+    public List<String> addBlackList(String[] imeiArr,List<String> blackImeis) {
+        for (String imeiStr :imeiArr) {
+            boolean inBlack =false;
+            for (String blackImei:blackImeis) {
+                if(imeiStr.equals(blackImei)){
+                    inBlack =true;
+                    break;
+                }
+            }
+            if(!inBlack){
+                blackImeis.add(imeiStr) ;
+            }
+        }
+
+        return blackImeis;
+    }
+
+    public List<String> removeBlackList(String[] imeiArr,List<String> blackImeis) {
+        for(int i =blackImeis.size()-1;i>=0;i--){
+            boolean inBlack =false;
+            for (String imeiStr :imeiArr) {
+                if(imeiStr.equals(blackImeis.get(i))){
+                    inBlack =true;
+                    break;
+                }
+            }
+            if(inBlack){
+                blackImeis.remove(i) ;
+            }
+        }
+        return blackImeis;
+    }
+
+    public boolean isBlackImei(String imei){
+        String blackListStr = redisService.get(AppConstant.NB_DEVICE_BLACKLIST);
+        List<String> blackImeis;
+        boolean blackFlag = false;
+        if(blackListStr != null){
+            blackImeis = JSONObject.parseObject(blackListStr,List.class);
+            for (String blackImei:blackImeis) {
+                if(blackImei.equals(imei)){
+                    blackFlag =true;
+                }
+            }
+        }
+
+        return blackFlag;
     }
 
 

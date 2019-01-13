@@ -142,5 +142,35 @@ public class SystemParamsController extends BaseController {
         return Results.success("保存联系人成功!");
     }
 
+    @PostMapping("/addBlackListImei")
+    @ApiOperation("添加Imei黑名单")
+    public Results addBlackListByImei(@RequestBody String imei){
+        String blackListStr = redisService.get(AppConstant.NB_DEVICE_BLACKLIST);
+        if(imei != null) {
+            String[] imeiArr = imei.split(",");
+            List<String> blackImeis = new ArrayList<>();
+            if (blackListStr != null) {
+                blackImeis = JSONObject.parseObject(blackListStr, List.class);
+            }
+            blackImeis = deviceConfigService.addBlackList(imeiArr, blackImeis);
+            redisService.set(AppConstant.NB_DEVICE_BLACKLIST, JSONObject.toJSONString(blackImeis));
+        }
+        return Results.success("添加Imei黑名单成功!");
+    }
+    @PostMapping("/removeBlackListImei")
+    @ApiOperation("添加Imei黑名单")
+    public Results removeBlackListByImei(@RequestBody String imei){
+        String blackListStr = redisService.get(AppConstant.NB_DEVICE_BLACKLIST);
+        if(imei != null) {
+            String[] imeiArr = imei.split(",");
+            List<String> blackImeis = new ArrayList<>();
+            if (blackListStr != null) {
+                blackImeis = JSONObject.parseObject(blackListStr, List.class);
+            }
+            blackImeis = deviceConfigService.removeBlackList(imeiArr, blackImeis);
+            redisService.set(AppConstant.NB_DEVICE_BLACKLIST, JSONObject.toJSONString(blackImeis));
+        }
+        return Results.success("移除Imei黑名单成功!");
+    }
 
 }

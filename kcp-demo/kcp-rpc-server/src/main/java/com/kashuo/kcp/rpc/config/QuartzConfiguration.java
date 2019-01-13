@@ -2,6 +2,8 @@ package com.kashuo.kcp.rpc.config;
 
 import com.kashuo.kcp.rpc.schedule.IoMRegSync;
 import com.kashuo.kcp.rpc.schedule.WarningInfoSync;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -29,7 +31,7 @@ public class QuartzConfiguration {
     private WarningInfoSync warningInfoSync;
     @Autowired
     private IoMRegSync regSync;
-
+    Logger logger = LoggerFactory.getLogger(getClass());
     /**
      * 定时更新订购方案状态，每天凌晨一点执行
      */
@@ -43,7 +45,11 @@ public class QuartzConfiguration {
     @Scheduled(cron = "${app.constant.quartz}")
     public void updateCurrentByCron() throws Exception {
         if (offSet) {
-            warningInfoSync.updateOfflineDevice();
+            try {
+                warningInfoSync.updateOfflineDevice();
+            }catch (Exception e){
+                logger.error("更新未上电出错!{}",e);
+            }
         }
     }
     @Scheduled(cron = "${app.constant.quartz}")

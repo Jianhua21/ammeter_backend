@@ -151,7 +151,7 @@ public class AmmeterRuleService {
 
                         AmmeterPosition position = positionMapper.selectByPrimaryKey(wellcover.getPositionId());
                         //boolean messageFlag = MessageUtils.sendMessage(position.getImei(),rule.getRuleDesc(),position.getContactInfo());
-                        deviceConfigService.sendMsgInfoBySMS(position,rule.getRuleDesc(),position.getDeviceType());
+                        deviceConfigService.sendMsgInfoBySMS(position,rule.getRuleDesc(),1);
 
                         AmmeterWarning warning = new AmmeterWarning();
                         warning.setCreateBy("system");

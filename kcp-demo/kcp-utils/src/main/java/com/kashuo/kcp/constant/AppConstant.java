@@ -22,6 +22,8 @@ public class AppConstant {
 
     public static final String NB_CONTACTINFO ="smartdevice_contact";
 
+    public static final String NB_DEVICE_BLACKLIST ="smartdevice_blackList";
+
     //系统参数typeId
     public static final String SYSTEM_PARAMS_TYPE_ID = "7";
 
