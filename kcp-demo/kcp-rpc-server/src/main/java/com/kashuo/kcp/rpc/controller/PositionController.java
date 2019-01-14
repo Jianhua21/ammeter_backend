@@ -18,6 +18,7 @@ import com.kashuo.kcp.dao.result.AmmeterIMEIResult;
 import com.kashuo.kcp.dao.result.PosotionHome;
 import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.eums.DeviceTypes;
+import com.kashuo.kcp.eums.PlateTypes;
 import com.kashuo.kcp.manage.DeviceConfigService;
 import com.kashuo.kcp.utils.Results;
 import com.kashuo.kcp.utils.StringUtil;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by dell-pc on 2018/3/20.
@@ -162,10 +164,19 @@ public class PositionController extends BaseController{
 
         AmmeterPosition positionDB = ammeterPositionService.selectByImei(ammeterPosition.getImei());
         //向IoT平台注册和设备信息同步
-        if("1".equals(ammeterPosition.getPlatform())){
+        if(String.valueOf(PlateTypes.CHINA_MOBILE.getCode()).equals(ammeterPosition.getPlatform())){
              nbiotCommandService.createDevice(positionDB);
-        }else if("0".equals(ammeterPosition.getPlatform())){
+        }else if(String.valueOf(PlateTypes.CHINA_TELNET.getCode()).equals(ammeterPosition.getPlatform())){
              commandService.autoRegDevice(positionDB);
+        }else{
+            AmmeterPosition update = new AmmeterPosition();
+            if(String.valueOf(PlateTypes.CHINA_UNICOM.getCode()).equals(ammeterPosition.getPlatform())){
+                update.setDeviceId("un-"+UUID.randomUUID().toString());
+            }else{
+                update.setDeviceId("sd-"+UUID.randomUUID().toString());
+            }
+            update.setId(positionDB.getId());
+            ammeterPositionService.updateByPrimaryKeySelective(update);
         }
         return Results.success("位置信息录入成功!");
     }

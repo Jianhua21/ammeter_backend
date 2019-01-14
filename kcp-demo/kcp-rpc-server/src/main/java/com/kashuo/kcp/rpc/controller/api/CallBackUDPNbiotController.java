@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Created by dell-pc on 2018/10/11.
@@ -98,6 +99,15 @@ public class CallBackUDPNbiotController {
 //        }
         /*************加密模式  end****************/
         return "ok";
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i < 5; i++) {
+            //注意replaceAll前面的是正则表达式
+            String uuid = UUID.randomUUID().toString().replaceAll("-","");
+            System.out.println(uuid);
+//            System.out.println(uuid.length());
+        }
     }
 
 }
