@@ -7,6 +7,7 @@ import cmcciot.onenet.nbapi.sdk.entity.Device;
 import cmcciot.onenet.nbapi.sdk.entity.NbiotResult;
 import cmcciot.onenet.nbapi.sdk.entity.Read;
 import cmcciot.onenet.nbapi.sdk.entity.Write;
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.huawei.iotplatform.utils.JsonUtil;
 import com.kashuo.kcp.api.entity.AmmeterCommand;
@@ -55,18 +56,19 @@ public class NbiotCommandService {
     public void createDevice(AmmeterPosition ammeterPosition) {
         AmmeterNbiot nbiot = authService.getNbiotInformation(ammeterPosition.getProductId());
         CreateDeviceOpe deviceOpe = new CreateDeviceOpe(nbiot.getApiKey());
-        Device device = new Device(ammeterPosition.getName(), ammeterPosition.getImei(), ammeterPosition.getNumber());
+        Device device = new Device(ammeterPosition.getName(), ammeterPosition.getImei(), ammeterPosition.getImei());
         device.setDesc(ammeterPosition.getAddress());
         JSONObject info = new JSONObject();
         info.put("version","1.0.0");
         info.put("manu","十钉物联");
         device.setOther(info);
         try {
+            logger.info("NBIot请求参数为:{}", device.toJsonObject());
             String response = deviceOpe.operation(device, device.toJsonObject()).toString();
             NbiotResult result = com.alibaba.fastjson.JSONObject.parseObject(response, NbiotResult.class);
             AmmeterPosition position = new AmmeterPosition();
             position.setId(ammeterPosition.getId());
-
+            logger.info("NBIot返回结果为:{}", JSON.toJSONString(result));
             if(NbiotConstant.NBIOT_ERROR_CODE_00.equals(result.getErrno())){
                 position.setStatus(1);
                 com.alibaba.fastjson.JSONObject jsStr = com.alibaba.fastjson.JSONObject.parseObject(result.getData());
