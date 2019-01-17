@@ -12,6 +12,8 @@ import com.kashuo.kcp.utils.BeanUtils;
 import com.kashuo.kcp.utils.MessageUtils;
 import com.kashuo.kcp.utils.StringUtil;
 import com.kashuo.kcp.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ import java.util.Map;
 @Service
 public class AmmeterWarningService {
 
+    private Logger logger = LoggerFactory.getLogger(AmmeterWarningService.class);
     @Autowired
     private AmmeterNetworkMapper networkMapper;
     @Autowired
@@ -246,47 +249,55 @@ public class AmmeterWarningService {
 
     public WarningDeviceHome reportWarningDeviceInfo(Integer channelId) throws Exception{
         WarningDeviceHome  home = new WarningDeviceHome();
-        Map<String,Object> warningInfo = warningMapper.reportWarningCount(0,channelId);
-        home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()) );
-        home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
-        home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
-        Map<String,Object> warningDevices = warningMapper.reportWarningSmartDevices(channelId);
-        WarningDeviceCategory category = new WarningDeviceCategory();
-        home.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
-        home.setOnlineDevices(Integer.parseInt(warningDevices.get("onlineDevices").toString()));
-        category.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
-        category.setNormalDevices(Integer.parseInt(warningDevices.get("normalDevices").toString()));
-        category.setBatteryWarningDevices(Integer.parseInt(warningDevices.get("batteryWarningDevices").toString()));
-        category.setSensorWarningDevices(Integer.parseInt(warningDevices.get("sensorWarningDevices").toString()));
-        category.setSurfaceDistanceWarningDevices(Integer.parseInt(warningDevices.get("surfaceDistanceWarningDevices").toString()));
-        category.setTiltSensorWarningDevices(Integer.parseInt(warningDevices.get("tiltSensorWarningDevices").toString()));
-        category.setWaterLevelSensorWarningDevices(Integer.parseInt(warningDevices.get("waterLevelSensorWarningDevices").toString()));
-        home.setWarningCategories(category);
+        try {
+            Map<String, Object> warningInfo = warningMapper.reportWarningCount(0, channelId);
+            home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()));
+            home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
+            home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
+            Map<String, Object> warningDevices = warningMapper.reportWarningSmartDevices(channelId);
+            WarningDeviceCategory category = new WarningDeviceCategory();
+            home.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
+            home.setOnlineDevices(Integer.parseInt(warningDevices.get("onlineDevices").toString()));
+            category.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
+            category.setNormalDevices(Integer.parseInt(warningDevices.get("normalDevices").toString()));
+            category.setBatteryWarningDevices(Integer.parseInt(warningDevices.get("batteryWarningDevices").toString()));
+            category.setSensorWarningDevices(Integer.parseInt(warningDevices.get("sensorWarningDevices").toString()));
+            category.setSurfaceDistanceWarningDevices(Integer.parseInt(warningDevices.get("surfaceDistanceWarningDevices").toString()));
+            category.setTiltSensorWarningDevices(Integer.parseInt(warningDevices.get("tiltSensorWarningDevices").toString()));
+            category.setWaterLevelSensorWarningDevices(Integer.parseInt(warningDevices.get("waterLevelSensorWarningDevices").toString()));
+            home.setWarningCategories(category);
+        }catch (Exception e){
+            logger.error("reportWarningDeviceInfo  出错了{}",e);
+        }
         return home;
     }
 
     public WarningDeviceHome reportWarningSmokeDeviceInfo(Integer channelId) throws Exception{
         WarningDeviceHome  home = new WarningDeviceHome();
-        Map<String,Object> warningInfo = warningMapper.reportWarningCount(1,channelId);
-        home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()) );
-        home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
-        home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
+        try {
+            Map<String, Object> warningInfo = warningMapper.reportWarningCount(1, channelId);
+            home.setCurrentWarnings(Integer.parseInt(warningInfo.get("currentWarnings").toString()));
+            home.setHistoryWarnings(Integer.parseInt(warningInfo.get("historyWarnings").toString()));
+            home.setWarningNumbers(Integer.parseInt(warningInfo.get("warningNumbers").toString()));
 
-        Map<String,Object> warningDevices = warningMapper.reportWarningSmokeDevices(channelId);
-        home.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
-        home.setOnlineDevices(Integer.parseInt(warningDevices.get("onlineDevices").toString()));
+            Map<String, Object> warningDevices = warningMapper.reportWarningSmokeDevices(channelId);
+            home.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
+            home.setOnlineDevices(Integer.parseInt(warningDevices.get("onlineDevices").toString()));
 
-        WarningSmokeDetectorCategory smokeDetectorCategory = new WarningSmokeDetectorCategory();
+            WarningSmokeDetectorCategory smokeDetectorCategory = new WarningSmokeDetectorCategory();
 
-        smokeDetectorCategory.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
-        smokeDetectorCategory.setNormalDevices(Integer.parseInt(warningDevices.get("onlineDevices").toString()));
-        smokeDetectorCategory.setOfflineDevices(Integer.parseInt(warningDevices.get("warningOfflineDevices").toString()));
-        smokeDetectorCategory.setBatteryWarningDevices(Integer.parseInt(warningDevices.get("batteryWarningDevices").toString()));
-        smokeDetectorCategory.setTemperatureWarningDevices(Integer.parseInt(warningDevices.get("temperatureWarningDevices").toString()));
-        smokeDetectorCategory.setHumidityWarningDevices(Integer.parseInt(warningDevices.get("humidityWarningDevices").toString()));
-        smokeDetectorCategory.setSmokeWarningDevices(Integer.parseInt(warningDevices.get("smokeWarningDevices").toString()));
-        smokeDetectorCategory.setWeakSignalDevices(0);
-        home.setSmokeDetectorCategory(smokeDetectorCategory);
+            smokeDetectorCategory.setTotalDevices(Integer.parseInt(warningDevices.get("totalDevices").toString()));
+            smokeDetectorCategory.setNormalDevices(Integer.parseInt(warningDevices.get("onlineDevices").toString()));
+            smokeDetectorCategory.setOfflineDevices(Integer.parseInt(warningDevices.get("warningOfflineDevices").toString()));
+            smokeDetectorCategory.setBatteryWarningDevices(Integer.parseInt(warningDevices.get("batteryWarningDevices").toString()));
+            smokeDetectorCategory.setTemperatureWarningDevices(Integer.parseInt(warningDevices.get("temperatureWarningDevices").toString()));
+            smokeDetectorCategory.setHumidityWarningDevices(Integer.parseInt(warningDevices.get("humidityWarningDevices").toString()));
+            smokeDetectorCategory.setSmokeWarningDevices(Integer.parseInt(warningDevices.get("smokeWarningDevices").toString()));
+            smokeDetectorCategory.setWeakSignalDevices(0);
+            home.setSmokeDetectorCategory(smokeDetectorCategory);
+        }catch (Exception e){
+            logger.error("reportWarningSmokeDeviceInfo 出错了{}",e);
+        }
         return home;
     }
 
