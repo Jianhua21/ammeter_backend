@@ -103,57 +103,61 @@ public class CallBackController {
         String notifyType = String.valueOf(params.get(IoTConstant.IOT_NOTIFY_TYPE));
         String deviceId = String.valueOf(params.get(IoTConstant.IOT_DEVICE_ID));
         logger.info("正在处理通知类型为:{} 的数据",notifyType);
-        if(IoTConstant.IOT_NOTIFY_TYPE_DEVICE_DATA_CHANGED.equals(notifyType)){
+        try {
+            if (IoTConstant.IOT_NOTIFY_TYPE_DEVICE_DATA_CHANGED.equals(notifyType)) {
 
-            DeviceDataChange dataChange = JSON.parseObject(result,DeviceDataChange.class);
-            String response = dataChange.getService().getData().getMeter();
-            //处理CallBack 命令参数
-            CommandDetail detail = commandService.processDeviceCallBackResponse(response);
+                DeviceDataChange dataChange = JSON.parseObject(result, DeviceDataChange.class);
+                String response = dataChange.getService().getData().getMeter();
+                //处理CallBack 命令参数
+                CommandDetail detail = commandService.processDeviceCallBackResponse(response);
 
-            String crc_new = CRC16x25Utils.CRC16_Check(detail.getContext().getBytes(),detail.getContext().length());
-            if(!crc_new.toUpperCase().equals(detail.getCrcValue())){
-                logger.info("CRC值 不正确:{}",JSON.toJSONString(detail));
-                return ;
+                String crc_new = CRC16x25Utils.CRC16_Check(detail.getContext().getBytes(), detail.getContext().length());
+                if (!crc_new.toUpperCase().equals(detail.getCrcValue())) {
+                    logger.info("CRC值 不正确:{}", JSON.toJSONString(detail));
+                    return;
+                }
+                System.out.println("------------------------");
+                if (IoTConstant.Command.DEVICE_COMMAND_NBM001.equals(detail.getCommand())) {
+                    //处理保活数据
+                    netWorkService.insertNetWorkInfo(detail.getData(), deviceId);
+                } else if (IoTConstant.Command.DEVICE_COMMAND_NBM002.equals(detail.getCommand())) {
+                    //设置CDP服务器IP
+                    callBackService.processRunningConfig(detail, deviceId);
+                } else if (IoTConstant.Command.DEVICE_COMMAND_NBM003.equals(detail.getCommand())) {
+                    //设置APN地址
+                    callBackService.processRunningConfig(detail, deviceId);
+                } else if (IoTConstant.Command.DEVICE_COMMAND_STM001.equals(detail.getCommand())) {
+                    //处理设备软重启CallBack
+                } else if (IoTConstant.Command.DEVICE_COMMAND_STM002.equals(detail.getCommand())) {
+                    //恢复出厂设置
+                } else if (IoTConstant.Command.DEVICE_COMMAND_STM003.equals(detail.getCommand())) {
+                    //保存系统配置
+                } else if (IoTConstant.Command.DEVICE_COMMAND_STM004.equals(detail.getCommand())) {
+                    //配置NB处理流程时间
+                    callBackService.processRunningConfig(detail, deviceId);
+                } else if (IoTConstant.Command.DEVICE_COMMAND_IEM001.equals(detail.getCommand())) {
+                    //拉闸处理
+                    callBackService.processSwitchPower(detail, deviceId, false);
+                } else if (IoTConstant.Command.DEVICE_COMMAND_IEM002.equals(detail.getCommand())) {
+                    //合闸处理
+                    callBackService.processSwitchPower(detail, deviceId, true);
+                } else if (detail.getCommand().startsWith(IoTConstant.Command.DEVICE_COMMAND_FEFEFEFE)) {
+                    //电表645命令
+                    callBackService.process645dltData(detail, deviceId);
+                }
+                commandService.updateCommandHistoryBySubscrible(dataChange, detail);
+            } else if (IoTConstant.IOT_NOTIFY_TYPE_DEVICE_INFO_CHANGED.equals(notifyType)) {
+
             }
-            System.out.println("------------------------");
-            if(IoTConstant.Command.DEVICE_COMMAND_NBM001.equals(detail.getCommand())){
-                //处理保活数据
-                netWorkService.insertNetWorkInfo(detail.getData(),deviceId);
-            }else if(IoTConstant.Command.DEVICE_COMMAND_NBM002.equals(detail.getCommand())){
-                //设置CDP服务器IP
-                callBackService.processRunningConfig(detail,deviceId);
-            }else if(IoTConstant.Command.DEVICE_COMMAND_NBM003.equals(detail.getCommand())){
-                //设置APN地址
-                callBackService.processRunningConfig(detail,deviceId);
-            }else if(IoTConstant.Command.DEVICE_COMMAND_STM001.equals(detail.getCommand())){
-                //处理设备软重启CallBack
-            }else if(IoTConstant.Command.DEVICE_COMMAND_STM002.equals(detail.getCommand())){
-                //恢复出厂设置
-            }else if(IoTConstant.Command.DEVICE_COMMAND_STM003.equals(detail.getCommand())){
-                //保存系统配置
-            }else if(IoTConstant.Command.DEVICE_COMMAND_STM004.equals(detail.getCommand())){
-                //配置NB处理流程时间
-                callBackService.processRunningConfig(detail,deviceId);
-            }else if(IoTConstant.Command.DEVICE_COMMAND_IEM001.equals(detail.getCommand())){
-                //拉闸处理
-                callBackService.processSwitchPower(detail,deviceId,false);
-            }else if(IoTConstant.Command.DEVICE_COMMAND_IEM002.equals(detail.getCommand())){
-               //合闸处理
-                callBackService.processSwitchPower(detail,deviceId,true);
-            }else if(detail.getCommand().startsWith(IoTConstant.Command.DEVICE_COMMAND_FEFEFEFE)){
-                //电表645命令
-                callBackService.process645dltData(detail,deviceId);
-            }
-            commandService.updateCommandHistoryBySubscrible(dataChange,detail);
-        }else if(IoTConstant.IOT_NOTIFY_TYPE_DEVICE_INFO_CHANGED.equals(notifyType)){
-
+            AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
+            callbackHistory.setDeviceId(deviceId);
+            callbackHistory.setNotifyType(notifyType);
+            callbackHistory.setCreateTime(new Date());
+            callbackHistory.setParams(result);
+            callBackService.insertCallBackHistory(callbackHistory);
+        }catch (Exception e){
+            logger.error("电信 -----数据格式有问题:{}",result);
         }
-        AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
-        callbackHistory.setDeviceId(deviceId);
-        callbackHistory.setNotifyType(notifyType);
-        callbackHistory.setCreateTime(new Date());
-        callbackHistory.setParams(result);
-        callBackService.insertCallBackHistory(callbackHistory);
         logger.info("--------IoM subscribe request data End------------------------");
     }
 

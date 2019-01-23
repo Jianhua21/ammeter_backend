@@ -80,6 +80,13 @@ public class DeviceManageService {
         boolean result =true;
         try {
             deviceManagement.modifyDeviceInfo(deviceInfoInDTO, ammeterAuth.getAppId(), ammeterAuth.getAccessToken());
+            /***
+             * 更新状态为 未上电
+             */
+            AmmeterPosition update = new AmmeterPosition();
+            update.setId(ammeterPosition.getId());
+            update.setStatus(5);
+            positionService.updateByPrimaryKeySelective(update);
         }catch (NorthApiException e){
             result = false;
             AmmeterPosition position_db = new AmmeterPosition();
