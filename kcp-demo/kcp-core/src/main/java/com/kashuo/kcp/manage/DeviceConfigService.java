@@ -12,7 +12,9 @@ import com.kashuo.kcp.domain.AmmeterMsgContact;
 import com.kashuo.kcp.domain.AmmeterMsgHistory;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterUser;
+import com.kashuo.kcp.entity.MessageBody;
 import com.kashuo.kcp.redis.RedisService;
+import com.kashuo.kcp.utils.MessageNewUtils;
 import com.kashuo.kcp.utils.MessageUtils;
 import com.kashuo.kcp.utils.StringUtil;
 import com.kashuo.kcp.utils.ValidateUtil;
@@ -87,7 +89,6 @@ public class DeviceConfigService {
     }
 
     public void sendMsgInfoBySMS(AmmeterPosition position,String status,Integer projectId){
-
         if(position != null) {
             try {
                 AmmeterUser user = new AmmeterUser();
@@ -97,15 +98,20 @@ public class DeviceConfigService {
                     return;
                 }
                 if(cacheContact != null){
+                    String phone="";
                     if(StringUtil.isNotEmpty(cacheContact.getContactPhone1()) && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone1())){
-                        sendMsgByLimit(position,status,cacheContact.getContactPhone1());
+                        //sendMsgByLimit(position,status,cacheContact.getContactPhone1());
+                        phone= cacheContact.getContactPhone1();
                     }
                     if(StringUtil.isNotEmpty(cacheContact.getContactPhone2()) && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone2())){
-                        sendMsgByLimit(position,status,cacheContact.getContactPhone2());
+//                        sendMsgByLimit(position,status,cacheContact.getContactPhone2());
+                        phone +=cacheContact.getContactPhone2();
                     }
                     if(StringUtil.isNotEmpty(cacheContact.getContactPhone3()) && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone3())){
-                        sendMsgByLimit(position,status,cacheContact.getContactPhone3());
+//                        sendMsgByLimit(position,status,cacheContact.getContactPhone3());
+                        phone +=cacheContact.getContactPhone3();
                     }
+                    sendMsgByLimit(position,status,phone);
                 }else if(StringUtil.isNotEmpty(position.getContactInfo()) && ValidateUtil.validatePhoneNumber(position.getContactInfo())){
                     sendMsgByLimit(position,status,position.getContactInfo());
                 }
@@ -127,11 +133,17 @@ public class DeviceConfigService {
         if(number >30){
             return;
         }
-        boolean flag = MessageUtils.sendLargeMessage(position.getImei(), status,phone,
-                position.getName(), position.getAddress());
+        MessageBody message = new MessageBody();
+        message.setImei(position.getImei());
+        message.setAddress(position.getAddress());
+        message.setStatus(status);
+        message.setRemark("请登录网站查看");
+        boolean flag =MessageNewUtils.sendNoticesMessage(message,phone);
+//        boolean flag = MessageUtils.sendLargeMessage(position.getImei(), status,phone,
+//                position.getName(), position.getAddress());
         if(flag){
             redisService.set(AppConstant.NB_CONTACTINFO+"_"+phone,String.valueOf(number+1));
-            redisService.expireKey(AppConstant.NB_CONTACTINFO+"_"+phone,24, TimeUnit.HOURS);
+            redisService.expireKey(AppConstant.NB_CONTACTINFO+"_"+phone,12, TimeUnit.HOURS);
         }
         sendMsgHistory(position.getImei(),phone,flag,status);
     }

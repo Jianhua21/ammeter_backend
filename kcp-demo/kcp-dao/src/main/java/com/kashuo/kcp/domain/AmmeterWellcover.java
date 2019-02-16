@@ -23,6 +23,16 @@ public class AmmeterWellcover {
 
     private String smokeWarning;
 
+    private String riData;
+
+    public String getRiData() {
+        return riData;
+    }
+
+    public void setRiData(String riData) {
+        this.riData = riData;
+    }
+
     public String getEnTemperature() {
         return enTemperature;
     }

@@ -64,7 +64,7 @@ public class SampleController {
     @GetMapping(value = "redisTest")
     @ResponseBody
     public String getIotNb(){
-        AmmeterPosition p = ammeterPositionMapper.selectByDeviceId("68562da5-b83a-452b-aed2-be93a8b0c7b8");
+        AmmeterPosition p = ammeterPositionMapper.selectByDeviceId("39749229");
 //                boolean messageFlag = MessageUtils.sendMessage(p.getImei(),"未上电",p.getContactInfo());
         deviceConfigService.sendMsgInfoBySMS(p,"测试状态",1);
         return JSONObject.toJSONString(redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER)) ;

@@ -91,6 +91,16 @@ public class AmmeterInfoResult implements Serializable{
 
     private Integer platform;
 
+    private String riData;
+
+    public String getRiData() {
+        return riData;
+    }
+
+    public void setRiData(String riData) {
+        this.riData = riData;
+    }
+
     public String getEnTemperature() {
         if(enTemperature != null){
             enTemperature = enTemperature+" ℃";

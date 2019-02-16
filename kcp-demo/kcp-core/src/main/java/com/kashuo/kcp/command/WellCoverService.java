@@ -73,7 +73,7 @@ public class WellCoverService {
         AmmeterWellcover wellcover = null;
         if(data != null) {
             String deviceType = data.substring(0, 2);
-            if (data.length() == 19 && "P7".equals(deviceType)) {
+            if (data.length() >= 19 && "P7".equals(deviceType)) {
                 wellcover = new AmmeterWellcover();
                 wellcover.setDeviceType(deviceType);
                 wellcover.setBatteryStatus(data.substring(4, 7));
@@ -86,6 +86,9 @@ public class WellCoverService {
                 }
                 wellcover.setTiltSensor(data.substring(15, 17));
                 wellcover.setWaterLevelSensor(data.substring(17, 19));
+                if(data.length()==23 && data.contains("ri")){
+                    wellcover.setRiData(data.substring(21));
+                }
             } else if (data.length() == 15 && "P0".equals(deviceType)) {
                 //烟感设备
                 wellcover = new AmmeterWellcover();
@@ -117,7 +120,7 @@ public class WellCoverService {
 
 
     public static void main(String[] args) {
-        new WellCoverService().analysisResponse("P0BV361A0");
+        new WellCoverService().analysisResponse("P7BV358L001D016A0W0ri25");
     }
 
 }

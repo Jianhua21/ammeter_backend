@@ -87,6 +87,7 @@
       <result column="en_humidity" property="enHumidity" jdbcType="VARCHAR" />
       <result column="smoke_warning" property="smokeWarning" jdbcType="VARCHAR" />
       <result column="platform" property="platform" jdbcType="INTEGER" />
+      <result column="ri_data" property="riData" jdbcType="VARCHAR" />
   </resultMap>
 
   <select id="selectAmmeterInfo" resultMap="AmmeterInfoMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterCondition">
@@ -97,7 +98,8 @@
       info.reverse_active_power,IFNULL(info.`status`,1) as status,
       p.agreement_status,p.company_name,p.contact_info,p.device_model,
       p.platform,
-      wc.battery_status,wc.sensor,wc.surface_distance,wc.tilt_sensor,wc.water_level_sensor,wc.en_temperature,wc.en_humidity,wc.smoke_warning
+      wc.battery_status,wc.sensor,wc.surface_distance,wc.tilt_sensor,wc.water_level_sensor,wc.en_temperature,wc.en_humidity,wc.smoke_warning,
+      wc.ri_data
       from ammeter_device device
       INNER JOIN ammeter_position p on device.imsi = p.imei
       INNER  JOIN ammeter_status s on p.status= s.code
@@ -422,7 +424,7 @@ and p.device_id is not null
     from ammeter_position p
     INNER JOIN ammeter_device d on p.imei = d.imsi
     where p.`status` in(1,6) and p.device_id is not null
-     and ((TIMESTAMPDIFF(MINUTE,d.product_date,NOW())>= 35 and p.channel_id =2) or (TIMESTAMPDIFF(HOUR,d.product_date,NOW())>= 5 and p.channel_id !=2))
+     and ((TIMESTAMPDIFF(MINUTE,d.product_date,NOW())>= 35 and p.channel_id =2) or (TIMESTAMPDIFF(HOUR,d.product_date,NOW())>= 6 and p.channel_id !=2))
      and not EXISTS(select * from ammeter_warning w where w.ammeter_id = d.id and w.warning_type=1
      and w.warning_status =0)
     </select>

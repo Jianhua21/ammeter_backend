@@ -138,5 +138,10 @@
             <!--<artifactId>jna</artifactId>-->
             <!--<version>4.1.0</version>-->
         <!--</dependency>-->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>4.0.3</version>
+        </dependency>
     </dependencies>
 </project>

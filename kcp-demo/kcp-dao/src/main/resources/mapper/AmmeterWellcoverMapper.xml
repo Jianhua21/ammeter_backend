@@ -13,10 +13,11 @@
     <result column="en_temperature" property="enTemperature" jdbcType="VARCHAR" />
     <result column="en_humidity" property="enHumidity" jdbcType="VARCHAR" />
     <result column="smoke_warning" property="smokeWarning" jdbcType="VARCHAR" />
+    <result column="ri_data" property="riData" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, position_id, device_type, battery_status, sensor, surface_distance, tilt_sensor, 
-    water_level_sensor,en_temperature,en_humidity,smoke_warning
+    water_level_sensor,en_temperature,en_humidity,smoke_warning,ri_data
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -40,11 +41,12 @@
     </selectKey>
     insert into ammeter_wellcover (position_id, device_type, battery_status, 
       sensor, surface_distance, tilt_sensor, 
-      water_level_sensor,en_temperature,en_humidity,smoke_warning)
+      water_level_sensor,en_temperature,en_humidity,smoke_warning,ri_data)
     values (#{positionId,jdbcType=INTEGER}, #{deviceType,jdbcType=VARCHAR}, #{batteryStatus,jdbcType=VARCHAR}, 
       #{sensor,jdbcType=VARCHAR}, #{surfaceDistance,jdbcType=VARCHAR}, #{tiltSensor,jdbcType=VARCHAR}, 
       #{waterLevelSensor,jdbcType=VARCHAR},
-    #{enTemperature,jdbcType=VARCHAR},#{enHumidity,jdbcType=VARCHAR},#{smokeWarning,jdbcType=VARCHAR})
+    #{enTemperature,jdbcType=VARCHAR},#{enHumidity,jdbcType=VARCHAR},#{smokeWarning,jdbcType=VARCHAR}
+    ,#{riData,jdbcType=VARCHAR})
   </insert>
   <insert id="insertHistory" parameterType="com.kashuo.kcp.domain.AmmeterWellcover" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
@@ -52,11 +54,12 @@
     </selectKey>
     insert into ammeter_wellcover_history (position_id, device_type, battery_status,
     sensor, surface_distance, tilt_sensor,
-    water_level_sensor,en_temperature,en_humidity,smoke_warning)
+    water_level_sensor,en_temperature,en_humidity,smoke_warning,ri_data)
     values (#{positionId,jdbcType=INTEGER}, #{deviceType,jdbcType=VARCHAR}, #{batteryStatus,jdbcType=VARCHAR},
     #{sensor,jdbcType=VARCHAR}, #{surfaceDistance,jdbcType=VARCHAR}, #{tiltSensor,jdbcType=VARCHAR},
     #{waterLevelSensor,jdbcType=VARCHAR},
-    #{enTemperature,jdbcType=VARCHAR},#{enHumidity,jdbcType=VARCHAR},#{smokeWarning,jdbcType=VARCHAR})
+    #{enTemperature,jdbcType=VARCHAR},#{enHumidity,jdbcType=VARCHAR},#{smokeWarning,jdbcType=VARCHAR}
+    ,#{riData,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.kashuo.kcp.domain.AmmeterWellcover" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
@@ -160,6 +163,9 @@
       </if>
       <if test="smokeWarning != null" >
         smoke_warning = #{smokeWarning,jdbcType=VARCHAR},
+      </if>
+      <if test="riData != null" >
+        ri_data = #{riData,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
