@@ -70,7 +70,7 @@
     select 
     p.id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude, p.gps_longitude, p.gps_latitude,
     p.remark,p.status,p.create_by,p.create_time,p.imei,p.device_id,p.verify_code,p.psk,p.Activated,p.installer,s.desc as status_name,
-    p.device_model,p.company_name,p.agreement_status,p.contact_info,p.product_id,p.platform,p.device_type
+    p.device_model,p.company_name,p.agreement_status,p.contact_info,p.product_id,p.platform,p.device_type,p.channel_id
     from ammeter_position p ,ammeter_status s
     where p.status = s.code and id = #{id,jdbcType=INTEGER}
   </select>

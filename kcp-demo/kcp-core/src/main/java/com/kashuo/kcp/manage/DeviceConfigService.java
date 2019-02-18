@@ -105,11 +105,20 @@ public class DeviceConfigService {
                     }
                     if(StringUtil.isNotEmpty(cacheContact.getContactPhone2()) && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone2())){
 //                        sendMsgByLimit(position,status,cacheContact.getContactPhone2());
-                        phone +=cacheContact.getContactPhone2();
+                        if(!"".equals(phone)) {
+                            phone =phone+","+cacheContact.getContactPhone2();
+                        }else{
+                            phone += cacheContact.getContactPhone2();
+                        }
                     }
                     if(StringUtil.isNotEmpty(cacheContact.getContactPhone3()) && ValidateUtil.validatePhoneNumber(cacheContact.getContactPhone3())){
 //                        sendMsgByLimit(position,status,cacheContact.getContactPhone3());
-                        phone +=cacheContact.getContactPhone3();
+
+                        if(!"".equals(phone)) {
+                            phone =phone+","+cacheContact.getContactPhone3();
+                        }else{
+                            phone +=cacheContact.getContactPhone3();
+                        }
                     }
                     sendMsgByLimit(position,status,phone);
                 }else if(StringUtil.isNotEmpty(position.getContactInfo()) && ValidateUtil.validatePhoneNumber(position.getContactInfo())){

@@ -73,21 +73,22 @@ public class WellCoverService {
         AmmeterWellcover wellcover = null;
         if(data != null) {
             String deviceType = data.substring(0, 2);
-            if (data.length() >= 19 && "P7".equals(deviceType)) {
+            if ("P7".equals(deviceType)) {
                 wellcover = new AmmeterWellcover();
                 wellcover.setDeviceType(deviceType);
-                wellcover.setBatteryStatus(data.substring(4, 7));
-                wellcover.setSensor(data.substring(8, 11));
+//                wellcover.setBatteryStatus(data.substring(4, 7));
+                wellcover.setBatteryStatus(data.substring(data.indexOf("BV")+2,data.indexOf("L")));
+                wellcover.setSensor(data.substring(data.indexOf("L")+1,data.indexOf("D")));
                 try {
-                    int distance = Integer.parseInt(data.substring(12, 15));
+                    int distance = Integer.parseInt(data.substring(data.indexOf("D")+1,data.indexOf("A")));
                     wellcover.setSurfaceDistance(String.valueOf(distance/2));
                 }catch (Exception e){
-                    wellcover.setSurfaceDistance(data.substring(12, 15));
+                    wellcover.setSurfaceDistance(data.substring(data.indexOf("D")+1,data.indexOf("A")));
                 }
-                wellcover.setTiltSensor(data.substring(15, 17));
-                wellcover.setWaterLevelSensor(data.substring(17, 19));
-                if(data.length()==23 && data.contains("ri")){
-                    wellcover.setRiData(data.substring(21));
+                wellcover.setTiltSensor(data.substring(data.indexOf("A"),data.indexOf("W")));
+                wellcover.setWaterLevelSensor(data.substring(data.indexOf("W"),data.indexOf("W")+2));
+                if(data.contains("ri")){
+                    wellcover.setRiData(data.substring(data.indexOf("ri")+2));
                 }
             } else if (data.length() == 15 && "P0".equals(deviceType)) {
                 //烟感设备
@@ -120,7 +121,10 @@ public class WellCoverService {
 
 
     public static void main(String[] args) {
-        new WellCoverService().analysisResponse("P7BV358L001D016A0W0ri25");
+        new WellCoverService().analysisResponse("P7BV15L012D120A1W0");
+//        String data ="P7BV12L012D120A1W0";
+//        System.out.println(data.indexOf("L"));
+//        System.out.println(data.substring(data.indexOf("BV")+2,data.indexOf("L")));
     }
 
 }
