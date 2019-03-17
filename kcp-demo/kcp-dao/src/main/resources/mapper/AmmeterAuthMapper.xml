@@ -10,9 +10,14 @@
     <result column="refresh_token" jdbcType="VARCHAR" property="refreshToken" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="status" jdbcType="CHAR" property="status" />
+    <result column="app_key" jdbcType="VARCHAR" property="appkey" />
+    <result column="secret_key" jdbcType="VARCHAR" property="secertKey" />
+    <result column="platform_id" jdbcType="INTEGER" property="platformId" />
+    <result column="server_url" jdbcType="VARCHAR" property="serverUrl" />
+    <result column="project_url" jdbcType="VARCHAR" property="projectUrl" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, scope, token_type, expires_in, access_token, refresh_token, create_time, status
+    id, scope, token_type, expires_in, access_token, refresh_token, create_time, status,platform_id,app_key,secret_key,server_url,project_url
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -24,8 +29,16 @@
     select
     <include refid="Base_Column_List" />
     from ammeter_auth
-    where status = 0
+    where status = 0 and platform_id=0
   </select>
+
+  <select id="selectAuthByPlatformId"  resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_auth
+    where status = 0 and platform_id =#{platformId,jdbcType=INTEGER}
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from ammeter_auth
     where id = #{id,jdbcType=INTEGER}

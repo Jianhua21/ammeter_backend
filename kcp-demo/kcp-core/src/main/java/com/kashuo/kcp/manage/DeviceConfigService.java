@@ -139,7 +139,7 @@ public class DeviceConfigService {
         }catch (Exception e){
 
         }
-        if(number >30){
+        if(number >100){
             return;
         }
         MessageBody message = new MessageBody();

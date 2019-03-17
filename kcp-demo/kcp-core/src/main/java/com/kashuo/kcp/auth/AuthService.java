@@ -10,21 +10,27 @@ import com.huawei.iotplatform.client.dto.AuthRefreshOutDTO;
 import com.huawei.iotplatform.client.dto.ClientInfo;
 import com.huawei.iotplatform.client.invokeapi.Authentication;
 import com.kashuo.kcp.constant.AppConstant;
+import com.kashuo.kcp.constant.NbiotConstant;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.AmmeterAuthMapper;
 import com.kashuo.kcp.dao.AmmeterNbiotMapper;
 import com.kashuo.kcp.domain.AmmeterAuth;
 import com.kashuo.kcp.domain.AmmeterNbiot;
+import com.kashuo.kcp.entity.ZxYunMessage;
+import com.kashuo.kcp.eums.PlateTypes;
 import com.kashuo.kcp.redis.RedisServiceImpl;
+import com.kashuo.kcp.utils.ZxYunUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dell-pc on 2018/4/16.
@@ -51,6 +57,7 @@ public class AuthService {
     public void initPlatIomAuth(){
         redisService.set(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER, JSON.toJSONString(authMapper.selectAuthDetail()));
         logger.info("IoM平台Auth 信息:",JSON.toJSONString(redisService.get(AppConstant.REDIS_KEY_AUTH_IOM_WELLCOVER)));
+
         //移动平台
         List<AmmeterNbiot> nbiots = nbiotMapper.queryAllNbiot();
         if(nbiots != null){
@@ -60,6 +67,11 @@ public class AuthService {
                  }
             );
         }
+
+        //中消云
+        redisService.set(AppConstant.REDIS_KEY_AUTH_ZXYUN, JSON.toJSONString(authMapper.selectAuthByPlatformId(PlateTypes.CHINA_ZXYUN.getCode())));
+        logger.info("中消云平台Auth 信息:",JSON.toJSONString(redisService.get(AppConstant.REDIS_KEY_AUTH_ZXYUN)));
+
 
     }
 
@@ -204,6 +216,33 @@ public class AuthService {
 
         return nbIot;
 
+    }
+
+    /***
+     * 中消云验证信息
+     * @return
+     */
+    public AmmeterAuth getZxYunAuthInformation() throws IOException {
+        String auth =  redisService.get(AppConstant.REDIS_KEY_AUTH_ZXYUN);
+        AmmeterAuth ammeterAuth;
+        if(auth != null){
+            ammeterAuth = JSONObject.parseObject(auth,AmmeterAuth.class);
+        }else{
+            ammeterAuth =authMapper.selectAuthByPlatformId(3);
+            redisService.set(AppConstant.REDIS_KEY_AUTH_ZXYUN, JSON.toJSONString(ammeterAuth));
+        }
+        if(!NbiotConstant.NB_ZXYUN_SUCCESS_CODE.equals(ZxYunUtils.checkToken(ammeterAuth.getAccessToken(),ammeterAuth.getServerUrl()).getCode())){
+            ZxYunMessage zxYunMessage = ZxYunUtils.getToken(ammeterAuth.getAppkey(),ammeterAuth.getSecertKey(),ammeterAuth.getServerUrl());
+            AmmeterAuth update = new AmmeterAuth();
+            Map<String,String> datas = (Map<String,String>)zxYunMessage.getData();
+            update.setAccessToken(datas.get("apiToken"));
+            update.setId(ammeterAuth.getId());
+            authMapper.updateByPrimaryKeySelective(update);
+            //重新刷新缓存
+            ammeterAuth =authMapper.selectAuthByPlatformId(3);
+            redisService.set(AppConstant.REDIS_KEY_AUTH_ZXYUN, JSON.toJSONString(ammeterAuth));
+        }
+        return ammeterAuth;
     }
 
     public static void main(String[] args) throws NorthApiException {

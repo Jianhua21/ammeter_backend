@@ -1,12 +1,16 @@
 package com.kashuo.kcp.core;
 
 import com.kashuo.kcp.constant.AppConstant;
+import com.kashuo.kcp.dao.AmmeterDeviceMapper;
 import com.kashuo.kcp.dao.AmmeterNetworkMapper;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterRuleMapper;
 import com.kashuo.kcp.dao.AmmeterWarningMapper;
 import com.kashuo.kcp.dao.condition.AmmeterWellCoverSystemParams;
+import com.kashuo.kcp.dao.condition.WarningCondition;
 import com.kashuo.kcp.domain.*;
+import com.kashuo.kcp.eums.ZxYunDeviceStates;
+import com.kashuo.kcp.eums.ZxYunOptCodes;
 import com.kashuo.kcp.manage.DeviceConfigService;
 import com.kashuo.kcp.utils.CompareUtils;
 import com.kashuo.kcp.utils.MessageUtils;
@@ -39,6 +43,8 @@ public class AmmeterRuleService {
     private AmmeterWarningMapper warningMapper;
     @Autowired
     private DeviceConfigService deviceConfigService;
+    @Autowired
+    private AmmeterDeviceMapper deviceMapper;
 
     private Logger logger = LoggerFactory.getLogger(AmmeterRuleService.class);
     private static List<AmmeterRule> netWorkRuleList = new ArrayList<>();
@@ -137,6 +143,41 @@ public class AmmeterRuleService {
         }
         return flag;
     }
+    public void generateWarning(String code,String pushType,Integer positionId){
+        AmmeterPosition position = positionMapper.selectByPrimaryKey(positionId);
+        AmmeterDevice device = deviceMapper.selectByDeviceId(position.getDeviceId());
+        String desc ="";
+        if("1".equals(pushType)){
+            desc = ZxYunDeviceStates.parseDesc(code);
+        }else if("2".equals(pushType)){
+            desc = ZxYunOptCodes.parseDesc(code);
+        }
+        WarningCondition condition = new WarningCondition();
+        condition.setPositionId(positionId);
+//        AmmeterWarning exists = warningMapper.selectByCondition(warningId,device.getId());
+        if(!"".equals(desc)) {
+            deviceConfigService.sendMsgInfoBySMS(position, desc, 1);
+            AmmeterWarning warning = new AmmeterWarning();
+            warning.setCreateBy("system");
+            warning.setAmmeterId(device.getId());
+            warning.setWarningDate(new Date());
+            warning.setCreateDate(new Date());
+            warning.setWarningDesc(desc);
+            warning.setWarningStatus("0");
+            warning.setWarningType(0);
+            warning.setMessageFlag(1);
+//            warning.setRuleId(rule.getId());
+            try {
+                warningMapper.insert(warning);
+            } catch (Exception e) {
+                logger.error("batch insert warning info failure...position.id={}", position.getId());
+            }
+        }else{
+            logger.info("告警已存在!==================");
+        }
+    }
+
+
     public boolean checkWellCoverWarning(AmmeterWellcover wellcover,String name,Integer ammeterId){
         boolean flag =false;
         for (AmmeterRule rule:netWorkRuleList){

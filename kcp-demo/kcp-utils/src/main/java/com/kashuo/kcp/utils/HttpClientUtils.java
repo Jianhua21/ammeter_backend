@@ -2,6 +2,7 @@ package com.kashuo.kcp.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -37,11 +38,34 @@ public class HttpClientUtils {
         return json;
     }
 
-    public static String getDataFromPostMethod(String url,String params) throws IOException {
-        return getDataFromPostMethod(url,params,"text/json");
+    public static String getDataFromGetMethodByApiToken(String url,String apiToken) throws IOException {
+        //开启一个HttpClient
+        HttpClient httpClient = new HttpClient();
+        //根据一个url创建一个method对象
+        GetMethod method = new GetMethod(url);
+        if(apiToken != null) {
+            method.setRequestHeader("API_TOKEN", apiToken);
+        }
+        //执行method
+        httpClient.executeMethod(method);
+        //获取返回的参数
+        String responseJsonString = method.getResponseBodyAsString();
+        //解析返回的数据格式
+        JSONObject json = JSON.parseObject(responseJsonString);
+        //关闭连接
+        method.releaseConnection();
+        return json.toString();
     }
 
-    public static String getDataFromPostMethod(String url,String params,String applciationType) throws IOException{
+    public static String getDataFromPostMethod(String url,String params) throws IOException {
+        return getDataFromPostMethod(url,params,"text/json",null);
+    }
+
+    public static String getPostByApiToken(String url,String params,String apiToken)throws IOException{
+        return getDataFromPostMethod(url,params,"application/json",apiToken);
+    }
+
+    public static String getDataFromPostMethod(String url,String params,String applciationType,String apiToken) throws IOException{
 
         //开启一个HttpClient
         HttpClient httpClient =new HttpClient();
@@ -51,6 +75,9 @@ public class HttpClientUtils {
         if(params != null && !"".equals(params.trim())) {
             RequestEntity requestEntity = new StringRequestEntity(params,applciationType,"UTF-8");
             method.setRequestEntity(requestEntity);
+        }
+        if(apiToken != null) {
+            method.setRequestHeader("API_TOKEN", apiToken);
         }
         //执行method
         httpClient.executeMethod(method);

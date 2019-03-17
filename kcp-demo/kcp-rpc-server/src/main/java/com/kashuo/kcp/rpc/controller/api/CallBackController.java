@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.kashuo.kcp.api.entity.CommandDetail;
 import com.kashuo.kcp.api.entity.callback.DeviceCommandCallBack;
 import com.kashuo.kcp.api.entity.callback.DeviceDataChange;
+import com.kashuo.kcp.api.entity.callback.DeviceZxYunCallBack;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.command.WellCoverService;
 import com.kashuo.kcp.constant.IoTConstant;
@@ -59,6 +60,33 @@ public class CallBackController {
         logger.info("--------IoM request data End------------------------");
         DeviceCommandCallBack params =JSONObject.parseObject(result,DeviceCommandCallBack.class);
         commandService.updateCommandHistory(params);
+    }
+
+    @PostMapping("/zxYunSubscribe")
+    @ApiOperation("中消云回调")
+    public void zxYunSubscribeCallBack(HttpServletRequest request) throws Exception {
+        InputStream inputStream = request.getInputStream();
+        String result = org.apache.commons.io.IOUtils.toString(inputStream);
+        logger.info("--------中消云回调 subscribe request data Start----------------------"+result);
+        try {
+            DeviceZxYunCallBack callBack = JSON.parseObject(result,DeviceZxYunCallBack.class);
+
+            callBackService.processZxYunCallBack(callBack);
+
+            netWorkService.updateDeviceStatusByNb(callBack.getDeviceId(),null,true);
+
+            logger.info("--------中消云回调 subscribe request data,DeviceId :{}", callBack.getDeviceId());
+            AmmeterCallbackHistory callbackHistory = new AmmeterCallbackHistory();
+            callbackHistory.setDeviceId(callBack.getDeviceId());
+            callbackHistory.setNotifyType("中消云");
+            callbackHistory.setCreateTime(new Date());
+            callbackHistory.setParams(result);
+            callBackService.insertCallBackHistory(callbackHistory);
+        }catch (Exception e){
+            logger.error("数据格式有问题!中消云");
+        }
+
+        logger.info("--------中消云回调 subscribe request data End----------------------");
     }
 
     @PostMapping("/manholeSubscribe")

@@ -19,11 +19,11 @@ import com.kashuo.kcp.utils.StringUtil;
 import com.kashuo.kcp.utils.ValidateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,7 +75,7 @@ public class SystemParamsController extends BaseController {
     @ApiOperation("获取井盖参数阀值列表")
     @GetMapping("/getWellCoverList")
     public Results WellCoverParamsList(){
-        Map<String,Object> params = new HashedMap();
+        Map<String,Object> params = new HashMap<>();
         List<AmmeterRule> rules = ruleService.getDictionartLists();
         for (AmmeterRule rule:rules
              ) {

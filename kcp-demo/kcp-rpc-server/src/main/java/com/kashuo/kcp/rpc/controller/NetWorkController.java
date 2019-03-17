@@ -13,11 +13,11 @@ import com.kashuo.kcp.utils.Results;
 import com.kashuo.kcp.utils.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +42,7 @@ public class NetWorkController {
             return Results.error("设备不存在");
         }
         AmmeterNetwork networkDB = netWorkService.selectByAmmeterId(device.getId());
-        Map<String,Object>  data = new HashedMap();
+        Map<String,Object>  data = new HashMap<>();
         List<Float> dataRsrq = new ArrayList<>();
         if(queryDate.length() == 10) {
             if(DateUtils.stringToDate(queryDate) == null){

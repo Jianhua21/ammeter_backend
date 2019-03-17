@@ -87,9 +87,14 @@ public class WellCoverService {
                 }
                 wellcover.setTiltSensor(data.substring(data.indexOf("A"),data.indexOf("W")));
                 wellcover.setWaterLevelSensor(data.substring(data.indexOf("W"),data.indexOf("W")+2));
-                if(data.contains("ri")){
-                    wellcover.setRiData(data.substring(data.indexOf("ri")+2));
+                if(data.contains("Ri")){
+                    wellcover.setRiData(data.substring(data.indexOf("Ri")+2,data.indexOf("Ri")+4));
                 }
+                if(data.contains("M")){
+                    wellcover.setDeviceImei(data.substring(data.indexOf("M")+1,data.indexOf("O")));
+                    wellcover.setDevicePlatform(data.substring(data.indexOf("O")+1));
+                }
+
             } else if (data.length() == 15 && "P0".equals(deviceType)) {
                 //烟感设备
                 wellcover = new AmmeterWellcover();
@@ -121,7 +126,7 @@ public class WellCoverService {
 
 
     public static void main(String[] args) {
-        new WellCoverService().analysisResponse("P7BV15L012D120A1W0");
+        new WellCoverService().analysisResponse("P7BV360L012D120A0W0Ri06");
 //        String data ="P7BV12L012D120A1W0";
 //        System.out.println(data.indexOf("L"));
 //        System.out.println(data.substring(data.indexOf("BV")+2,data.indexOf("L")));

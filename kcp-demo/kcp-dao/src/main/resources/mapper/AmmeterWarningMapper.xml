@@ -38,6 +38,14 @@
     from ammeter_warning
     where id = #{id,jdbcType=INTEGER}
   </select>
+
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from ammeter_warning
+        where rule_id = #{warningId,jdbcType=INTEGER} and ammeter_id =#{ammeterId,jdbcType=INTEGER}
+        and warning_status =0 limit 1
+    </select>
     
     <select id="queryWarningList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
       select p.id,w.id as warning_id,p.device_id,d.imsi ,p.name as ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type,

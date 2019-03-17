@@ -21,6 +21,56 @@ public class AmmeterAuth {
 
     private String appId;
 
+    private String appkey;
+
+    private String secertKey;
+
+    private Integer platformId;
+
+    private String serverUrl;
+
+    private String projectUrl;
+
+    public String getProjectUrl() {
+        return projectUrl;
+    }
+
+    public void setProjectUrl(String projectUrl) {
+        this.projectUrl = projectUrl;
+    }
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
+
+    public Integer getPlatformId() {
+        return platformId;
+    }
+
+    public void setPlatformId(Integer platformId) {
+        this.platformId = platformId;
+    }
+
+    public String getAppkey() {
+        return appkey;
+    }
+
+    public void setAppkey(String appkey) {
+        this.appkey = appkey;
+    }
+
+    public String getSecertKey() {
+        return secertKey;
+    }
+
+    public void setSecertKey(String secertKey) {
+        this.secertKey = secertKey;
+    }
+
     public String getAppId() {
         return appId;
     }

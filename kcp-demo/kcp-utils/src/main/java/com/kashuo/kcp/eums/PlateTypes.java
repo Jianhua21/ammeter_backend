@@ -6,7 +6,7 @@ package com.kashuo.kcp.eums;
 public enum PlateTypes {
 
     CHINA_TELNET(0,"中国电信"),CHINA_MOBILE(1,"中国移动"),
-    CHINA_UNICOM(2,"中国联通"),OTHERS(3,"其他");
+    CHINA_UNICOM(2,"中国联通"),CHINA_ZXYUN(3,"中消云"),OTHERS(9,"其他");
 
     private Integer code;
 

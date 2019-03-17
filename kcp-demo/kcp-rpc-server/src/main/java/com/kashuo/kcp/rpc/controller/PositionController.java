@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -69,7 +70,7 @@ public class PositionController extends BaseController{
 
     @PostMapping(value = "/create")
     @ApiOperation(value="电表位置信息录入")
-    public Results createAmmeterPosition(@RequestBody AmmeterPosition ammeterPosition) throws NorthApiException {
+    public Results createAmmeterPosition(@RequestBody AmmeterPosition ammeterPosition) throws NorthApiException, IOException {
 
         logger.info("录入设备信息参数：{}", JSON.toJSONString(ammeterPosition));
         if(StringUtil.isEmpty(ammeterPosition.getImei())){
@@ -107,15 +108,27 @@ public class PositionController extends BaseController{
         if(StringUtil.isEmpty(String.valueOf(ammeterPosition.getPlatform()))){
             return Results.error("请选择设备注册平台!");
         }
-        AmmeterPosition position = ammeterPositionService.selectByImei(ammeterPosition.getImei());
         boolean updateFlag = false;
-        if(position != null && position.getStatus() != 3 &&
-                position.getStatus() !=8){
-            return Results.error("IMEI号已存在!");
-        }else if(position != null && (position.getStatus() == 3||
-                position.getStatus() == 8 )){
-            updateFlag = true;
-            ammeterPosition.setId(position.getId());
+        if("3".equals(ammeterPosition.getPlatform())){
+            AmmeterPosition position = ammeterPositionService.selectByNumber(ammeterPosition.getNumber());
+            if (position != null && position.getStatus() != 3 &&
+                    position.getStatus() != 8) {
+                return Results.error("网关编号已存在!");
+            } else if (position != null && (position.getStatus() == 3 ||
+                    position.getStatus() == 8)) {
+                updateFlag = true;
+                ammeterPosition.setId(position.getId());
+            }
+        }else {
+            AmmeterPosition position = ammeterPositionService.selectByImei(ammeterPosition.getImei());
+            if (position != null && position.getStatus() != 3 &&
+                    position.getStatus() != 8) {
+                return Results.error("IMEI号已存在!");
+            } else if (position != null && (position.getStatus() == 3 ||
+                    position.getStatus() == 8)) {
+                updateFlag = true;
+                ammeterPosition.setId(position.getId());
+            }
         }
         AmmeterUser user = getCuruser();
         ammeterPosition.setProductId(DeviceTypes.parseName(String.valueOf(ammeterPosition.getDeviceType())));
@@ -129,7 +142,7 @@ public class PositionController extends BaseController{
             }else {
                 ammeterPositionService.insert(ammeterPosition);
             }
-            AmmeterDevice ammeterDevice = ammeterService.selectDeviceByImsi(ammeterPosition.getImei());
+            AmmeterDevice ammeterDevice = ammeterService.selectByPositionId(ammeterPosition.getId());
             if(ammeterDevice == null){
                 ammeterDevice = new AmmeterDevice();
                 ammeterDevice.setAmmeterNumber(ammeterPosition.getNumber());
@@ -168,6 +181,12 @@ public class PositionController extends BaseController{
              nbiotCommandService.createDevice(positionDB);
         }else if(String.valueOf(PlateTypes.CHINA_TELNET.getCode()).equals(ammeterPosition.getPlatform())){
              commandService.autoRegDevice(positionDB);
+        }else if(String.valueOf(PlateTypes.CHINA_ZXYUN.getCode()).equals(ammeterPosition.getPlatform())){
+            if(updateFlag){
+                commandService.deviceBindZxYun(positionDB);
+            }else {
+                commandService.autoRegDeviceZxYun(positionDB);
+            }
         }else{
             AmmeterPosition update = new AmmeterPosition();
             if(String.valueOf(PlateTypes.CHINA_UNICOM.getCode()).equals(ammeterPosition.getPlatform())){
@@ -427,5 +446,13 @@ public class PositionController extends BaseController{
     public Results updateAmmeterStatus(@RequestBody AmmeterUpdateCondition condition) throws Exception {
         return ammeterService.updateAmmeterStatus(condition.getStatus(),condition.getPositionId(),properties.isNbiot());
     }
+
+    @GetMapping("/getPlate")
+    @ApiOperation("获取支持的平台")
+    public Results getPlate(){
+        List<SysPlatform> platforms = ammeterPositionService.queryPlate();
+        return Results.success(platforms);
+    }
+
 
 }

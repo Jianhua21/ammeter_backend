@@ -25,6 +25,27 @@ public class AmmeterWellcover {
 
     private String riData;
 
+    private String deviceImei;
+
+    private String devicePlatform;
+
+
+    public String getDeviceImei() {
+        return deviceImei;
+    }
+
+    public void setDeviceImei(String deviceImei) {
+        this.deviceImei = deviceImei;
+    }
+
+    public String getDevicePlatform() {
+        return devicePlatform;
+    }
+
+    public void setDevicePlatform(String devicePlatform) {
+        this.devicePlatform = devicePlatform;
+    }
+
     public String getRiData() {
         return riData;
     }

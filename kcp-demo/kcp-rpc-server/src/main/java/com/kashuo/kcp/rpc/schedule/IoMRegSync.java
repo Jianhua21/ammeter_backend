@@ -10,11 +10,8 @@ import com.kashuo.kcp.dao.result.AmmeterDeviceResult;
 import com.kashuo.kcp.domain.AmmeterMonthlyReport;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterReport;
-import com.kashuo.kcp.domain.AmmeterWorkingInfo;
 import com.kashuo.kcp.redis.RedisServiceImpl;
 import com.kashuo.kcp.utils.DateUtils;
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.httpclient.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -181,7 +179,7 @@ public class IoMRegSync {
 
         int i = 3;
         double j = 7.2;
-        Map<String,Object> order = new HashedMap();
+        Map<String,Object> order = new HashMap();
         order.put("price",7076000);
         BigDecimal bg = new BigDecimal((Integer) order.get("price")/100*25/30*8/1000).setScale(0, RoundingMode.HALF_UP);
 //        BigDecimal bg = new BigDecimal(j*60/100).setScale(0, RoundingMode.HALF_UP);

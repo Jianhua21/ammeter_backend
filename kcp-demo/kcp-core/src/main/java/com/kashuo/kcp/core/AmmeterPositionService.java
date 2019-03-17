@@ -5,10 +5,12 @@ import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
 import com.kashuo.kcp.dao.AmmeterImeiMapper;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
+import com.kashuo.kcp.dao.SysPlatformMapper;
 import com.kashuo.kcp.dao.condition.AmmeterPositionCondition;
 import com.kashuo.kcp.dao.result.PosotionHome;
 import com.kashuo.kcp.domain.AmmeterImei;
 import com.kashuo.kcp.domain.AmmeterPosition;
+import com.kashuo.kcp.domain.SysPlatform;
 import com.kashuo.kcp.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,8 @@ public class AmmeterPositionService {
 
     @Autowired
     private AmmeterLoginHistoryService loginHistoryService;
+    @Autowired
+    private SysPlatformMapper sysPlatformMapper;
 
     public void insert(AmmeterPosition ammeterPosition){
         ammeterPositionMapper.insert(ammeterPosition);
@@ -57,6 +61,10 @@ public class AmmeterPositionService {
         return ammeterPositionMapper.selectByImei(imei);
     }
 
+    public AmmeterPosition selectByNumber(String number){
+        return ammeterPositionMapper.selectByNumber(number);
+    }
+
     public AmmeterPosition selectByPrimaryKey(Integer id){
         return ammeterPositionMapper.selectByPrimaryKey(id);
     }
@@ -71,6 +79,10 @@ public class AmmeterPositionService {
 
     public AmmeterPosition selectByDeviceId(String deviceId){
         return ammeterPositionMapper.selectByDeviceId(deviceId);
+    }
+
+    public List<AmmeterPosition> queryPositionByPlatform(Integer platform){
+        return ammeterPositionMapper.queryPositionByPlatform(platform);
     }
 
     public Page<AmmeterPosition> getPositionList(AmmeterPositionCondition condition){
@@ -99,6 +111,10 @@ public class AmmeterPositionService {
 
     public AmmeterImei selectIMEIbyKey(String IMEI){
         return ammeterImeiMapper.selectByPrimaryKey(IMEI);
+    }
+
+    public List<SysPlatform> queryPlate(){
+        return sysPlatformMapper.queryAll();
     }
 
 }

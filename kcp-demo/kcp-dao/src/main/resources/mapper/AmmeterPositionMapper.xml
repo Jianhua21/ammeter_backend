@@ -92,11 +92,26 @@
     from ammeter_position
     where status = #{status,jdbcType=INTEGER}
   </select>
+
+  <select id="queryPositionByPlatform" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_position
+    where platform = #{platform,jdbcType=INTEGER}
+  </select>
+
   <select id="selectByDeviceId" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
     <include refid="Base_Column_List" />
     from ammeter_position
     where device_id = #{deviceId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByNumber" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from ammeter_position
+    where number = #{number,jdbcType=VARCHAR}
   </select>
     <select id="getPositionList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterPositionCondition">
       select p.id,p.device_id, p.name, p.number, p.address, p.amap_longitude, p.amap_latitude,
@@ -319,6 +334,9 @@
   <update id="updateAllByPrimaryKeySelective" parameterType="com.kashuo.kcp.domain.AmmeterPosition" >
     update ammeter_position
     <set >
+      <if test="imei != null">
+        imei = #{imei,jdbcType=VARCHAR},
+      </if>
       <if test="name != null" >
         name = #{name,jdbcType=VARCHAR},
       </if>

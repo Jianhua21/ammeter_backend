@@ -47,6 +47,8 @@ public class QuartzConfiguration {
         if (offSet) {
             try {
                 warningInfoSync.updateOfflineDevice();
+
+                warningInfoSync.updateZxYunStates();
             }catch (Exception e){
                 logger.error("更新未上电出错!{}",e);
             }

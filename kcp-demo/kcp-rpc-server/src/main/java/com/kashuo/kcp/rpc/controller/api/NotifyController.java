@@ -32,7 +32,7 @@ import java.util.Map;
 public class NotifyController {
     private Logger logger = LoggerFactory.getLogger(getClass());
     //设置推送URL
-    private String appURL = "http://111.85.219.23/smartcity/api/tenpin/updateDeviceDatas";
+    private String appURL = "http://58.16.58.86:8082/smartcity/api/auth/tenpin/updateDeviceDatas";
 
     /**
      * 接收推送的数据
@@ -79,7 +79,7 @@ public class NotifyController {
         pushBean.setService(map);
         System.out.println(JSONObject.toJSONString(pushBean));
         //发送数据
-        String response = HttpClientUtils.getDataFromPostMethod(appURL,JSONObject.toJSONString(pushBean),"application/json");
+        String response = HttpClientUtils.getDataFromPostMethod(appURL,JSONObject.toJSONString(pushBean),"application/json",null);
         logger.info("返回结果:{}",JSONObject.toJSONString(response));
         return new ResponseEntity<>(HttpStatus.OK);
     }

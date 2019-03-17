@@ -16,30 +16,40 @@ import com.kashuo.kcp.api.entity.CommandDetail;
 import com.kashuo.kcp.api.entity.CommandParams;
 import com.kashuo.kcp.api.entity.callback.DeviceCommandCallBack;
 import com.kashuo.kcp.api.entity.callback.DeviceDataChange;
+import com.kashuo.kcp.api.entity.callback.DeviceZxYunGateWay;
 import com.kashuo.kcp.auth.AuthExceptionService;
 import com.kashuo.kcp.auth.AuthService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.constant.IoTConstant;
+import com.kashuo.kcp.constant.NbiotConstant;
 import com.kashuo.kcp.core.AmmeterPositionService;
 import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.AmmeterCommandHistoryMapper;
+import com.kashuo.kcp.dao.AmmeterDeviceMapper;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.result.AmmeterDeviceResult;
 import com.kashuo.kcp.domain.AmmeterAuth;
 import com.kashuo.kcp.domain.AmmeterCommandHistory;
 import com.kashuo.kcp.domain.AmmeterNbiot;
 import com.kashuo.kcp.domain.AmmeterPosition;
+import com.kashuo.kcp.entity.ZxYunMessage;
 import com.kashuo.kcp.manage.DeviceManageService;
 import com.kashuo.kcp.utils.AmmeterUtils;
 import com.kashuo.kcp.utils.CRC16x25Utils;
 import com.kashuo.kcp.utils.DateUtils;
-import com.kashuo.kcp.utils.Results;
+import com.kashuo.kcp.utils.ZxYunUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -65,6 +75,8 @@ public class CommandService {
 
     @Autowired
     private AmmeterPositionMapper positionMapper;
+    @Autowired
+    private AmmeterDeviceMapper deviceMapper;
 
     @Value("${app.constant.nbiot}")
     private boolean nbiot;
@@ -204,6 +216,74 @@ public class CommandService {
             return 2;
         }
     }
+
+    /***
+     *
+     * @param position
+     * @return
+     * @throws IOException
+     */
+    public Integer deviceBindZxYun(AmmeterPosition position)throws IOException {
+        AmmeterAuth ammeterAuth = authService.getZxYunAuthInformation();
+        Map<String,String> params = new HashMap<>();
+        params.put("gatewayName",position.getNumber());
+        logger.info("中消云参数:{}",JSONObject.toJSONString(params));
+        Integer result =0;
+        AmmeterPosition update = new AmmeterPosition();
+        update.setId(position.getId());
+        try {
+            ZxYunMessage message = ZxYunUtils.deviceBind(ammeterAuth.getAccessToken(), ammeterAuth.getProjectUrl(), JSONObject.toJSONString(params));
+            logger.info("中消云result:{}",JSONObject.toJSONString(message));
+            if(!NbiotConstant.NB_ZXYUN_SUCCESS_CODE.equals(message.getCode())){
+                result =1;
+                update.setStatus(2);
+            }else {
+                update.setStatus(1);
+            }
+        }catch (Exception e){
+            result =1;
+            update.setStatus(2);
+        }
+        positionMapper.updateByPrimaryKeySelective(update);
+        return result;
+    }
+
+    /***
+     * 中消云添加网关
+     * @param position
+     * @return
+     * @throws IOException
+     */
+    public Integer autoRegDeviceZxYun(AmmeterPosition position) throws IOException {
+        AmmeterAuth ammeterAuth = authService.getZxYunAuthInformation();
+        List<Map<String,String>> list = new ArrayList<>();
+        Map<String,String> map = new HashMap<>();
+        map.put("gateWayName",position.getNumber());
+        map.put("longitude",position.getGpsLongitude());
+        map.put("latitude",position.getGpsLatitude());
+        list.add(map);
+        Map<String,Object> params = new HashMap<>();
+        params.put("gateWayList",list);
+        logger.info("中消云参数:{}",JSONObject.toJSONString(params));
+        Integer result =0;
+        AmmeterPosition update = new AmmeterPosition();
+        update.setId(position.getId());
+        try {
+            ZxYunMessage message = ZxYunUtils.registerDevice(ammeterAuth.getAccessToken(), ammeterAuth.getProjectUrl(), JSONObject.toJSONString(params));
+            if(!NbiotConstant.NB_ZXYUN_SUCCESS_CODE.equals(message.getCode())){
+                result =1;
+                update.setStatus(2);
+            }else {
+                update.setStatus(1);
+            }
+        }catch (Exception e){
+            result =1;
+            update.setStatus(2);
+        }
+        positionMapper.updateByPrimaryKeySelective(update);
+        return result;
+    }
+
 
     /***
      *
@@ -489,6 +569,38 @@ public class CommandService {
             commonCommandSend(position, AppConstant.COMMAND_NB_KEEPALIVE_KEY, params);
         }catch (NorthApiException e){
             exceptionService.handleException(e,position.getDeviceId());
+        }
+    }
+
+    public void updateZxYunStates(AmmeterPosition position){
+        try {
+            AmmeterAuth ammeterAuth = authService.getZxYunAuthInformation();
+            ZxYunMessage message = ZxYunUtils.getGateway(ammeterAuth.getAccessToken(), ammeterAuth.getProjectUrl(), position.getNumber());
+            if (NbiotConstant.NB_ZXYUN_SUCCESS_CODE.equals(message.getCode())) {
+                DeviceZxYunGateWay gateWay = JSONObject.parseObject(message.getData().toString(), DeviceZxYunGateWay.class);
+                if (gateWay != null && gateWay.isConnectState()) {
+                    if(position.getDeviceId() == null){
+                        message = ZxYunUtils.getGatewayList(ammeterAuth.getAccessToken(), ammeterAuth.getProjectUrl(), position.getNumber());
+                        logger.info("中消云 获取 网关下的设备列表================");
+                        List<Map<String,String>> data = (List<Map<String,String>>)message.getData();
+                        String deviceId = data.get(0).get("deviceId");
+                        AmmeterPosition update = new AmmeterPosition();
+                        update.setDeviceId(deviceId);
+                        update.setId(position.getId());
+                        positionMapper.updateByPrimaryKeySelective(update);
+                    }
+                    //更新上报时间
+                    deviceMapper.updateProductDateByDeviceId(position.getDeviceId(), new Date());
+                    if(position.getStatus() !=6) {
+                        AmmeterPosition update = new AmmeterPosition();
+                        update.setStatus(6);
+                        update.setId(position.getId());
+                        positionMapper.updateByPrimaryKeySelective(update);
+                    }
+                }
+            }
+        }catch (Exception e){
+
         }
     }
 

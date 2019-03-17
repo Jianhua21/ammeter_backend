@@ -3,6 +3,7 @@ package com.kashuo.kcp.core;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
 import com.kashuo.kcp.api.entity.CommandDetail;
+import com.kashuo.kcp.api.entity.callback.DeviceZxYunCallBack;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.dao.*;
 import com.kashuo.kcp.dao.condition.CallBackCondition;
@@ -10,12 +11,14 @@ import com.kashuo.kcp.domain.AmmeterCallbackHistory;
 import com.kashuo.kcp.domain.AmmeterConfig;
 import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterPosition;
+import com.kashuo.kcp.domain.AmmeterWellcover;
 import com.kashuo.kcp.redis.RedisService;
 import com.kashuo.kcp.redis.RedisServiceImpl;
 import com.kashuo.kcp.utils.AmmeterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,6 +50,14 @@ public class AmmeterCallBackService {
 
     @Autowired
     private RedisServiceImpl redisService;
+    @Autowired
+    private AmmeterWellcoverMapper wellcoverMapper;
+
+    @Autowired
+    private AmmeterDeviceMapper deviceMapper;
+    @Autowired
+    private AmmeterRuleService ruleService;
+
 
     public Page<AmmeterCallbackHistory> getCallBackHistoryByDeviceId(CallBackCondition condition){
         PageHelper.startPage(condition.getPageIndex(),condition.getPageSize());
@@ -189,5 +200,42 @@ public class AmmeterCallBackService {
             }
         }
         configMapper.updateStatusByPositionKeySelective(config);
+    }
+
+    public void processZxYunCallBack(DeviceZxYunCallBack callBack){
+        AmmeterPosition position = positionMapper.selectByDeviceId(callBack.getDeviceId());
+        if(position == null){
+            AmmeterPosition update = new AmmeterPosition();
+            position = positionMapper.selectByNumber(callBack.getGatewayName());
+            if(position != null){
+                update.setId(position.getId());
+                update.setDeviceId(callBack.getDeviceId());
+                positionMapper.updateByPrimaryKeySelective(update) ;
+            }
+        }
+        if(position != null){
+            AmmeterWellcover wellcover = new AmmeterWellcover();
+            wellcover.setDeviceType("P99");
+            wellcover.setBatteryStatus("360");
+            wellcover.setSmokeWarning("A0");
+            if("2".equals(callBack.getPushType())){
+                ruleService.generateWarning(callBack.getOptCode(), callBack.getPushType(), position.getId());
+            }else if("1".equals(callBack.getPushType())) {
+                if ("1".equals(callBack.getDeviceState())) {
+                    wellcover.setSmokeWarning("A1");
+                }
+                    ruleService.generateWarning(callBack.getDeviceState(), callBack.getPushType(), position.getId());
+            }
+            wellcover.setPositionId(position.getId());
+            AmmeterWellcover wellcoverDB = wellcoverMapper.selectByPositionId(position.getId());
+            if(wellcoverDB != null){
+                wellcover.setId(wellcoverDB.getId());
+                wellcoverMapper.updateByPrimaryKeySelective(wellcover);
+            }else{
+                wellcoverMapper.insert(wellcover);
+            }
+            //更新上报时间
+            deviceMapper.updateProductDateByDeviceId(position.getDeviceId(),new Date());
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.kashuo.kcp.domain;
 
+import com.kashuo.kcp.eums.PlateTypes;
 import com.kashuo.kcp.utils.DateUtils;
 import com.kashuo.kcp.utils.StringUtil;
 import com.kashuo.kcp.utils.StringUtils;
@@ -92,6 +93,30 @@ public class AmmeterInfoResult implements Serializable{
     private Integer platform;
 
     private String riData;
+
+    private String deviceImei;
+
+    private String devicePlatform;
+
+    public String getDeviceImei() {
+        return StringUtil.pageViewToEmpty(deviceImei);
+    }
+
+    public void setDeviceImei(String deviceImei) {
+        this.deviceImei = deviceImei;
+    }
+
+    public String getDevicePlatform() {
+        try {
+            return PlateTypes.parseName(Integer.parseInt(devicePlatform));
+        }catch (Exception e){
+            return "-";
+        }
+    }
+
+    public void setDevicePlatform(String devicePlatform) {
+        this.devicePlatform = devicePlatform;
+    }
 
     public String getRiData() {
         return riData;

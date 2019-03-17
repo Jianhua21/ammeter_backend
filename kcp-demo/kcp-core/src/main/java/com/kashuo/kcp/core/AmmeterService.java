@@ -110,6 +110,10 @@ public class AmmeterService {
         return ammeterDeviceMapper.selectByImsiKey(imsi);
     }
 
+    public AmmeterDevice selectByPositionId(Integer positionId){
+        return ammeterDeviceMapper.selectByPositionId(positionId);
+    }
+
     public AmmeterDevice selectByPrimaryKey(Integer id){
         return ammeterDeviceMapper.selectByPrimaryKey(id);
     }

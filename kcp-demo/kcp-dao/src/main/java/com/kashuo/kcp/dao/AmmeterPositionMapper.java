@@ -23,7 +23,11 @@ public interface AmmeterPositionMapper {
 
     AmmeterPosition selectByDeviceId(String deviceId);
 
+    AmmeterPosition selectByNumber(String number);
+
     List<AmmeterPosition> selectPositionByStatus(Integer status);
+
+    List<AmmeterPosition> queryPositionByPlatform(Integer platform);
 
     int updateByPrimaryKeySelective(AmmeterPosition record);
 

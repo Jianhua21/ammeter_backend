@@ -115,7 +115,6 @@
                 <artifactId>kcp-utils</artifactId>
                 <version>${kcp.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 

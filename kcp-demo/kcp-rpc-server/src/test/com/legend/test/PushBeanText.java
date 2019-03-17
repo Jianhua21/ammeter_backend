@@ -31,6 +31,6 @@ public class PushBeanText {
         pushBean.setService(map);
         System.out.println(JSONObject.toJSONString(pushBean));
         //发送数据
-        HttpClientUtils.getDataFromPostMethod(appURL,JSONObject.toJSONString(pushBean),"application/json");
+        HttpClientUtils.getDataFromPostMethod(appURL,JSONObject.toJSONString(pushBean),"application/json",null);
 }
 }

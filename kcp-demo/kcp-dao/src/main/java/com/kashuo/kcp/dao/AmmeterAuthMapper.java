@@ -16,4 +16,6 @@ public interface AmmeterAuthMapper {
     int updateByPrimaryKeySelective(AmmeterAuth record);
 
     int updateByPrimaryKey(AmmeterAuth record);
+
+    AmmeterAuth selectAuthByPlatformId(Integer platformId);
 }

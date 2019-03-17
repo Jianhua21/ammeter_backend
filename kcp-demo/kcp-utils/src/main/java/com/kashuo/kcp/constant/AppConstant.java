@@ -12,6 +12,9 @@ public class AppConstant {
     //移动平台
     public static final String REDIS_KEY_AUTH_IOT ="auth_IoT_token_key";
 
+    //中消云
+    public static final String REDIS_KEY_AUTH_ZXYUN ="auth_zxYun_token_key";
+
     public static final String IOM_APPID ="appId";
 
     public static final String IOM_SECRET ="secret";
