@@ -17,7 +17,7 @@ public class WebMvcAdapter extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
 
         registry.addInterceptor(userSecurityInterceptor).addPathPatterns("/device/**","/user/**","/position/**","/warning/**","/system/**")
-                .excludePathPatterns("/user/add/**","/nbiot/**","/command/test")
+                .excludePathPatterns("/user/add/**","/nbiot/**","/command/test","/data/**")
         ;
 
 //        registry.addInterceptor(new PermissionInterceptorAdapter());
