@@ -27,6 +27,16 @@ public class AmmeterChannel {
     private Byte status;
     @ApiModelProperty("机构登记编码，默认 0000")
     private String levelCode;
+    @ApiModelProperty("第三方推送的标记")
+    private String thirdParty;
+
+    public String getThirdParty() {
+        return thirdParty;
+    }
+
+    public void setThirdParty(String thirdParty) {
+        this.thirdParty = thirdParty;
+    }
 
     public Integer getId() {
         return id;

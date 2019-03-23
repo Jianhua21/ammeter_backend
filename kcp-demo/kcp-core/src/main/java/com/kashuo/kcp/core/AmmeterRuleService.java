@@ -9,9 +9,11 @@ import com.kashuo.kcp.dao.AmmeterWarningMapper;
 import com.kashuo.kcp.dao.condition.AmmeterWellCoverSystemParams;
 import com.kashuo.kcp.dao.condition.WarningCondition;
 import com.kashuo.kcp.domain.*;
+import com.kashuo.kcp.eums.ThirdPartyDeviceStatus;
 import com.kashuo.kcp.eums.ZxYunDeviceStates;
 import com.kashuo.kcp.eums.ZxYunOptCodes;
 import com.kashuo.kcp.manage.DeviceConfigService;
+import com.kashuo.kcp.message.JmsMessageService;
 import com.kashuo.kcp.utils.CompareUtils;
 import com.kashuo.kcp.utils.MessageUtils;
 import com.kashuo.kcp.utils.StringUtil;
@@ -45,6 +47,9 @@ public class AmmeterRuleService {
     private DeviceConfigService deviceConfigService;
     @Autowired
     private AmmeterDeviceMapper deviceMapper;
+
+    @Autowired
+    private JmsMessageService jmsMessageService;
 
     private Logger logger = LoggerFactory.getLogger(AmmeterRuleService.class);
     private static List<AmmeterRule> netWorkRuleList = new ArrayList<>();
@@ -152,6 +157,10 @@ public class AmmeterRuleService {
         }else if("2".equals(pushType)){
             desc = ZxYunOptCodes.parseDesc(code);
         }
+        //告警告知第三方
+        jmsMessageService.sendThirdPartyNotificationMessage(position,
+                ThirdPartyDeviceStatus.parseCode(desc),"","1");
+
         WarningCondition condition = new WarningCondition();
         condition.setPositionId(positionId);
 //        AmmeterWarning exists = warningMapper.selectByCondition(warningId,device.getId());
@@ -191,8 +200,14 @@ public class AmmeterRuleService {
                     if(flag){
 
                         AmmeterPosition position = positionMapper.selectByPrimaryKey(wellcover.getPositionId());
-                        //boolean messageFlag = MessageUtils.sendMessage(position.getImei(),rule.getRuleDesc(),position.getContactInfo());
+
                         deviceConfigService.sendMsgInfoBySMS(position,rule.getRuleDesc(),1);
+
+                        ReceiveMessage message = ReceiveMessage.getMessageBody(position,rule.getRuleDesc(),"主要告警");
+                        jmsMessageService.sendWechatMessage(message);
+
+                        jmsMessageService.sendThirdPartyNotificationMessage(position,
+                                ThirdPartyDeviceStatus.parseCode(rule.getRuleDesc()),"","1");
 
                         AmmeterWarning warning = new AmmeterWarning();
                         warning.setCreateBy("system");

@@ -12,14 +12,14 @@
         <result column="email" property="email" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="TINYINT"/>
         <result column="level_code" property="levelCode" jdbcType="VARCHAR"/>
-
+        <result column="third_party" property="thirdParty" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, channel_name, channel_type,channel_code, address, contact_name, mobile_phone, email, status, level_code
+        id, channel_name, channel_type,channel_code, address, contact_name, mobile_phone, email, status, level_code,third_party
     </sql>
     <sql id="Base_Column_List_">
-        id, channel_name,channel_code, address, contact_name, mobile_phone, email, status, level_code
+        id, channel_name,channel_code, address, contact_name, mobile_phone, email, status, level_code,third_party
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">

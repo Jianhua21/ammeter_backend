@@ -16,6 +16,10 @@
             <artifactId>validation-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.kashuo.kcp</groupId>
+            <artifactId>kcp-utils</artifactId>
+        </dependency>
     </dependencies>
 
 

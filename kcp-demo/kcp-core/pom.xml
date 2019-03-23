@@ -22,6 +22,10 @@
             <version>2.0.5.RELEASE</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-activemq</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.taobao.util</groupId>
             <artifactId>taobao-express</artifactId>
             <exclusions>

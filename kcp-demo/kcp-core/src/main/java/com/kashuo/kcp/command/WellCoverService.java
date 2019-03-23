@@ -6,6 +6,8 @@ import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterWellcoverMapper;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterWellcover;
+import com.kashuo.kcp.eums.ThirdPartyDeviceStatus;
+import com.kashuo.kcp.message.JmsMessageService;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class WellCoverService {
 
     @Autowired
     private AmmeterWarningService warningService;
+
+    @Autowired
+    private JmsMessageService jmsMessageService;
 
     public boolean avoidWellCoverStatus(String imei,Integer ruleId){
         AmmeterPosition position = positionMapper.selectByImei(imei);
@@ -50,6 +55,9 @@ public class WellCoverService {
         AmmeterPosition position = positionMapper.selectByDeviceId(deviceId);
         AmmeterWellcover wellcover = analysisResponse(response);
         if(wellcover != null && position != null){
+            //通知第三方
+            jmsMessageService.sendThirdPartyNotificationMessage(position, ThirdPartyDeviceStatus.NORMAL.getCode(),response,"2");
+
             wellcover.setPositionId(position.getId());
             AmmeterWellcover wellcoverDB = wellcoverMapper.selectByPositionId(position.getId());
             if(wellcoverDB != null){
@@ -64,6 +72,8 @@ public class WellCoverService {
             deviceMapper.updateProductDateByDeviceId(deviceId,new Date());
 
             wellcoverMapper.insertHistory(wellcover);
+
+
         }
 
 

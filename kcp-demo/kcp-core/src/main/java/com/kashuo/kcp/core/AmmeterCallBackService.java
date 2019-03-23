@@ -12,6 +12,8 @@ import com.kashuo.kcp.domain.AmmeterConfig;
 import com.kashuo.kcp.domain.AmmeterDevice;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterWellcover;
+import com.kashuo.kcp.eums.ThirdPartyDeviceStatus;
+import com.kashuo.kcp.message.JmsMessageService;
 import com.kashuo.kcp.redis.RedisService;
 import com.kashuo.kcp.redis.RedisServiceImpl;
 import com.kashuo.kcp.utils.AmmeterUtils;
@@ -57,6 +59,8 @@ public class AmmeterCallBackService {
     private AmmeterDeviceMapper deviceMapper;
     @Autowired
     private AmmeterRuleService ruleService;
+    @Autowired
+    private JmsMessageService jmsMessageService;
 
 
     public Page<AmmeterCallbackHistory> getCallBackHistoryByDeviceId(CallBackCondition condition){
@@ -220,6 +224,7 @@ public class AmmeterCallBackService {
             wellcover.setSmokeWarning("A0");
             if("2".equals(callBack.getPushType())){
                 ruleService.generateWarning(callBack.getOptCode(), callBack.getPushType(), position.getId());
+
             }else if("1".equals(callBack.getPushType())) {
                 if ("1".equals(callBack.getDeviceState())) {
                     wellcover.setSmokeWarning("A1");

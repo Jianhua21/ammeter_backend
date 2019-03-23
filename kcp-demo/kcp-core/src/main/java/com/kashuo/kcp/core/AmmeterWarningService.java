@@ -1,17 +1,16 @@
 package com.kashuo.kcp.core;
 
-import com.alibaba.fastjson.JSONObject;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
+import com.kashuo.kcp.domain.ReceiveMessage;
 import com.kashuo.kcp.dao.*;
 import com.kashuo.kcp.dao.condition.WarningCondition;
 import com.kashuo.kcp.dao.result.*;
 import com.kashuo.kcp.domain.*;
+import com.kashuo.kcp.eums.ThirdPartyDeviceStatus;
 import com.kashuo.kcp.manage.DeviceConfigService;
-import com.kashuo.kcp.utils.BeanUtils;
-import com.kashuo.kcp.utils.MessageUtils;
+import com.kashuo.kcp.message.JmsMessageService;
 import com.kashuo.kcp.utils.StringUtil;
-import com.kashuo.kcp.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,10 @@ public class AmmeterWarningService {
     private AmmeterDeviceMapper deviceMapper;
     @Autowired
     private DeviceConfigService deviceConfigService;
+
+    @Autowired
+    private JmsMessageService jmsMessageService;
+
 
     public void updateWarningInfo(){
         List<AmmeterNetwork> networks = networkMapper.selectForWarningReport();
@@ -213,6 +216,12 @@ public class AmmeterWarningService {
                 ammeterPositionMapper.updateByPrimaryKeySelective(position);
                 //发送短信提醒
                 deviceConfigService.sendMsgInfoBySMS(position,"未上电",1);
+
+                ReceiveMessage message = ReceiveMessage.getMessageBody(position,"未上电","警告告警");
+
+                jmsMessageService.sendWechatMessage(message);
+                //通知第三方
+                jmsMessageService.sendThirdPartyNotificationMessage(position,ThirdPartyDeviceStatus.NO_ELECT.getCode(),"","1");
             });
         }
     }
