@@ -1,6 +1,6 @@
 package com.kashuo.kcp.rpc.config;
 
-import com.huawei.iotplatform.client.NorthApiException;
+import com.iotplatform.client.NorthApiException;
 import com.kashuo.kcp.auth.AuthExceptionService;
 import com.kashuo.kcp.utils.Results;
 import org.slf4j.Logger;

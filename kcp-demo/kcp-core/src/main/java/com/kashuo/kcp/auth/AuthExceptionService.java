@@ -1,7 +1,7 @@
 package com.kashuo.kcp.auth;
 
 import com.alibaba.fastjson.JSON;
-import com.huawei.iotplatform.client.NorthApiException;
+import com.iotplatform.client.NorthApiException;
 import com.kashuo.kcp.constant.ExceptionConstant;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.domain.AmmeterPosition;
@@ -9,7 +9,6 @@ import com.kashuo.kcp.utils.Results;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,7 +23,7 @@ public class AuthExceptionService {
     @Autowired
     private AmmeterPositionMapper positionMapper;
 
-    public Results handleException(NorthApiException exception,String deviceId){
+    public Results handleException(NorthApiException exception, String deviceId){
         try{
             logger.info("NorthApiException 异常信息 :{}", JSON.toJSONString(exception));
             if(ExceptionConstant.ERROR_CODE_1005.getErrorCode().equals(exception.getError_code())||

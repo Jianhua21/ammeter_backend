@@ -1,6 +1,6 @@
 package com.kashuo.kcp.rpc.schedule;
 
-import com.huawei.iotplatform.client.NorthApiException;
+import com.iotplatform.client.NorthApiException;
 import com.kashuo.kcp.auth.AuthExceptionService;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.core.AmmeterPositionService;

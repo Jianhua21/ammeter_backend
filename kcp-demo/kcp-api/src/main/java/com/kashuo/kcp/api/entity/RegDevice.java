@@ -1,11 +1,12 @@
 package com.kashuo.kcp.api.entity;
 
-import com.huawei.iotplatform.client.dto.RegDirectDeviceInDTO;
+
+import com.iotplatform.client.dto.RegDirectDeviceInDTO2;
 
 /**
  * Created by dell-pc on 2018/4/15.
  */
-public class RegDevice extends RegDirectDeviceInDTO {
+public class RegDevice extends RegDirectDeviceInDTO2 {
 
     public Integer getPositionId() {
         return positionId;

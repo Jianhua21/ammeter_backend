@@ -2,13 +2,13 @@ package com.kashuo.kcp.auth;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.huawei.iotplatform.client.NorthApiClient;
-import com.huawei.iotplatform.client.NorthApiException;
-import com.huawei.iotplatform.client.dto.AuthOutDTO;
-import com.huawei.iotplatform.client.dto.AuthRefreshInDTO;
-import com.huawei.iotplatform.client.dto.AuthRefreshOutDTO;
-import com.huawei.iotplatform.client.dto.ClientInfo;
-import com.huawei.iotplatform.client.invokeapi.Authentication;
+import com.iotplatform.client.NorthApiClient;
+import com.iotplatform.client.NorthApiException;
+import com.iotplatform.client.dto.AuthOutDTO;
+import com.iotplatform.client.dto.AuthRefreshInDTO;
+import com.iotplatform.client.dto.AuthRefreshOutDTO;
+import com.iotplatform.client.dto.ClientInfo;
+import com.iotplatform.client.invokeapi.Authentication;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.constant.NbiotConstant;
 import com.kashuo.kcp.core.SysDictionaryService;
@@ -26,8 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +78,7 @@ public class AuthService {
      * @return
      * @throws NorthApiException
      */
-    public void getAuthInfo() throws NorthApiException{
+    public void getAuthInfo() throws NorthApiException {
         //初始化鉴权对象
         Authentication auth = initAuth();
         //5 调用SDK API

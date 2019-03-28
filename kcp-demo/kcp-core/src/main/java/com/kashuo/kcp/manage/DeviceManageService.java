@@ -1,11 +1,11 @@
 package com.kashuo.kcp.manage;
 
 import com.alibaba.fastjson.JSON;
-import com.huawei.iotplatform.client.NorthApiException;
-import com.huawei.iotplatform.client.dto.ModifyDeviceInfoInDTO;
-import com.huawei.iotplatform.client.dto.RegDirectDeviceInDTO;
-import com.huawei.iotplatform.client.dto.RegDirectDeviceOutDTO;
-import com.huawei.iotplatform.client.invokeapi.DeviceManagement;
+import com.iotplatform.client.NorthApiException;
+import com.iotplatform.client.dto.ModifyDeviceInfoInDTO;
+import com.iotplatform.client.dto.RegDirectDeviceInDTO;
+import com.iotplatform.client.dto.RegDirectDeviceOutDTO;
+import com.iotplatform.client.invokeapi.DeviceManagement;
 import com.kashuo.kcp.auth.AuthExceptionService;
 import com.kashuo.kcp.auth.AuthService;
 import com.kashuo.kcp.command.CommandService;
@@ -32,7 +32,7 @@ public class DeviceManageService {
     @Autowired
     private AuthExceptionService authExceptionService;
 
-    public boolean regDirectDevice(AmmeterPosition ammeterPosition, DeviceManagement deviceManagement,AmmeterAuth ammeterAuth) throws NorthApiException {
+    public boolean regDirectDevice(AmmeterPosition ammeterPosition, DeviceManagement deviceManagement, AmmeterAuth ammeterAuth) throws NorthApiException {
 
         boolean result = true;
         RegDirectDeviceInDTO deviceInDTO = new RegDirectDeviceInDTO();

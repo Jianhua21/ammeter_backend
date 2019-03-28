@@ -3,12 +3,15 @@ package com.kashuo.kcp.rpc.controller;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.huawei.iotplatform.client.NorthApiException;
-import com.huawei.iotplatform.client.dto.*;
-import com.huawei.iotplatform.client.invokeapi.DeviceManagement;
+
+import com.iotplatform.client.NorthApiException;
+import com.iotplatform.client.dto.AsynCommandDTO;
+import com.iotplatform.client.dto.PostDeviceCommandInDTO;
+import com.iotplatform.client.dto.QueryDeviceStatusOutDTO;
+import com.iotplatform.client.dto.RegDirectDeviceInDTO;
+import com.iotplatform.client.invokeapi.DeviceManagement;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.auth.AuthService;
-import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.AmmeterCallBackService;
 import com.kashuo.kcp.core.AmmeterHandleService;
 import com.kashuo.kcp.core.AmmeterPositionService;
@@ -56,7 +59,7 @@ public class DeviceManagerController extends BaseController{
     public PostDeviceCommandInDTO handleIoMData(@RequestBody AmmeterHandleCondition condition){
 
         logger.info("处理IoM 平台发来的数据 :{}",JSON.toJSONString(condition));
-        PostDeviceCommandInDTO  dto = new PostDeviceCommandInDTO();
+        PostDeviceCommandInDTO dto = new PostDeviceCommandInDTO();
         AmmeterHandleResult result = handleService.handleIomData(condition,isDebugFlag);
         StringBuffer sb = new StringBuffer();
         sb.append(result.getProtocolHander()).append(result.getProtocolVersion()).append(result.getAmmeterType()).

@@ -1,7 +1,7 @@
 package com.kashuo.kcp.rpc.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.huawei.iotplatform.client.NorthApiException;
+import com.iotplatform.client.NorthApiException;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.command.NbiotCommandService;

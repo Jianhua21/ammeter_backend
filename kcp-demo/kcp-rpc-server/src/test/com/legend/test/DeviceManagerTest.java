@@ -1,13 +1,15 @@
 package com.legend.test;
 
-import com.huawei.iotplatform.client.NorthApiClient;
-import com.huawei.iotplatform.client.NorthApiException;
-import com.huawei.iotplatform.client.dto.AuthOutDTO;
-import com.huawei.iotplatform.client.dto.ClientInfo;
-import com.huawei.iotplatform.client.dto.RegDirectDeviceInDTO;
-import com.huawei.iotplatform.client.dto.RegDirectDeviceOutDTO;
-import com.huawei.iotplatform.client.invokeapi.Authentication;
-import com.huawei.iotplatform.client.invokeapi.DeviceManagement;
+
+import com.iotplatform.client.NorthApiClient;
+import com.iotplatform.client.NorthApiException;
+import com.iotplatform.client.dto.AuthOutDTO;
+import com.iotplatform.client.dto.ClientInfo;
+import com.iotplatform.client.dto.RegDirectDeviceInDTO;
+import com.iotplatform.client.dto.RegDirectDeviceOutDTO;
+import com.iotplatform.client.invokeapi.Authentication;
+import com.iotplatform.client.invokeapi.DeviceManagement;
+import net.sf.json.util.PropertyFilter;
 
 /**
  * Created by dell-pc on 2018/4/22.
@@ -56,6 +58,5 @@ public class DeviceManagerTest {
         rddod = dm.regDirectDevice(rddid, appId, accessToken);
         System.out.println(rddod.toString());
         String deviceId = rddod.getDeviceId();
-
     }
 }

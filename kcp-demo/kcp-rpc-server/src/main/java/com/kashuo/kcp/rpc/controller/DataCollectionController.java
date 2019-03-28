@@ -1,9 +1,10 @@
 package com.kashuo.kcp.rpc.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.huawei.iotplatform.client.NorthApiException;
-import com.huawei.iotplatform.client.dto.SubscribeInDTO;
-import com.huawei.iotplatform.client.invokeapi.DataCollection;
+
+import com.iotplatform.client.NorthApiException;
+import com.iotplatform.client.dto.SubscribeInDTO;
+import com.iotplatform.client.invokeapi.DataCollection;
 import com.kashuo.kcp.auth.AuthService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.SysDictionaryService;

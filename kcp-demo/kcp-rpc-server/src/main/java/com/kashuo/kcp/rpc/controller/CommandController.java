@@ -1,12 +1,11 @@
 package com.kashuo.kcp.rpc.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.huawei.iotplatform.utils.JsonUtil;
-import com.huawei.iotplatform.client.NorthApiException;
-import com.huawei.iotplatform.client.dto.AsynCommandDTO;
-import com.huawei.iotplatform.client.dto.PostDeviceCommandInDTO;
-import com.huawei.iotplatform.client.dto.PostDeviceCommandOutDTO;
+
+import com.iotplatform.client.dto.AsynCommandDTO;
+import com.iotplatform.client.dto.PostDeviceCommandInDTO;
+import com.iotplatform.client.dto.PostDeviceCommandOutDTO;
+import com.iotplatform.utils.JsonUtil;
 import com.kashuo.kcp.api.entity.AmmeterCommand;
 import com.kashuo.kcp.api.entity.CommandParams;
 import com.kashuo.kcp.api.entity.DeviceCommand;

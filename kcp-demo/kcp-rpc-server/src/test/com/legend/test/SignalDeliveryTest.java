@@ -2,12 +2,17 @@ package com.legend.test;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.huawei.iotplatform.client.NorthApiClient;
-import com.huawei.iotplatform.client.NorthApiException;
-import com.huawei.iotplatform.client.dto.*;
-import com.huawei.iotplatform.client.invokeapi.Authentication;
-import com.huawei.iotplatform.client.invokeapi.SignalDelivery;
-import com.huawei.iotplatform.utils.JsonUtil;
+
+import com.iotplatform.client.NorthApiClient;
+import com.iotplatform.client.NorthApiException;
+import com.iotplatform.client.dto.AsynCommandDTO;
+import com.iotplatform.client.dto.AuthOutDTO;
+import com.iotplatform.client.dto.ClientInfo;
+import com.iotplatform.client.dto.PostDeviceCommandInDTO;
+import com.iotplatform.client.dto.PostDeviceCommandOutDTO;
+import com.iotplatform.client.invokeapi.Authentication;
+import com.iotplatform.client.invokeapi.SignalDelivery;
+import com.iotplatform.utils.JsonUtil;
 import com.kashuo.kcp.auth.AuthService;
 import com.kashuo.kcp.rpc.App;
 import org.junit.Test;

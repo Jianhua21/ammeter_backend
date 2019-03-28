@@ -1,6 +1,6 @@
 package com.kashuo.kcp.dao.condition;
 
-import com.huawei.iotplatform.client.dto.DeviceConfigDTO;
+import com.iotplatform.client.dto.DeviceConfigDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

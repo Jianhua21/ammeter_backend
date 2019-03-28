@@ -1,12 +1,10 @@
 package com.kashuo.kcp.core;
 
-import com.huawei.iotplatform.client.NorthApiException;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.common.mybatis.helper.PageHelper;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.dao.*;
-import com.kashuo.kcp.dao.condition.AmmeterHandleResult;
 import com.kashuo.kcp.dao.condition.AmmeterNetWorkCondition;
 import com.kashuo.kcp.domain.*;
 import com.kashuo.kcp.utils.DateUtils;

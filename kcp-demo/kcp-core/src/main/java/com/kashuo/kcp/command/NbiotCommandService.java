@@ -9,7 +9,7 @@ import cmcciot.onenet.nbapi.sdk.entity.Read;
 import cmcciot.onenet.nbapi.sdk.entity.Write;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.huawei.iotplatform.utils.JsonUtil;
+import com.iotplatform.utils.JsonUtil;
 import com.kashuo.kcp.api.entity.AmmeterCommand;
 import com.kashuo.kcp.api.entity.CommandParams;
 import com.kashuo.kcp.api.entity.NbiotDTO;
