@@ -250,14 +250,14 @@ public class AuthService {
 
         ClientInfo ci = new ClientInfo();
 
-//        String appId = "bpfcOrUv5lUvxiSOLeVtUMfxBhMa";
-//        String secret = "p6m9oSn9FlXZc0nTCIeXPHpm3sYa";
+        String appId = "b0oWRfLAfgfCtSRDcjrAOfXp8Fca";
+        String secret = "qOFdevlu0lU8B3HifZi_YvURlNQa";
 
-        String appId = "BneCA9AjQg4_uHbA_6anCHfvpbMa";
-        String secret = "gc4SrNGIa__eHA5jdQYMPLJ1UwYa";
+//        String appId = "BneCA9AjQg4_uHbA_6anCHfvpbMa";
+//        String secret = "gc4SrNGIa__eHA5jdQYMPLJ1UwYa";
 
         ci.setAppId(appId);
-        ci.setPlatformIp("180.101.147.89");
+        ci.setPlatformIp("device.api.ct10649.com");
         ci.setPlatformPort("8743");
         ci.setSecret(secret);
 

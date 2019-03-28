@@ -274,7 +274,7 @@ public class CommandService {
                 result =1;
                 update.setStatus(2);
             }else {
-                update.setStatus(1);
+                deviceBindZxYun(position);
             }
         }catch (Exception e){
             result =1;

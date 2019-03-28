@@ -2,7 +2,6 @@ package com.kashuo.kcp.rpc.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.huawei.iotplatform.client.NorthApiException;
-import com.huawei.iotplatform.client.invokeapi.DeviceManagement;
 import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.command.NbiotCommandService;
@@ -10,7 +9,6 @@ import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.core.AmmeterIMEIService;
 import com.kashuo.kcp.core.AmmeterPositionService;
 import com.kashuo.kcp.core.AmmeterService;
-import com.kashuo.kcp.core.SysDictionaryService;
 import com.kashuo.kcp.dao.condition.AmmeterPositionCondition;
 import com.kashuo.kcp.dao.condition.AmmeterUpdateCondition;
 import com.kashuo.kcp.dao.condition.IMEICondition;

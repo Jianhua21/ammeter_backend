@@ -1,16 +1,39 @@
 package com.legend.test;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.huawei.iotplatform.client.NorthApiClient;
+import com.huawei.iotplatform.client.NorthApiException;
 import com.huawei.iotplatform.client.dto.*;
 import com.huawei.iotplatform.client.invokeapi.Authentication;
 import com.huawei.iotplatform.client.invokeapi.SignalDelivery;
 import com.huawei.iotplatform.utils.JsonUtil;
+import com.kashuo.kcp.auth.AuthService;
+import com.kashuo.kcp.rpc.App;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Created by dell-pc on 2018/9/10.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(classes = App.class)
 public class SignalDeliveryTest {
+
+
+    @Autowired
+    private AuthService authService;
+
+    @Test
+    public void getChinaNetIoMInfo() throws NorthApiException {
+        System.out.println(JSON.toJSONString(authService.getPlatIomAuth()));
+    }
+
+
+
     public static void main(String args[]) throws Exception
     {
         NorthApiClient nac = new NorthApiClient();
