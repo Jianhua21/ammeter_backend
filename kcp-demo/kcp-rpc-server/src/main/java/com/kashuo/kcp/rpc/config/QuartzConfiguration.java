@@ -54,6 +54,19 @@ public class QuartzConfiguration {
             }
         }
     }
+
+    @Scheduled(cron = "${app.constant.quartz.second}")
+    public void generateWarning(){
+        if(offSet){
+           try{
+               warningInfoSync.generateWarning();
+           }catch (Exception e){
+
+           }
+
+        }
+    }
+
     @Scheduled(cron = "${app.constant.quartz}")
     public void registerSync() throws Exception {
         if (offSet) {

@@ -29,6 +29,15 @@ public class AmmeterWellcover {
 
     private String devicePlatform;
 
+    private Integer deviceStatus;
+
+    public Integer getDeviceStatus() {
+        return deviceStatus;
+    }
+
+    public void setDeviceStatus(Integer deviceStatus) {
+        this.deviceStatus = deviceStatus;
+    }
 
     public String getDeviceImei() {
         return deviceImei;

@@ -1,11 +1,14 @@
 package com.kashuo.kcp.core;
 
+import com.alibaba.fastjson.JSON;
+import com.kashuo.common.base.domain.Page;
 import com.kashuo.kcp.constant.AppConstant;
 import com.kashuo.kcp.dao.AmmeterDeviceMapper;
 import com.kashuo.kcp.dao.AmmeterNetworkMapper;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterRuleMapper;
 import com.kashuo.kcp.dao.AmmeterWarningMapper;
+import com.kashuo.kcp.dao.DevicePreWarningMapper;
 import com.kashuo.kcp.dao.condition.AmmeterWellCoverSystemParams;
 import com.kashuo.kcp.dao.condition.WarningCondition;
 import com.kashuo.kcp.domain.*;
@@ -50,6 +53,10 @@ public class AmmeterRuleService {
 
     @Autowired
     private JmsMessageService jmsMessageService;
+
+    @Autowired
+    private DevicePreWarningService devicePreWarningService;
+
 
     private Logger logger = LoggerFactory.getLogger(AmmeterRuleService.class);
     private static List<AmmeterRule> netWorkRuleList = new ArrayList<>();
@@ -186,6 +193,65 @@ public class AmmeterRuleService {
         }
     }
 
+    public boolean checkWellCoverByName(AmmeterWellcover wellcover,String name){
+        boolean flag =false;
+        for (AmmeterRule rule:netWorkRuleList){
+            Field[] fields = wellcover.getClass().getDeclaredFields();
+            for (Field f:fields){
+                if(f.getName().equals(rule.getRuleParams()) && f.getName().equals(name)){
+                    flag = CompareUtils.compareParams(
+                            String.valueOf(getFieldValueByName(f.getName(),wellcover)),
+                            rule.getRuleValue(),
+                            rule.getRuleKey());
+                    return flag;
+                }
+            }
+        }
+        return flag;
+    }
+
+    public void sendWarning(DevicePreWarning devicePreWarning){
+        AmmeterPosition position = positionMapper.selectByImei(devicePreWarning.getImei());
+        if(position != null){
+            WarningCondition condition = new WarningCondition();
+            condition.setImei(position.getImei());
+            condition.setRuleId(devicePreWarning.getRuleId());
+            condition.setPageSize(10);
+            condition.setStatus(0);
+            Page<AmmeterWarningResult> warningResults = warningMapper.queryWarningList(condition);
+            if(warningResults != null && warningResults.size()>0){
+                logger.info("告警已经存在:{}", JSON.toJSONString(warningResults.get(0)));
+            }else {
+                AmmeterDevice device = deviceMapper.selectByImsiKey(devicePreWarning.getImei());
+                deviceConfigService.sendMsgInfoBySMS(position, devicePreWarning.getRemark(), 1);
+                ReceiveMessage message = ReceiveMessage.getMessageBody(position, devicePreWarning.getRemark(), "主要告警");
+                jmsMessageService.sendWechatMessage(message);
+
+                jmsMessageService.sendThirdPartyNotificationMessage(position,
+                        ThirdPartyDeviceStatus.parseCode(devicePreWarning.getRemark()), "", "1");
+
+                AmmeterWarning warning = new AmmeterWarning();
+                warning.setCreateBy("system");
+                warning.setAmmeterId(device.getId());
+                warning.setWarningDate(devicePreWarning.getCreateTime());
+                warning.setCreateDate(new Date());
+                warning.setWarningDesc(devicePreWarning.getRemark());
+                warning.setWarningStatus("0");
+                warning.setWarningType(0);
+                warning.setMessageFlag(1);
+                warning.setRuleId(devicePreWarning.getRuleId());
+                try {
+                    warningMapper.insert(warning);
+                } catch (Exception e) {
+                    logger.error("batch insert warning info failure...sendWarning.id={}", devicePreWarning.getId());
+                }
+            }
+            devicePreWarningService.deleteDevicePreWarning(position.getImei(),devicePreWarning.getRuleId());
+
+        }
+
+    }
+
 
     public boolean checkWellCoverWarning(AmmeterWellcover wellcover,String name,Integer ammeterId){
         boolean flag =false;
@@ -197,15 +263,18 @@ public class AmmeterRuleService {
                             String.valueOf(getFieldValueByName(f.getName(),wellcover)),
                             rule.getRuleValue(),
                             rule.getRuleKey());
+                    AmmeterPosition position = positionMapper.selectByPrimaryKey(wellcover.getPositionId());
+
                     if(flag){
+                        /**
+                         * 针对误告警进行判断
+                         */
+                        devicePreWarningService.updateDevicePreWarning(position,rule);
 
-                        AmmeterPosition position = positionMapper.selectByPrimaryKey(wellcover.getPositionId());
-
+                        /***
                         deviceConfigService.sendMsgInfoBySMS(position,rule.getRuleDesc(),1);
-
                         ReceiveMessage message = ReceiveMessage.getMessageBody(position,rule.getRuleDesc(),"主要告警");
                         jmsMessageService.sendWechatMessage(message);
-
                         jmsMessageService.sendThirdPartyNotificationMessage(position,
                                 ThirdPartyDeviceStatus.parseCode(rule.getRuleDesc()),"","1");
 
@@ -224,6 +293,9 @@ public class AmmeterRuleService {
                         }catch (Exception e){
                             logger.error("batch insert warning info failure...network.id={}",wellcover.getId());
                         }
+                         */
+                    }else {
+                        devicePreWarningService.deleteDevicePreWarning(position.getImei(),rule.getId());
                     }
                     return flag;
                 }
@@ -248,9 +320,11 @@ public class AmmeterRuleService {
                         warning.setAmmeterId(ammeterId);
                         warning.setWarningStatus("1");
                         warning.setReason("系统取消告警");
+                        warning.setEliminateDate(new Date());
                         warning.setRuleId(rule.getId());
                         try {
                             warningMapper.updateByRuleKey(warning);
+                            deviceMapper.selectByPrimaryKey(ammeterId);
                         }catch (Exception e){
                             logger.error("batch insert warning info failure...network.id={}",wellcover.getId());
                         }

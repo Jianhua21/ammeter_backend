@@ -29,6 +29,16 @@ public class WarningCondition extends BaseCondition{
     @ApiModelProperty("设备类型")
     private Integer deviceType;
 
+    private Integer ruleId;
+
+    public Integer getRuleId() {
+        return ruleId;
+    }
+
+    public void setRuleId(Integer ruleId) {
+        this.ruleId = ruleId;
+    }
+
     public Integer getDeviceType() {
         return deviceType;
     }

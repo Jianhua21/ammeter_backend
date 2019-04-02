@@ -6,9 +6,12 @@ import com.kashuo.kcp.auth.AuthService;
 import com.kashuo.kcp.command.CommandService;
 import com.kashuo.kcp.constant.NbiotConstant;
 import com.kashuo.kcp.core.AmmeterPositionService;
+import com.kashuo.kcp.core.AmmeterRuleService;
 import com.kashuo.kcp.core.AmmeterWarningService;
+import com.kashuo.kcp.core.DevicePreWarningService;
 import com.kashuo.kcp.domain.AmmeterAuth;
 import com.kashuo.kcp.domain.AmmeterPosition;
+import com.kashuo.kcp.domain.DevicePreWarning;
 import com.kashuo.kcp.entity.ZxYunMessage;
 import com.kashuo.kcp.utils.ZxYunUtils;
 import org.slf4j.Logger;
@@ -32,11 +35,17 @@ public class WarningInfoSync {
     private AmmeterPositionService positionService;
     @Autowired
     private CommandService commandService;
+    @Autowired
+    private DevicePreWarningService devicePreWarningService;
+
+    @Autowired
+    private AmmeterRuleService ruleService;
+
     Logger logger = LoggerFactory.getLogger(getClass());
 
     public void updateWarningInfoByCron() throws Exception {
         logger.info("定时把已经长时间失去连接和信号量不正常的列出警告");
-        warningService.genereateWellCoverWarning();
+//        warningService.genereateWellCoverWarning();
     }
 
     public void updateOfflineDevice() throws Exception{
@@ -50,5 +59,20 @@ public class WarningInfoSync {
         positions.forEach(p->
               commandService.updateZxYunStates(p)
         );
+    }
+
+    public void generateWarning(){
+        logger.info("=====================上报告警====================");
+        List<DevicePreWarning> devicePreWarningList = devicePreWarningService.queryDevicePreWarningList();
+        if(devicePreWarningList != null && devicePreWarningList.size()>0){
+            devicePreWarningList.forEach(w->{
+                try {
+                    ruleService.sendWarning(w);
+                }catch (Exception e){
+                    logger.error("上报告警发生错误!{}",e);
+                }
+            }
+            );
+        }
     }
 }

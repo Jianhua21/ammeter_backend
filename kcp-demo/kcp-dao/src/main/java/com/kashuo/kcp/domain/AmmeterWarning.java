@@ -25,6 +25,16 @@ public class AmmeterWarning {
 
     private Integer ruleId=0;
 
+    private Date eliminateDate;
+
+    public Date getEliminateDate() {
+        return eliminateDate;
+    }
+
+    public void setEliminateDate(Date eliminateDate) {
+        this.eliminateDate = eliminateDate;
+    }
+
     public Integer getRuleId() {
         return ruleId;
     }

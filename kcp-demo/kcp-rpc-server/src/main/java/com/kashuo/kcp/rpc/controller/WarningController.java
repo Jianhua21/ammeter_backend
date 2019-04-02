@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 /**
  * Created by dell-pc on 2018/4/10.
  */
@@ -87,6 +89,7 @@ public class WarningController extends BaseController{
      */
     @GetMapping("/avoid/{warningId}/{sn}")
     public Results avoidWarning(@PathVariable("warningId") Integer warningId,@PathVariable("sn") String sn,@RequestParam(required = false) String reason){
+        logger.info("取消告警参数:warningId:{}",warningId);
         AmmeterWarning  warningDB = warningService.selectWarningByKey(warningId);
         if(warningDB == null){
             return Results.error("该警告不存在,请确认!",sn);
@@ -95,6 +98,7 @@ public class WarningController extends BaseController{
         warning.setId(warningId);
         warning.setWarningStatus("1");
         warning.setReason(StringUtil.nullToEmpty(reason));
+        warning.setEliminateDate(new Date());
         Integer result = warningService.updateWarning(warning);
         if(warningDB.getWarningType() == 0) {
             AmmeterDevice device = ammeterService.selectByPrimaryKey(warningDB.getAmmeterId());
@@ -103,7 +107,6 @@ public class WarningController extends BaseController{
                 device_2.setRsrqWarningFlag(0);
                 device_2.setId(device.getId());
                 ammeterService.updateWarningStatusByPrimaryKey(device_2);
-
             //消除井盖告警--恢复正常
             wellCoverService.avoidWellCoverStatus(device.getImsi(),warningDB.getRuleId());
             }

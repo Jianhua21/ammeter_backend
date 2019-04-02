@@ -172,9 +172,13 @@
       <if test="deviceImei != null" >
         device_imei = #{deviceImei,jdbcType=VARCHAR},
       </if>
-      <if test="riData != null" >
+      <if test="devicePlatform != null" >
         device_platform = #{devicePlatform,jdbcType=VARCHAR},
       </if>
+      <if test="deviceStatus != null" >
+        device_status = #{deviceStatus,jdbcType=INTEGER},
+      </if>
+
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>

@@ -1,8 +1,11 @@
 package com.kashuo.kcp.dao.result;
 
+import com.kashuo.kcp.eums.DeviceStatus;
+import com.kashuo.kcp.utils.DateUtils;
 import com.kashuo.kcp.utils.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,6 +37,36 @@ public class PosotionHome {
     private String companyName;
 
     private Integer deviceType;
+
+    private Integer realStatus;
+
+    private Date realTime;
+
+    private Date warningTime;
+
+    public String getWarningTime() {
+        return warningTime != null ? DateUtils.dateDetailToString(warningTime):"-";
+    }
+
+    public void setWarningTime(Date warningTime) {
+        this.warningTime = warningTime;
+    }
+
+    public String getRealStatus() {
+        return DeviceStatus.parseStatusName(realStatus);
+    }
+
+    public void setRealStatus(Integer realStatus) {
+        this.realStatus = realStatus;
+    }
+
+    public String getRealTime() {
+        return realTime != null ? DateUtils.dateDetailToString(realTime):"-";
+    }
+
+    public void setRealTime(Date realTime) {
+        this.realTime = realTime;
+    }
 
     public Integer getDeviceType() {
         return deviceType;

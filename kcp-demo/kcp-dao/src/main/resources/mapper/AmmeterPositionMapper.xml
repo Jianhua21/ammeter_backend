@@ -60,6 +60,9 @@
     <result column="platform" property="platform" jdbcType="INTEGER" />
     <result column="contact_info" property="contactInfo" jdbcType="VARCHAR" />
     <result column="device_type" property="deviceType" jdbcType="INTEGER" />
+    <result column="product_date" property="realTime" jdbcType="TIMESTAMP"/>
+    <result column="device_status" property="realStatus" jdbcType="INTEGER"/>
+    <result column="warning_date" property="warningTime" jdbcType="TIMESTAMP"/>
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, number, address, amap_longitude, amap_latitude, gps_longitude, gps_latitude, 
@@ -120,6 +123,9 @@
       p.create_by,p.create_time,d.type,p.imei,p.installer,p.platform,p.company_name,
       wc.battery_status,wc.sensor,wc.surface_distance,wc.tilt_sensor,wc.water_level_sensor,
       wc.en_temperature,wc.en_humidity,wc.smoke_warning,p.device_type,
+      d.product_date,
+      wc.device_status,
+      f.warning_date,
       case when f.id is null then '0' else '1' end as warning_status,
       case when f.id is null then '' else f.warning_desc end as warning_desc
       from ammeter_position p INNER JOIN ammeter_user u on p.create_by = u.id
@@ -164,8 +170,11 @@
     <result column="warning_status" property="warningStatus" jdbcType="VARCHAR" />
     <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
     <result column="imei" property="imei" jdbcType="VARCHAR" />
-    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
     <result column="device_type" property="deviceType" jdbcType="INTEGER"/>
+    <result column="product_date" property="realTime" jdbcType="TIMESTAMP"/>
+    <result column="device_status" property="realStatus" jdbcType="INTEGER"/>
+    <result column="warning_date" property="warningTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
   <select id="getGISList" resultMap="BaseHomeResultMap" parameterType="com.kashuo.kcp.dao.condition.AmmeterPositionCondition">
@@ -173,11 +182,15 @@
     p.remark,p.device_type,
     s.desc as status_name,
     p.imei,p.company_name,
+    d.product_date,
+    wc.device_status,
+    f.warning_date,
     case when f.id is null then '0' else '1' end as warning_status,
     case when f.id is null then '' else f.warning_desc end as warning_desc
     from ammeter_position p INNER JOIN ammeter_user u on p.create_by = u.id
     INNER JOIN ammeter_device d on p.imei= d.imsi
     INNER JOIN ammeter_status s on p.status = s.code
+    LEFT JOIN ammeter_wellcover wc on wc.position_id = p.id
     LEFT join (select w.* from ammeter_warning w,
     (select max(id) id from ammeter_warning where warning_status = 0 group by ammeter_id) e
     where w.id = e.id ) f on f.ammeter_id = d.id WHERE p.status !=3

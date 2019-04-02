@@ -1,6 +1,7 @@
 package com.kashuo.kcp.domain;
 
 
+import com.kashuo.kcp.eums.DeviceStatus;
 import com.kashuo.kcp.utils.DateUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -59,6 +60,36 @@ public class AmmeterPosition extends AmmeterPositionBaseInfo{
     private String smokeWarning;
     @ApiModelProperty("机构Id")
     private Integer channelId;
+
+    private Integer realStatus;
+
+    private Date realTime;
+
+    private Date warningTime;
+
+    public String getWarningTime() {
+        return warningTime != null ? DateUtils.dateDetailToString(warningTime):"-";
+    }
+
+    public void setWarningTime(Date warningTime) {
+        this.warningTime = warningTime;
+    }
+
+    public String getRealStatus() {
+        return DeviceStatus.parseStatusName(realStatus);
+    }
+
+    public void setRealStatus(Integer realStatus) {
+        this.realStatus = realStatus;
+    }
+
+    public String getRealTime() {
+        return realTime != null ? DateUtils.dateDetailToString(realTime):"-";
+    }
+
+    public void setRealTime(Date realTime) {
+        this.realTime = realTime;
+    }
 
     public Integer getChannelId() {
         return channelId;

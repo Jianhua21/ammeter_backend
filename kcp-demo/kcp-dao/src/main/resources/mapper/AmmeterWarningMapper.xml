@@ -11,6 +11,7 @@
     <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
     <result column="warning_type" property="warningType" jdbcType="INTEGER" />
       <result column="rule_id" property="ruleId" jdbcType="INTEGER" />
+      <result column="eliminate_date" property="eliminateDate" jdbcType="TIMESTAMP" />
   </resultMap>
 
     <resultMap id="BaseQueryResultMap" type="com.kashuo.kcp.domain.AmmeterWarningResult" >
@@ -28,9 +29,10 @@
         <result column="reason" property="reason" jdbcType="VARCHAR" />
         <result column="rule_id" property="ruleId" jdbcType="INTEGER" />
         <result column="device_type" property="deviceType" jdbcType="INTEGER" />
+        <result column="eliminate_date" property="eliminateDate" jdbcType="TIMESTAMP" />
     </resultMap>
   <sql id="Base_Column_List" >
-    id, ammeter_id, warning_status, warning_date, create_date, create_by, warning_desc,warning_type,reason,rule_id
+    id, ammeter_id, warning_status, warning_date, create_date, create_by, warning_desc,warning_type,reason,rule_id,eliminate_date
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -49,7 +51,7 @@
     
     <select id="queryWarningList" resultMap="BaseQueryResultMap" parameterType="com.kashuo.kcp.dao.condition.WarningCondition">
       select p.id,w.id as warning_id,p.device_id,d.imsi ,p.name as ammeter_number,w.warning_date,w.warning_desc,d.type as ammeter_type,w.warning_type,
-      w.warning_status,w.reason,w.rule_id,p.device_type,
+      w.warning_status,w.reason,w.rule_id,p.device_type,w.eliminate_date,
       case when w.warning_status = 0 then '待处理'
       else '已消除' end as status_name
       from ammeter_warning w,ammeter_device d,ammeter_position p
@@ -61,6 +63,9 @@
       <if test="status != null">
         and w.warning_status = #{status,jdbcType=INTEGER}
       </if>
+        <if test="ruleId != null">
+            and w.rule_id = #{ruleId,jdbcType=INTEGER}
+        </if>
       <if test="positionId != null">
         and p.id = #{positionId,jdbcType=INTEGER}
       </if>
@@ -171,6 +176,9 @@
       <if test="reason != null" >
         reason = #{reason,jdbcType=VARCHAR},
       </if>
+        <if test="eliminateDate != null" >
+            eliminate_date = #{eliminateDate,jdbcType=TIMESTAMP},
+        </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -195,6 +203,9 @@
             </if>
             <if test="reason != null" >
                 reason = #{reason,jdbcType=VARCHAR},
+            </if>
+            <if test="eliminateDate != null" >
+                eliminate_date = #{eliminateDate,jdbcType=TIMESTAMP},
             </if>
         </set>
         where ammeter_id = #{ammeterId,jdbcType=INTEGER} and rule_id =#{ruleId,jdbcType=INTEGER}

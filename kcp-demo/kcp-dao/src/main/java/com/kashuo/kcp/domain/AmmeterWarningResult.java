@@ -36,6 +36,8 @@ public class AmmeterWarningResult {
 
     private Integer deviceType;
 
+    private Date eliminateDate;
+
     public String getDeviceType() {
         return DeviceTypes.parseDesc(String.valueOf(deviceType));
     }
@@ -134,6 +136,14 @@ public class AmmeterWarningResult {
 
     public void setWarningDate(Date warningDate) {
         this.warningDate = warningDate;
+    }
+
+    public String getEliminateDate() {
+        return eliminateDate != null ? DateUtils.format(eliminateDate): "";
+    }
+
+    public void setEliminateDate(Date eliminateDate) {
+        this.eliminateDate = eliminateDate;
     }
 
     public String getWarningDesc() {

@@ -1,14 +1,17 @@
 package com.kashuo.kcp.command;
 
+import com.kashuo.kcp.core.AmmeterRuleService;
 import com.kashuo.kcp.core.AmmeterWarningService;
 import com.kashuo.kcp.dao.AmmeterDeviceMapper;
 import com.kashuo.kcp.dao.AmmeterPositionMapper;
 import com.kashuo.kcp.dao.AmmeterWellcoverMapper;
 import com.kashuo.kcp.domain.AmmeterPosition;
 import com.kashuo.kcp.domain.AmmeterWellcover;
+import com.kashuo.kcp.eums.DeviceStatus;
 import com.kashuo.kcp.eums.ThirdPartyDeviceStatus;
 import com.kashuo.kcp.message.JmsMessageService;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,15 +35,38 @@ public class WellCoverService {
 
     @Autowired
     private JmsMessageService jmsMessageService;
+    @Autowired
+    private AmmeterRuleService ruleService;
 
     public boolean avoidWellCoverStatus(String imei,Integer ruleId){
         AmmeterPosition position = positionMapper.selectByImei(imei);
         if(position != null &&"wellcover".equals(position.getProductId())) {
             AmmeterWellcover wellcover = wellcoverMapper.selectByPositionId(position.getId());
+            //校验设备状态
+            wellcover.setDeviceStatus(ruleId+100);
+            if (ruleId == 7 ) {
+                wellcover.setTiltSensor("A0");
+            } else if(ruleId == 8 ){
+                wellcover.setWaterLevelSensor("W0");
+            } else if(ruleId == 5 ){
+                wellcover.setSensor("12");
+            } else if(ruleId == 6 ){
+                wellcover.setSurfaceDistance("55");
+            }
+            wellcover.setPositionId(position.getId());
+            wellcoverMapper.updateByPrimaryKeySelective(wellcover);
+        }else if(position != null &&"smokeDetector".equals(position.getProductId())){
+            AmmeterWellcover wellcover = wellcoverMapper.selectByPositionId(position.getId());
+            //校验设备状态
+            wellcover.setDeviceStatus(ruleId+100);
             if (ruleId == 7) {
                 wellcover.setTiltSensor("A0");
             } else if(ruleId ==8){
                 wellcover.setWaterLevelSensor("W0");
+            }else if(ruleId ==11){
+                wellcover.setSmokeWarning("A0");
+            }else if(ruleId ==10){
+                wellcover.setSmokeWarning("50");
             }
             wellcover.setPositionId(position.getId());
             wellcoverMapper.updateByPrimaryKeySelective(wellcover);
@@ -55,6 +81,8 @@ public class WellCoverService {
         AmmeterPosition position = positionMapper.selectByDeviceId(deviceId);
         AmmeterWellcover wellcover = analysisResponse(response);
         if(wellcover != null && position != null){
+            //校验设备状态
+            wellcover = checkDeviceStatus(wellcover);
             //通知第三方
             jmsMessageService.sendThirdPartyNotificationMessage(position, ThirdPartyDeviceStatus.NORMAL.getCode(),response,"2");
 
@@ -67,16 +95,47 @@ public class WellCoverService {
                 wellcoverMapper.insert(wellcover);
             }
             warningService.cancelWellCoverWarning(position.getId(),position.getDeviceType());
-
             //更新上报时间
             deviceMapper.updateProductDateByDeviceId(deviceId,new Date());
-
             wellcoverMapper.insertHistory(wellcover);
-
-
         }
+    }
 
-
+    public AmmeterWellcover checkDeviceStatus(AmmeterWellcover wellcover){
+        AmmeterWellcover check = new AmmeterWellcover();
+        BeanUtils.copyProperties(wellcover,check);
+        if(check.getTiltSensor()!= null){
+            check.setTiltSensor(check.getTiltSensor().substring(1));
+        }
+        if(check.getWaterLevelSensor()!= null){
+            check.setWaterLevelSensor(check.getWaterLevelSensor().substring(1));
+        }
+        wellcover.setDeviceStatus(DeviceStatus.NORMAL.getCode());
+        if(ruleService.checkWellCoverByName(check,"batteryStatus")){
+            wellcover.setDeviceStatus(DeviceStatus.LowBattery.getCode());
+        }
+        if(ruleService.checkWellCoverByName(check,"sensor")){
+            wellcover.setDeviceStatus(DeviceStatus.STATE_05.getCode());
+        }
+        if(ruleService.checkWellCoverByName(check,"surfaceDistance")){
+            wellcover.setDeviceStatus(DeviceStatus.STATE_06.getCode());
+        }
+        if(ruleService.checkWellCoverByName(check,"tiltSensor")){
+            wellcover.setDeviceStatus(DeviceStatus.STATE_07.getCode());
+        }
+        if(ruleService.checkWellCoverByName(check,"waterLevelSensor")){
+            wellcover.setDeviceStatus(DeviceStatus.STATE_08.getCode());
+        }
+        if(ruleService.checkWellCoverByName(check,"enTemperature")){
+            wellcover.setDeviceStatus(DeviceStatus.STATE_09.getCode());
+        }
+        if(ruleService.checkWellCoverByName(check,"enHumidity")){
+            wellcover.setDeviceStatus(DeviceStatus.STATE_10.getCode());
+        }
+        if(ruleService.checkWellCoverByName(check,"smokeWarning")){
+            wellcover.setDeviceStatus(DeviceStatus.STATE_11.getCode());
+        }
+        return wellcover;
     }
 
     public AmmeterWellcover analysisResponse(String data){
