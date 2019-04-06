@@ -7,6 +7,8 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +22,8 @@ import java.util.Map;
  * →→→→→→如果有问题请联系→→QQ:727865942
  */
 public class HttpClientUtils {
+
+    private static Logger logger = LoggerFactory.getLogger(HttpClientUtils.class);
 
     public static JSONObject getDataFromGetMethod(String url) throws IOException {
         //开启一个HttpClient
@@ -66,6 +70,7 @@ public class HttpClientUtils {
 
     public static String getDataFromPostMethod(String url,String params,String applciationType,String apiToken) throws IOException{
 
+        logger.info("getDataFromPostMethod 请求Url:{},参数:{} ",url,JSON.toJSONString(params));
         //开启一个HttpClient
         HttpClient httpClient =new HttpClient();
 
@@ -98,6 +103,7 @@ public class HttpClientUtils {
         } else {
             System.out.println("send error!");
         }
+        logger.info("getDataFromPostMethod 返回结果:{} ",JSON.toJSONString(responseJsonString));
         return responseJsonString.toString();
     }
 

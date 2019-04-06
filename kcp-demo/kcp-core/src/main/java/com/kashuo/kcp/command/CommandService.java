@@ -274,7 +274,7 @@ public class CommandService {
             ZxYunMessage message = ZxYunUtils.registerDevice(ammeterAuth.getAccessToken(), ammeterAuth.getProjectUrl(), JSONObject.toJSONString(params));
             if(!NbiotConstant.NB_ZXYUN_SUCCESS_CODE.equals(message.getCode())){
                 result =1;
-                update.setStatus(2);
+                deviceBindZxYun(position);
             }else {
                 deviceBindZxYun(position);
             }
@@ -600,6 +600,8 @@ public class CommandService {
                         positionMapper.updateByPrimaryKeySelective(update);
                     }
                 }
+            }else {
+
             }
         }catch (Exception e){
 

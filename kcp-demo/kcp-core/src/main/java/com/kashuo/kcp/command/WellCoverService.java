@@ -43,7 +43,8 @@ public class WellCoverService {
         if(position != null &&"wellcover".equals(position.getProductId())) {
             AmmeterWellcover wellcover = wellcoverMapper.selectByPositionId(position.getId());
             //校验设备状态
-            wellcover.setDeviceStatus(ruleId+100);
+            wellcover = checkDeviceStatus(wellcover);
+//            wellcover.setDeviceStatus(ruleId+100);
             if (ruleId == 7 ) {
                 wellcover.setTiltSensor("A0");
             } else if(ruleId == 8 ){
@@ -58,7 +59,7 @@ public class WellCoverService {
         }else if(position != null &&"smokeDetector".equals(position.getProductId())){
             AmmeterWellcover wellcover = wellcoverMapper.selectByPositionId(position.getId());
             //校验设备状态
-            wellcover.setDeviceStatus(ruleId+100);
+            wellcover = checkDeviceStatus(wellcover);
             if (ruleId == 7) {
                 wellcover.setTiltSensor("A0");
             } else if(ruleId ==8){
