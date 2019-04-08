@@ -170,6 +170,7 @@
     <result column="warning_status" property="warningStatus" jdbcType="VARCHAR" />
     <result column="warning_desc" property="warningDesc" jdbcType="VARCHAR" />
     <result column="imei" property="imei" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR"/>
     <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
     <result column="device_type" property="deviceType" jdbcType="INTEGER"/>
     <result column="product_date" property="realTime" jdbcType="TIMESTAMP"/>
@@ -182,6 +183,7 @@
     p.remark,p.device_type,
     s.desc as status_name,
     p.imei,p.company_name,
+    p.address,
     d.product_date,
     wc.device_status,
     f.warning_date,

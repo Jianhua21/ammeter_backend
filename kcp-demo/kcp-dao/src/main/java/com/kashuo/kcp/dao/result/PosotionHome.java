@@ -191,8 +191,6 @@ public class PosotionHome {
     }
 
     public String getAddress() {
-
-        address = remark;
         return address;
     }
 

@@ -13,9 +13,9 @@
         </encoder>
     </appender>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>./logs/application.log</File>
+        <File>/apps/logs/qitong/shiding-manage/application.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>./logs/application.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <FileNamePattern>/apps/logs/qitong/shiding-manage/application.%d{yyyy-MM-dd}.log</FileNamePattern>
             <maxHistory>60</maxHistory>
         </rollingPolicy>
         <encoder>
