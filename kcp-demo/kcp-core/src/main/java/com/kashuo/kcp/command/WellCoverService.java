@@ -162,7 +162,7 @@ public class WellCoverService {
                 }
                 if(data.contains("M")){
                     wellcover.setDeviceImei(data.substring(data.indexOf("M")+1,data.indexOf("O")));
-                    wellcover.setDevicePlatform(data.substring(data.indexOf("O")+1));
+                    wellcover.setDevicePlatform(data.substring(data.indexOf("O")+1,data.indexOf("O")+2));
                 }
 
             } else if (data.length() == 15 && "P0".equals(deviceType)) {
@@ -196,7 +196,7 @@ public class WellCoverService {
 
 
     public static void main(String[] args) {
-        new WellCoverService().analysisResponse("P7BV360L012D120A0W0Ri06");
+        new WellCoverService().analysisResponse("P7BV16L012D120A1W0Ri27M89861118284007192907O0^@");
 //        String data ="P7BV12L012D120A1W0";
 //        System.out.println(data.indexOf("L"));
 //        System.out.println(data.substring(data.indexOf("BV")+2,data.indexOf("L")));
