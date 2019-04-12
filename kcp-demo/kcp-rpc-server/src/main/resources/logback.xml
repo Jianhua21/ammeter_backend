@@ -13,9 +13,9 @@
         </encoder>
     </appender>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>/apps/logs/qitong/shiding-manage/application.log</File>
+        <File>./logs/application.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>/apps/logs/qitong/shiding-manage/application.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <FileNamePattern>./logs/application.%d{yyyy-MM-dd}.log</FileNamePattern>
             <maxHistory>60</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -36,11 +36,12 @@
 
     <!--这里指定logger name-->
     <logger name="org.springframework" level="WARN" />
-    <logger name="org.apache.ibatis" level="WARN" />
+    <logger name="org.apache.ibatis" level="DEBUG" />
     <logger name="org.mybatis.spring" level="WARN" />
     <logger name="org.springframework.web" level="WARN"/>
-    <logger name="com.kashuo" level="INFO"/>
-    <logger name="dao" level="INFO"/>
+    <logger name="com.kashuo.kcp" level="DEBUG"/>
+    <!--<logger name="com.kashuo" level="INFO"/>-->
+    <!--<logger name="dao" level="DEBUG"/>-->
     <!--<logger name="com.kashuo.kop.server.dao" level="DEBUG"/>-->
     <!--<logger name="com.kashuo.kop.server.provider.impl.ZdManager" level="DEBUG"/>-->
     <!--<logger name="com.kashuo.kop.server.provider.impl.KsManager" level="DEBUG"/>-->

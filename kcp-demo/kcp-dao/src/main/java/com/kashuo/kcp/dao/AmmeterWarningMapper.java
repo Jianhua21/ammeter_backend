@@ -23,6 +23,8 @@ public interface AmmeterWarningMapper {
 
     AmmeterWarning selectByCondition(@Param("warningId") Integer warningId,@Param("ammeterId") Integer ammeterId);
 
+    AmmeterWarning selectByDesc(@Param("desc") String desc,@Param("ammeterId") Integer ammeterId);
+
     int updateByPrimaryKeySelective(AmmeterWarning record);
 
     int updateByRuleKey(AmmeterWarning record);

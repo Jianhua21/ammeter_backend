@@ -11,6 +11,7 @@ import com.kashuo.kcp.eums.DeviceStatus;
 import com.kashuo.kcp.eums.ThirdPartyDeviceStatus;
 import com.kashuo.kcp.message.JmsMessageService;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -105,10 +106,10 @@ public class WellCoverService {
     public AmmeterWellcover checkDeviceStatus(AmmeterWellcover wellcover){
         AmmeterWellcover check = new AmmeterWellcover();
         BeanUtils.copyProperties(wellcover,check);
-        if(check.getTiltSensor()!= null){
+        if(StringUtils.isNotBlank(check.getTiltSensor())){
             check.setTiltSensor(check.getTiltSensor().substring(1));
         }
-        if(check.getWaterLevelSensor()!= null){
+        if(StringUtils.isNotBlank(check.getWaterLevelSensor())){
             check.setWaterLevelSensor(check.getWaterLevelSensor().substring(1));
         }
         wellcover.setDeviceStatus(DeviceStatus.NORMAL.getCode());

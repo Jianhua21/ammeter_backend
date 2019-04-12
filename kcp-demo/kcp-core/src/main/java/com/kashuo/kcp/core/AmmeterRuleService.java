@@ -164,14 +164,18 @@ public class AmmeterRuleService {
         }else if("2".equals(pushType)){
             desc = ZxYunOptCodes.parseDesc(code);
         }
-        //告警告知第三方
-        jmsMessageService.sendThirdPartyNotificationMessage(position,
-                ThirdPartyDeviceStatus.parseCode(desc),"","1");
+
 
         WarningCondition condition = new WarningCondition();
         condition.setPositionId(positionId);
-//        AmmeterWarning exists = warningMapper.selectByCondition(warningId,device.getId());
-        if(!"".equals(desc)) {
+
+        AmmeterWarning exists = warningMapper.selectByDesc(desc,device.getId());
+
+        if(exists == null) {
+            //告警告知第三方
+            jmsMessageService.sendThirdPartyNotificationMessage(position,
+                    ThirdPartyDeviceStatus.parseCode(desc),"","1");
+
             deviceConfigService.sendMsgInfoBySMS(position, desc, 1);
             AmmeterWarning warning = new AmmeterWarning();
             warning.setCreateBy("system");
@@ -189,6 +193,10 @@ public class AmmeterRuleService {
                 logger.error("batch insert warning info failure...position.id={}", position.getId());
             }
         }else{
+            AmmeterWarning update = new AmmeterWarning();
+            update.setId(exists.getId());
+            update.setCreateDate(new Date());
+            warningMapper.updateByPrimaryKeySelective(update);
             logger.info("告警已存在!==================");
         }
     }
