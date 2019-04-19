@@ -56,7 +56,7 @@ public class WellCoverService {
                 wellcover.setSurfaceDistance("55");
             }
             wellcover.setPositionId(position.getId());
-            wellcoverMapper.updateByPrimaryKeySelective(wellcover);
+            wellcoverMapper.updateCurrentDeviceStatus(wellcover);
         }else if(position != null &&"smokeDetector".equals(position.getProductId())){
             AmmeterWellcover wellcover = wellcoverMapper.selectByPositionId(position.getId());
             //校验设备状态
@@ -71,7 +71,7 @@ public class WellCoverService {
                 wellcover.setSmokeWarning("50");
             }
             wellcover.setPositionId(position.getId());
-            wellcoverMapper.updateByPrimaryKeySelective(wellcover);
+            wellcoverMapper.updateCurrentDeviceStatus(wellcover);
         }
         return true;
 

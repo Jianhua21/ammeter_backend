@@ -193,4 +193,8 @@
       water_level_sensor = #{waterLevelSensor,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <update id="updateCurrentDeviceStatus" parameterType="com.kashuo.kcp.domain.AmmeterWellcover" >
+  update ammeter_wellcover set device_status =#{deviceStatus}
+  where id = #{id,jdbcType=INTEGER}
+  </update>
 </mapper>

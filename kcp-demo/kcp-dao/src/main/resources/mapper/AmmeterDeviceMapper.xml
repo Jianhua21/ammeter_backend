@@ -426,7 +426,7 @@ and p.device_id is not null
     from ammeter_position p
     INNER JOIN ammeter_device d on p.imei = d.imsi
     where p.`status` in(1,6) and p.device_id is not null
-     and ((TIMESTAMPDIFF(MINUTE,d.product_date,NOW())>= 35 and p.channel_id =2) or (TIMESTAMPDIFF(HOUR,d.product_date,NOW())>= 12 and p.channel_id !=2))
+     and ((TIMESTAMPDIFF(HOUR,d.product_date,NOW())>= 4 and p.channel_id =2) or (TIMESTAMPDIFF(HOUR,d.product_date,NOW())>= 12 and p.channel_id !=2))
      and not EXISTS(select * from ammeter_warning w where w.ammeter_id = d.id and w.warning_type=1
      and w.warning_status =0)
     </select>

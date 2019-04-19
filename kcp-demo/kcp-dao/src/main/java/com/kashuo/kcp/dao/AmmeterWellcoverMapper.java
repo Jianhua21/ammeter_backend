@@ -17,5 +17,7 @@ public interface AmmeterWellcoverMapper {
 
     int updateByPrimaryKeySelective(AmmeterWellcover record);
 
+    int updateCurrentDeviceStatus(AmmeterWellcover record);
+
     int updateByPrimaryKey(AmmeterWellcover record);
 }
