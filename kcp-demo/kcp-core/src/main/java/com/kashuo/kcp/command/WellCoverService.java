@@ -159,7 +159,21 @@ public class WellCoverService {
                 wellcover.setTiltSensor(data.substring(data.indexOf("A"),data.indexOf("W")));
                 wellcover.setWaterLevelSensor(data.substring(data.indexOf("W"),data.indexOf("W")+2));
                 if(data.contains("Ri")){
-                    wellcover.setRiData(data.substring(data.indexOf("Ri")+2,data.indexOf("Ri")+4));
+                    int riData = 0;
+                    try{
+                        if(data.contains("M")) {
+                            riData = Integer.parseInt(data.substring(data.indexOf("Ri") + 2, data.indexOf("M")));
+                        }else{
+                            try {
+                                riData = Integer.parseInt(data.substring(data.indexOf("Ri") + 2, data.indexOf("Ri") + 4));
+                            }catch (Exception e){
+                                riData = Integer.parseInt(data.substring(data.indexOf("Ri") + 2, data.indexOf("Ri") + 3));
+                            }
+                        }
+                        wellcover.setRiData(String.valueOf(riData));
+                    }catch (Exception e){
+                        wellcover.setRiData("0");
+                    }
                 }
                 if(data.contains("M")){
                     wellcover.setDeviceImei(data.substring(data.indexOf("M")+1,data.indexOf("O")));
@@ -197,7 +211,7 @@ public class WellCoverService {
 
 
     public static void main(String[] args) {
-        new WellCoverService().analysisResponse("P7BV16L012D120A1W0Ri27M89861118284007192907O0^@");
+        new WellCoverService().analysisResponse("P7BV360L012D120A0W0Ri0MO^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@");
 //        String data ="P7BV12L012D120A1W0";
 //        System.out.println(data.indexOf("L"));
 //        System.out.println(data.substring(data.indexOf("BV")+2,data.indexOf("L")));
